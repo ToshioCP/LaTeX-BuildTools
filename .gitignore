@@ -1,0 +1,7 @@
+# .gitignore
+
+# Ignore all backupfiles made by gedit
+*~
+
+# Ignore Readme.html file generated from Readme.md by pandoc
+Readme.html
