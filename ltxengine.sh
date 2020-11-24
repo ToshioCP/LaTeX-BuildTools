@@ -1,17 +1,25 @@
 #! /bin/bash
 
+usage() {
+  echo "Usage: ltxengine rootfile" 1>&2
+  exit 1
+}
+
 IFS=$'\n'
 
-if [[ $# -ne 1 ]]; then
-  echo "ltxengine rootfile" 1>&2
-  exit 1
+if [[ $1 == "--help" ]]; then
+  usage
 fi
+if [[ $# -ne 1 ]]; then
+  usage
+fi
+
 rootfile=$(echo "$1" | sed 's/.tex$//').tex
 texfiles_preamble=$(tfiles -p "$rootfile")
 
 # check the magic comment
 # ERE
-pattern_tw_prog='^ *% *!TeX +@rogram *= *([^ ]+) *$'
+pattern_tw_prog='^ *% *!TeX +program *= *([^ ]+) *$'
 engine=$(cat "$rootfile" |
   grep -E "$pattern_tw_prog" |
   sed -E "s/$pattern_tw_prog/\1/")

@@ -1,24 +1,48 @@
 # uninstall.sh
 
-# bash uninstall.sh [-s|-u]
-# option: -s taget directorys are /usr/local/bin and /usr/local/share/ltxtools (default when root)
-#          -u taget directorys are $HOME/bin and $HOME/share/ltxtools (default when user mode)
+binfiles="arl
+gfiles
+lb
+ltxengine
+newtex
+p2t
+srf
+tfiles
+tftype
+ttex"
 
-# アンインストールのスクリプト。bash uninstall.sh のように、bash の引数に指定する。
-# オプション: -s インストール先ディレクトリを/usr/local/binと/usr/local/share/ltxtoolsとしてアンインストール。
-#          -u インストール先ディレクトリを$HOME/binと$HOME/share/ltxtoolsとしてアンストール。
+templatefiles="tsrc_en
+tsrc_ja"
 
-binfiles="newtex ttex tfiles p2t ltxengine tftype srf gfiles lb arl"
-toolfiles="Makefile main.tex helper.tex cover.tex skeleton.txt gecko.png"
+usage() {
+  echo "Usage: bash uninstall.sh [--help| -s| -u]" 1>&2
+  echo "   Uninstall the script files in this directory from bin|share directory." 1>&2
+  echo "Option:" 1>&2
+  echo "   --help: Show this help message." 1>&2
+  echo "       -s: /usr/local is chosen as the parent directory of the bin|share directory." 1>&2
+  echo "       -u: $HOME is chosen as the parent directory of the bin|share directory." 1>&2
+}
 
-if [[ $# -eq 1 && $1 == "-u" ]] ; then
-  bin="$HOME/bin"
-  share="$HOME/share"
-elif [[ $# -eq 1 && $1 == "-s" ]] ; then
-  # root privilege is needed to install.
-  bin="/usr/local/bin"
-  share="/usr/local/share"
+if [[ $# -eq 1 ]] ; then
+  case "$1" in
+    --help) usage;;
+    -s)
+      if [[ ! -w /usr/local/bin ]] ; then
+        echo "install.sh: Intallation failed." 1>&2
+        echo "  You don't have permission to write any files under /usr/local/bin." 1>&2
+        echo "  Use sudo or su." 1>&2
+        exit 1
+      fi
+      bin="/usr/local/bin"
+      share="/usr/local/share";;
+    -u)
+      bin="$HOME/bin"
+      share="$HOME/share";;
+    *) usage;;
+  esac
 elif [[ $# -eq 0 ]] ; then
+  # If no argument is given, the folder to install is determined from whether /usr/local/bin is writable or not.
+  # 引数なしのときは、/usr/local/binの書き込み権限を見て、rootか一般ユーザかを見てインストール先を決定する
   if [[ -w /usr/local/bin ]] ; then
     bin="/usr/local/bin"
     share="/usr/local/share"
@@ -28,8 +52,7 @@ elif [[ $# -eq 0 ]] ; then
   fi
 else
   # argument error, print usage to stderr
-  echo "Usage : bash uninstall.sh [-s|-u]" 1>&2
-  exit 1
+  usage
 fi
 
 ltxtools="$share/ltxtools"
@@ -41,18 +64,15 @@ for file in $binfiles ; do
 done
 
 if [[ -d $ltxtools ]] ; then
-  for x in en ja ; do
-    for file in $toolfiles ; do
-      if [[ -f $ltxtools/tsrc_$x/$file ]] ; then
-        rm $ltxtools/tsrc_$x/$file
-      fi
-      if [[ -z $(ls $ltxtools/tsrc_$x) ]] ; then
-        rmdir $ltxtools/tsrc_$x
-      fi
-    done
+  for file in $templatefiles ; do
+    if [[ -f $ltxtools/$file ]] ; then
+      rm $ltxtools/$file
+    elif [[ -d $ltxtools/$file ]] ; then
+      rm -r $ltxtools/$file
+    fi
   done
+  if [[ -z $(ls $ltxtools) ]] ; then
+    rmdir $ltxtools
+  fi
 fi
 
-if [[ -z $(ls $ltxtools) ]] ; then
-  rmdir $ltxtools
-fi

@@ -198,10 +198,11 @@ arlは、ARchive LaTeX filesから。
 
 - 前処理プログラムがある場合、そのプログラムを実行してからarlを起動する必要がある。
 - arlのアーカイブするのは、LaTeXソースファイルと、includegraphicsされる画像ファイルのみ。
-- したがって前処理のソースファイル（例えばgnuplotのソース）もアーカイブしたいときには別の方法が必要。
-- Makefileもアーカイブしない。
+- したがってMakefileや、前処理のソースファイル（例えばgnuplotのソース）などはアーカイブされない。
 
-tar.gz, tar.bz2, zipをサポート。
+Makefileにターゲットを作り（例えばarという名前のターゲット）、arlで作ったアーカイブにtarでMakefileや前処理ソースファイルを追加するスクリプトを書いておくと便利である。
+
+アーカイブを圧縮するオプション -g、-b、-zで、それぞれ、tar.gz, tar.bz2, zipをサポート。
 
 #### ユーティリティ群
 
@@ -213,7 +214,7 @@ tar.gz, tar.bz2, zipをサポート。
 subfileからルートファイルを探し、その結果（ファイル名）を出力する。
 srfは「Search Root File」の意味。
 
-    $ tfiles [-p|-a] rootfile
+    $ tfiles [-p| -a| -i] rootfile
 
 シェル・スクリプト。
 rootfileのサブファイルの一覧を取得する
@@ -240,7 +241,7 @@ exitステータスが0はルートファイル、1はサブファイル。
     $ gfiles files ...
 
 シェル・スクリプト。
-引数のLaTeXファイルの中で\\includegraphicsによって取り込まれる画像ファイルの一覧を返す
+引数のLaTeXファイルの中で\\includegraphicsによって取り込まれる画像ファイルの一覧を返す。
 
     $ ltxengine ルートファイル
 
@@ -270,26 +271,38 @@ LaTeXで使えない文字がいくつかある。
 
     $ bash install.sh
 
-この場合、\$HOME/binにスクリプトは保存される。
-debianでは、ログイン時に\$HOME/binがあれば、実行ディレクトリのパス\$PATHに追加される。
+この場合、シェルスクリプトなどの実行ファイルは\$HOME/binに、テンプレートは\$HOME/share/ltxtoolsに保存される。
+debianやubuntuでは、ログイン時に\$HOME/binがあれば、bashの実行ディレクトリのパス\$PATHに追加される。
 インストール時に新規に \$HOME/bin を作成した場合には、再ログインしないと、それが実行ディレクトリに追加されないので注意が必要。
-rootになってインストールすると /usr/local/bin にインストールされる。
+rootになってインストールすると/usr/local/bin、/usr/local/share/ltxtoolsにそれぞれ実行ファイル、テンプレートをインストール。
+debianの場合は、
 
+    $ su -
     # bash install.sh
+
+ubuntuの場合は
+
+    $ sudo bash install.sh
 
 オプションで個人レベルのインストールか、システムレベルのインストールかを指定することも可能。
 
-- -s システムレベル。/usr/local/bin にインストール。書き込み権限が必要。通常はrootになってインストールを実行する。
-- -u ユーザレベル。 \$HOME/bin にインストール。rootでインストールすると/root/binにインストールされるので注意。つまり、rootの個人用としてインストールされる。これはおそらくありあえないインストールだと思う。通常はrootでないユーザでインストールを実行する。
+- -s システムレベルのインストール。システムへの書き込み権限が必要。
+- -u ユーザレベルのインストール。かならず一般ユーザで行うこと。仮にrootでインストールすると/root/bin、/root/share/ltxtoolsにインストールされる、つまりrootの個人用としてインストールされる。
 
 アンインストールは uninstall.shで行う。
+一般ユーザで実行すれば、\$HOME以下のインストールファイルが削除される。
 
     $ bash uninstall.sh
 
-または、
+rootで実行すれば、/usr/local以下のインストールファイルが削除される。
+debianの場合は、
 
+    $ su -
     # bash uninstall.sh
 
-rootになって、システムレベルのアンインストール。
+ubuntuの場合は、
+
+    $ sudo bash uninstall.sh
+
 オプション -s, -u で、システムレベルか、個人レベルかを明示することも可能。
 

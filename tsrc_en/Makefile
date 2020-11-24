@@ -13,8 +13,11 @@ clean:
 	rm -rf _build
 ar:
 	arl main
+	tar -rf main.tar Makefile
+	gzip main.tar
 	mv main.tar.gz bookname.tar.gz
 zip:
 	arl -z main
+	zip main.zip Makefile
 	mv main.zip bookname.zip
 

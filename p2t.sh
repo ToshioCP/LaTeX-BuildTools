@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # plain to tex
-# This is a filter program to replace the special charactors with latex format.
+# This is a filter program to replace the special characters with latex format.
 #  # => \#
 #  $ => \$
 #  % => \%
@@ -15,6 +15,14 @@
 #  | => \textbar
 #  < => \textless
 #  > => \textgreater
+
+usage () {
+  echo "Usage: p2t [--help]" 1>&2
+  echo "  Option: --help   show this message." 1>&2
+  echo "  p2t read data from standard input and escape the special characters with latex format." 1>&2
+  echo "  For example, backslash(\) is translated into \textbackslash." 1>&2
+  exit 1
+}
 
 split () {
   sed -E 's/(.)/\1\n/g'
@@ -39,9 +47,8 @@ trans () {
      '
 }
 
-if [[ $# -eq 1 && $1 == --help || $1 == -h ]]; then
-  echo "Usage : bash p2t.sh [filename]" 1>&2
-  exit 1
+if [[ $# -eq 1 && $1 == --help ]]; then
+  usage
 fi
 
 split | trans | connect

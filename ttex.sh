@@ -1,19 +1,18 @@
 #! /bin/bash
 
-# ttex (test tex script ... script to test tex sub file)
+# ttex is a script to test tex subfile.
 # If you compile LaTeX root file with all the subfiles, it takes quite long time.
-# This script makes temporary root file to test the given subfile.
-# First search its root file and copy its preamble and \begin{document} to the temporary root file,
-# then adds \mainmatter if necessary, and finally adds \input{subfile} and \end{document} at the end of the temporary root file.
-# Then, invoke a latex engine to compile the temporary root file.
-# This is quick and reasonable if you just want to test a subfile.
+# This script makes temporary rootfile to test the given subfile.
+# First, copy preamble and \begin{document} in the rootfile to the temporary rootfile.
+# Then adds \mainmatter if necessary, and finally adds \input{subfile} and \end{document} at the end of the temporary rootfile.
+# Then, invoke a latex engine to compile the temporary rootfile.
 
-# ルートファイル・・コンパイル対象のサブファイルのルートファイル（デフォルトmain.tex）
-# テンポラリ・ルートファイルは_buildの中に生成される。サブファイルのテスト用のファイルである
-# ttexはテンポラリ・ルートファイルをコンパイルする。サブファイルはテンポラリ・ルートファイルから呼び出される。
-# エンジンのカレントディレクトリはルートファイル（テンポラリでない）のディレクトリである
-# すべてのパス名は（ルートファイルの存在するディレクトリからの）相対ディレクトリでなければならない
-# それは、テンポラリ・ルートファイルからの相対ディレクトリではないことに注意
+# ttexという名前はtest tex scriptから来ており、す部ファイルをテストするスクリプトである。
+# もしも、サブファイルをテストするために、ルートファイルとすべてのサブファイルをコンパイルするのはかなり時間がかかる。
+# ttexは与えられたサブファイルをテストするために、テンポラリ・ルートファイル作成する。
+# はじめに、ルートファイルのプリアンブルと\begin{document}をテンポラリ・ルートファイルにコピーする。
+# そして、必要ならば\mainmatterを加え、最後に\input{subfile}と\end{document}をテンポラリ・ルートファイルの最後に付け加える。
+# 次にテンポラリ・ルートファイルをlatexエンジンでコンパイルする。
 
 usage () {
   echo "Usage : ttex [-b builddir] -e latex_engine [-p dvipdf] [-v previewr] -r rootfile subfile" 1>&2
@@ -26,8 +25,6 @@ if [[ $1 == "-b" ]]; then
   shift
   builddir=$1
   shift
-else
-  builddir=
 fi
 if [[ $1 == "-e" ]]; then
   shift
@@ -38,6 +35,7 @@ else
 fi
 if [[ ! $engine =~ ^(pdflatex|lualatex|xelatex|latex|platex)$ ]]; then
   echo "Unknown latex engine: $engine" 1>&2
+  exit 1
 fi
 if [[ $1 == "-p" ]]; then
   shift
@@ -76,12 +74,11 @@ fi
 if [[ -n $builddir ]]; then
   temprfile=$builddir/test_$(basename "$subfile")
 else
-  temprfile=test$(basename "$subfile")
+  temprfile=test_$(basename "$subfile")
 fi
 cat "$rootfile" | sed -nE '/\\documentclass/,/\\begin\{document\}/p' > "$temprfile"
 if [[ -n $(grep -E '\\documentclass.*\{book\}' "$temprfile") ]]; then
   echo \\mainmatter >> "$temprfile"
-#  echo "\\chapter{Test pdf result of $(echo "$subfile" |p2t)}" >> "$temprfile"
 fi
 echo "\\input{$subfile}" >> "$temprfile"
 echo "\\end{document}" >> "$temprfile"

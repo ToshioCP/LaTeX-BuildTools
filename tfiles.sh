@@ -4,10 +4,10 @@
 #   look for subfiles of the given rootfile (default is main.tex)
 #   no option => output the list of subfiles (specified in include/iinput command located between \begin{document} and \end{document})
 #   -p output subfiles specified in the preamble
-#   -a output the rootfile and subfiles (the same as the non-option output)
+#   -a output add the rootfile to the files listed when no option.  
 #   -i output the list of files given by \include command.
 
-# tfiles [-p|-a] [rootfile]
+# tfiles [-p|-a|-i] [rootfile]
 #   ルートファイルからサブファイルを検索する（デフォルトはmain.tex）
 #   オプション無し => サブファイル（\begin{document}から\end{document}までのinclude/inputコマンドで指定されたファイル）のリストを標準出力に出力する
 #   -p プリアンブルで取り込まれるサブファイルのリストを標準出力に出力する
@@ -27,7 +27,7 @@
 
 #- \include{拡張子の無いファイル名}でその場所にファイルを取り込む
 #- ファイルを取り込む場所の直前と直後に\clearpage命令を入れる
-#- ファイル名は拡張子をつけない。しかし取り込まれるファイルを探すときには.texの拡張子をつけて探す
+#- ファイル名には拡張子をつけない。しかし取り込まれるファイルを探すときには.texの拡張子をつけて探す
 #- includeはネストできない
 #- includeはボディのみに記述でき、プリアンブルには記述できない
 #- プリアンブルにincludeonlyがある場合はその影響を受ける
@@ -37,7 +37,7 @@
 
 #- プリアンブルに記述する
 #- \includeonly{拡張子無しのファイル名,拡張子無しのファイル名, ...}の形で記述する
-#- includeonlyのファイル名には拡張子をつけないが、実際のファイルには拡張子.texをつける
+#- includeonlyのファイル名には拡張子をつけないが、それは拡張子.texのついたファイルを意味する
 #- ファイル名のリストはコンマで区切る
 #- ここに現れたファイルがボディでinclude命令に再び現れると、includeが有効に機能する
 #- ここに現れていないファイルがボディでinclude命令に再び現れた場合、includeは無効になる
@@ -46,30 +46,42 @@
 
 #- ルートファイルの補助ファイルと各サブファイルの補助ファイルが作られる
 #- ルートファイルの補助ファイルは、各サブファイルの補助ファイルをinputする
-#- includeonlyからあるファイルが消される（コメントアウト）のちも対応する補助ファイルは残り、ルートファイルのinputも残る
+#- includeonlyからあるファイルが消された（コメントアウトされた）のちも対応する補助ファイルは残り、ルートファイルのinputも残る
 #- ということは、コメントアウトされたファイルへの参照が可能である
 #-------------------------------------------------------------------------------------------
 
-# searchf
-# The variable files contains the list of the files that are included through the input command.
-# This function adds the files that are the second level of nesting or more.
-# Important note!
-# This function and the main routine share the variable files.
+usage () {
+  echo "Usage: tfiles --help"  1>&2
+  echo "  Show this message."  1>&2
+  echo "Usage: tfiles [-p|-a|-i] [rootfile]"  1>&2
+  echo "  Look for subfiles of the given rootfile (default is main.tex)." 1>&2
+  echo "  Option:" 1>&2
+  echo "    no option: Output the list of subfiles (specified in include/iinput command located between \begin{document} and \end{document})." 1>&2
+  echo "   -p:         Output subfiles specified in the preamble." 1>&2
+  echo "   -a:         Output the files' list with no option. Then output the rootfile." 1>&2  
+  echo "   -i:         Output the list of files specified by \include command." 1>&2
+  exit 1
+}
 
 # searchf
-# 変数filesはinputするファイルのリストである。
-# この関数はネストされた2段階目以降のファイルをfilesに付け足す
-# 重要な注意!
-# この関数とメインルーチンは変数filesを共有
+# This function and the main routine share the variable "files".
+# When this function is invoked, the variable files has a list of tex files.
+# This function searches the files in the list for files specified by the \input command.
+# And it searches the files found in the search above for files specified by the \input command again. It repeats. The number of repeat is less than or equal to 10.
+# All the files found by the search above are added to the variable files.
+
+# searchf
+# この関数とメインルーチンは変数filesを共有している。
+# この関数が呼ばれたときに、変数filesにはtexファイルのリストが代入されている。
+# リストの各ファイルから、inputコマンドで取り込み指定されているファイルを探す。
+# この検索で見つかったファイルからもinputコマンドで取り込み指定されているファイルを探す。この検索はくり返され、最大10回の深さまで行われる。
+# 見つかったすべてのファイル（重複を除く）を変数filesに付け加える。
 
 searchf () {
-  # The value n=10 is the maximum times of the loop.
-  # The variable i contains the files that are added to the variable files and not checked the further nested files.
-  # The variable j is obtained by the variable i and its contents are one level further than the one in the variable i.
+  # The value n=10 is the maximum number of times of the loop.
 
-  # nは無限ループを避けるための最大値
-  # i filesに追加したが、まだ下位を調べていないファイル
-  # j iから得られた一つ下位のファイル => その中でfilesにないものを抽出して新たに次のiを得る
+  # n=10はループ回数の最大値
+
   declare -i n=10
   i="$files"
   while [[ $n -gt 0 && -n $i ]]; do
@@ -79,7 +91,7 @@ searchf () {
       k=$(cat "$x" |
         sed 's/%.*$//' |
         sed -nE '/\\begin\{verbatim\}/,/\\end\{verbatim\}/! p' |
-        sed 's/\\/\n\\/g' |
+        sed 's/\\input/\n\\input/g' |
         grep -E '\\input *\{' |
         sed -E 's/^\\input *\{([^}]*)\}.*$/\1/')
       if [[ -z $j ]]; then
@@ -115,17 +127,19 @@ searchf () {
 
 IFS=$'\n'
 
+if [[ $1 == "--help" ]]; then
+  usage
+fi
 if [[ $1 =~ ^-[api]$ ]]; then
   opt=$1
   shift
 fi
 if [[ $# -gt 1 ]]; then
-  echo "Usage: tfiles [-p|-a|-i] [rootfile]" 1>&2
-  exit 1
+  usage
 elif [[ $# -eq 1 ]]; then
   arg_rootfile=$(echo "$1" | sed 's/.tex$//').tex
 else
-  arg_rootfile=main.tex
+  arg_rootfile=main.tex # default rootfile
 fi
 if [[ ! -f $arg_rootfile ]]; then
   echo "tfiles: No such file: $arg_rootfile" 1>&2
@@ -134,30 +148,24 @@ fi
 tftype -q "$arg_rootfile"
 filetype=$?
 if [[ $filetype -ne 0 ]]; then
-  echo "Usage: tfiles [-p|-a] [rootfile]" 1>&2
-  echo "  $arg_rootfile is not a rootfile." 1>&2
+  echo "tfiles: tftype says $arg_rootfile is not a rootfile." 1>&2
   exit 1
 fi
 
 # Usually, the paths described in include/input command are relative from the directory of the rootfile.
-# Therefore, this script changes its current directory into the directory above.
-# The rootfile is accessed with the relative path contained in the variable $rootpath.
+# Therefore, this script changes its current directory into the directory the given rootfile belongs.
 
-#\includeや\inputはルートファイルからの相対パスで表す（通常はそうである）ため、カレントディレクトリをルートファイルのディレクトリに写す
-#以下ではルートファイルを相対パスの$rootfileでアクセスする
+#\includeや\inputはルートファイルからの相対パスで通常は表されるので、カレントディレクトリをルートファイルのディレクトリに移動する
 
 dname=$(dirname "$arg_rootfile")
 rootfile=$(basename "$arg_rootfile")
 cd "$dname"
 
-# In case of -p option
-# -p オプションの時
-
 if [[ $opt == "-p" ]]; then
   files=$(cat "$rootfile" |
     sed 's/%.*$//' |
     sed -nE '1,/\\begin\{document\}/ p' |
-    sed 's/\\/\n\\/g' |
+    sed 's/\\input/\n\\input/g' |
     grep -E '\\input *\{' |
     sed -E 's/^\\input *\{([^}]*)\}.*$/\1/' |
     sed -E 's/^"(.*)"$/\1/' )
@@ -165,7 +173,7 @@ if [[ $opt == "-p" ]]; then
   searchf
   files=$(echo "$files" | sort | uniq)
   echo "$files"
-  exit
+  exit 0
 fi
 
 # In the case other than -p option.
@@ -187,58 +195,54 @@ includefiles=$(cat "$rootfile" |
   sed 's/%.*$//' |
   sed -nE '/\\begin\{verbatim\}/,/\\end\{verbatim\}/! p' |
   sed -nE '/\\begin\{document\}/, /\\end\{document\}/ p' |
-  sed 's/\\/\n\\/g' |
+  sed 's/\\include/\n\\include/g' |
   grep -E '\\include *\{' |
   sed -E 's/^\\include *\{([^}]*)\}.*$/\1/' |
   sed -E 's/^"(.*)"$/\1/' )
-final_includefiles=
-for x in $includeonlyfiles; do
-  for y in $includefiles; do
-    if [[ $x == $y ]]; then
-# The file names specified by include command doesn't have suffix. It is added in the following line. 
-# includeコマンドのファイルには拡張子がないので、ここで付けるようにする
-      if [[ -z $final_includefiles ]]; then
-        final_includefiles="$x".tex
-      else
-        final_includefiles="$final_includefiles"$'\n'"$x".tex
-      fi
-    fi
-  done
-done
 if [[ -z $includeonlyfiles ]]; then
-  for x in $includefiles; do
+  final_includefiles=$includefiles
+else
+  final_includefiles=
+  for x in $includeonlyfiles; do
+    for y in $includefiles; do
+      if [[ $x == $y ]]; then
+        if [[ -z $final_includefiles ]]; then
+          final_includefiles="$x"
+        else
+          final_includefiles="$final_includefiles"$'\n'"$x"
+        fi
+      fi
+    done
+  done
+fi
 # The file names specified by include command doesn't have suffix. It is added in the following line. 
 # includeコマンドのファイルには拡張子がないので、ここで付けるようにする
-    if [[ -z $final_includefiles ]]; then
-      final_includefiles="$x".tex
-    else
-      final_includefiles="$final_includefiles"$'\n'"$x".tex
-    fi
-  done
+if [[ -n $final_includefiles ]]; then
+  final_includefiles="$(echo "$final_includefiles" | sed 's/$/.tex/')"
 fi
 
 if [[ $opt == "-i" ]]; then
   echo "$final_includefiles"
-  exit
+  exit 0
 fi
-# input
 
+#input
 files=$(cat "$rootfile" |
   sed 's/%.*$//' |
   sed -nE '/\\begin\{verbatim\}/,/\\end\{verbatim\}/! p' |
   sed -nE '/\\begin\{document\}/, /\\end\{document\}/ p' |
-  sed 's/\\/\n\\/g' |
+  sed 's/\\input/\n\\input/g' |
   grep -E '\\input *\{' |
   sed -E 's/^\\input *\{([^}]*)\}.*$/\1/' |
   sed -E 's/^"(.*)"$/\1/' )
-files=$(echo "$files" | sort | uniq)
+files="$(echo "$files" | sort | uniq)"
 # look into the file nested
 # ネストしたファイルのチェック
 searchf
 if [[ -n $final_includefiles ]]; then
   files="$files"$'\n'"$final_includefiles" 
 fi
-files=$(echo "$files" | sort | uniq)
+files="$(echo "$files" | sort | uniq)"
 if [[ $opt == "-a" ]]; then
   echo "$rootfile"$'\n'"$files"
 else
