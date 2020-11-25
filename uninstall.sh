@@ -5,7 +5,6 @@ gfiles
 lb
 ltxengine
 newtex
-p2t
 srf
 tfiles
 tftype

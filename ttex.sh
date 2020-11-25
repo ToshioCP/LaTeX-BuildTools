@@ -72,6 +72,9 @@ if [[ ! -f $subfile ]]; then
 fi
 
 if [[ -n $builddir ]]; then
+  if [[ ! -d $builddir ]]; then
+    mkdir $builddir
+  fi
   temprfile=$builddir/test_$(basename "$subfile")
 else
   temprfile=test_$(basename "$subfile")
@@ -92,9 +95,16 @@ if [[ $engine == "lualatex" ]]; then
 fi
 
 $engine $option "$temprfile"
+
+tempdvifile=$(echo "$temprfile" | sed 's/\.tex$/.dvi/')
+temppdffile=$(echo "$temprfile" | sed 's/\.tex$/.pdf/')
 if [[ $engine =~ ^(latex|platex)$ ]]; then
-  $dvipdf $(echo "$temprfile" | sed 's/\.tex$//').dvi
+  if [[ $dvipdf == dvipdf ]]; then
+    $dvipdf $tempdvifile $temppdffile
+  elif [[ $dvipdf == dvipdfmx || $dvipdf == dvipdfm ]]; then
+    $dvipdf -o $temppdffile $tempdvifile
+  fi
 fi
-if [[ -n $previewer ]]; then
-  $previewer $(echo "$temprfile" | sed 's/\.tex$/.pdf/') >/dev/null 2>&1 &
+if [[ -n $previewer && -f $temppdffile ]]; then
+  $previewer $temppdffile >/dev/null 2>&1 &
 fi

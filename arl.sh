@@ -3,7 +3,7 @@
 # archive LaTeX source
 
 usage() {
-  echo "Usage: arl [-b|-g|-z] [LaTeXrootfile]" 1>&2
+  echo "Usage: arl [-b|-g|-z] [rootfile]" 1>&2
   echo "option:" 1>&2
   echo "  -b:     compress the archive file into a bzip2 file" 1>&2
   echo "  -g:     compress the archive file into a gzip file" 1>&2

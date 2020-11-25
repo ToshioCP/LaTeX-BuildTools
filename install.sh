@@ -5,7 +5,6 @@ gfiles.sh
 lb.sh
 ltxengine.sh
 newtex.sh
-p2t.sh
 srf.sh
 tfiles.sh
 tftype.sh
