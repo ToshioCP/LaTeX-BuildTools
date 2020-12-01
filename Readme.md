@@ -1,137 +1,152 @@
-# BuildTools
+# Buildtools
 
-## BuildTools作成の背景
+## The background of Buildtools
 
-#### LatexToolsとBuildtoolsの関係
+#### Buildtools is a part of Latextools
 
-大きな文書、例えば100ページを越える本などをLaTeXで作る場合は、小さい文書の作成と異なる様々な問題を考える必要がある。
+If you make a long document, for example, a book with more than a hundred pages, you need to consider various things which isn't necessary in creating a short document.
 
-- ソースファイルの分割
-- 分割コンパイル
-- 文書の一括置換
-- 前処理（LaTeXコンパイル前に処理する作業）
+- Divide the source file into small parts
+- Compile each parts independently
+- Replace something with another in the whole document
+- Preprocessing (processes before compiling latex source files)
 
-これらを支援するツール群がLatexToolsであり、2つのグループに別れている。
+Latextools support these things and it includes two parts.
 
-- BuildTools。ソースファイルの新規作成、ビルド、分割コンパイルを支援するツール群
-- SubsTolls。ソースファイルに対する一括置換をするツール群
+- Buildtools. It is tools which support creating templates of source files, building and partial compiling.
+- Substools. It is tools which perform replacements in the whole document.
 
-このように、BuildToolsはLatexToolsを構成する一部であるが、同時にその中核をなすツール群である。
-このドキュメントではBuildToolsを解説する。
+Buildtools is a part of Latextools and also a core tools in it.
+This document describes Buildtools only.
 
-#### ソースファイルの分割
+#### Dividing a source file
 
-LaTeXソースファイルを単にここではソースファイルと呼ぶ。
-大きな文書を1つのソースファイルに記述するのは適切でない。
-なぜなら、ファイルが大きくなると、エディタで編集するのが極めて困難になるからである。
-そこで、文書を分割することになる。
-通常は\\begin{document}と\\end{document}を含む1つのファイルと、そのファイルから\\includeまたは\\inputで呼び出される複数のファイルに分割する。
-前者をルートファイル、後者をサブファイルという。
-\\includeと\\inputはどちらもサブファイルの取り込みのコマンドだが、違いがある。
+Latex source files are simply called source files here.
+It is not appropriate to write a long document into a single source file.
+Because, bigger the file, much more difficult to edit it.
+To solve this, the document will be divided into some parts.
+Usually, they consist of a file containing `\begin{document}` and `\end{document}` and the other files called by the file with `\include` or `\input` command.
+The former file is called rootfile and the latter files are called subfiles.
+There is a difference between `\include` and `\input` though both are commands to include subfiles.
 
-- \\includeはネストはできない。\\includeはボディ（\\begin{document}と\\end{document}の間の部分）にのみ書くことができる。\\includeonlyでファイルのリストが指定されている場合は、そのリストに書かれているファイルのみが\\includeで取り込め、リストにないファイルの\\includeは無視される。\\includeonlyはプリアンブルのみに書くことができる。\\includeはファイルを取り込む前に\\clearpageをする。
-- \\inputは単にファイルを取り込むだけで\\clearpageはしない。このコマンドはネストできる。
+- `\include` can't be nested.
+it can be described only in the body, which means the part between `\begin{document}` and `\end{document}`.
+`\includeonly`, which must be in the preamble, specifies a list of files to include by the `\include` command.
+The files in the list are included by `\include` command, and files out of the list aren't included even if it is an argument of `\include` command.
+`\include` command issues `\clearpage` command before and after including the file.
 
-文書をコンパイルによって作成することをビルドと呼ぶ。
-ビルドはLaTeXのコンパイルだけでなく、前処理（例えばgnuplotによる画像生成だったり、データからtikzのグラフを生成したりなど）も含める。
-ビルドは最終的にルートファイルをコンパイルすることによって完了する。
-LaTeXソースファイルをコンパイルするプログラムにはいくつかあり、それをエンジンと呼んでいる。
-Buildtoolsでサポートしているエンジンには、latex、platex、pdflatex、xelatex、lualatexがある。
-コンパイルは文書が大きくなればなるほど時間がかかるようになる。
-1箇所だけを変更する場合も同じだけ時間がかかる。
-文書の編集の途中で出来栄えをチェックするためにコンパイルすること（これをテストするなどということがある）は頻繁に起こるが、そのたびに長い時間がかかる。
-文書が大きくなればなるほどこの問題は深刻になる。
-そこで、サブファイルのみをコンパイルできるようにする方法がいろいろ考えられた。
+- `\input` command simply include files.
+It doesn't issue `\clearpage` command.
+This command can be nested.
 
-- \\includeonlyコマンドの引数（サブファイルのリスト）からコンパイルしたくないファイルをコメントアウトする
-- subfilesパッケージを用いる
+It is called build to make a document by compiling.
+It includes not only the compilation with latex but also the preprocessing, such as the image generation by gnuplot or tikz graph generation with data.
+It is finally completed by the compilation of the rootfile.
 
-とくにsubfilesパッケージはよくできており、推薦する方も多い。
-ただ、パッケージを取り込み、そのコマンドを適切に使うことが必要である。
-もちろん、上記のコンパイル時間の問題からすれば、それくらいは何ともないことであるが。
+There are several programs to compile LaTeX source files, and they are called engines.
+Buildtools supports latex, platex, pdflatex, xelatex and lualate as engines.
 
-これ以外の方法としては、サブファイルのコンパイル用に何らかの方法でプリアンブル部などを付け加えてコンパイルする方法がある。
-具体的には、サブファイルを「\\documentclassから\\begin{document}まで」と「\\end{document}」でサンドイッチにする。
-そのときにサブファイル自体を変更するのではなく、プリアンブルなどを記述したファイルからサブファイルを\\inputで取り込むようにする。
-そのサブファイルを取り込むファイルを「仮のルートファイル」と呼んだりする。
-それに対して元々のルートファイルを「オリジナルのルートファイル」と呼ぶこともある。
-仮のルートファイルのプリアンブル部は、オリジナルのルートファイルのコピーである。
-この方法の良い点は
+The bigger the document to compile is, the longer the time needs.
+Even if you change a small part of the document, it needs the same time as the big change.
+You often need to compile to check how the pdf document looks like, which is sometimes called test, it needs long time in each compilation.
+The bigger the document is, the more serious the problem is.
+So, it has been thought up to compile a subfile itself without rootfile or other subfiles.
 
-- ソースファイルにパッケージの取り込みや特別な命令を書き込む必要がない。
-- したがって、ソースファイルを配布するにあたって、被配布者に特定のパッケージをインストールさせる必要がない。
+- Comment out the files in the argument list of `\includeonly` command which you don't want to compile.
+- Use subfiles package.
 
-つまり、ソースファイルをなんら変更することなく、サブファイルのみのコンパイルが可能だというのが長所である。
-ただ、そのためには仮のルートファイルを生成するプログラムが必要である。
-BuildToolsでは、ttexというシェルスクリプトでそれを行っている。
+Subfiles package is nice and many people recommend it.
+However, you need to include the package and use its command appropriately.
+Naturally, it is not the matter compared with the compilation time above.
 
-#### コンパイルのリピート（繰り返し）
+Another way is to add an specific preamble to compile a subfile without any other files.
+More specifically, the subfile is put between "the text from `\documentclass` to `\begin{document}`" and "`\end{document}`".
+On that occasion, the subfile itself isn't changed, but another file, which contains the preamble, `\end{document}` and `\input` command, is made.
+The `\input` command reads the subfile.
+The file newly made is called "temporary rootfile".
+On the other hand, the rootfile is sometimes called " original rootfile".
+The preamble in the temporary rootfile is a copy of the preamble in the original rootfile.
+The good point of this way is:
 
-最終的に文書をコンパイルするときには、相互参照などを実現するためにコンパイルを複数回行わなければならない。
-その回数は2回であったり、3回であったりするらしいが、筆者はその事情をよく知らない。
-が、ここに優れたプログラムがあり、必要回数を判断し、必要なだけコンパイルしてくれる。
-latexmkというプログラムである。
-latexmkを用いることによって、ビルドは非常に楽になる。
-BuildToolsではルートファイルのコンパイルにlatexmkを使用する。
+- There's no need to include any packages or put any special commands.
+- Therefore, users don't need to install any packages when the source file is distributed.
 
-#### 作業用ディレクトリの設置
+The point is subfile can be compiled separately without any modification in the source files.
+The generation of the temporary rootfile is the only necessary.
+Buildtools has `ttex` shell script to do that.
 
-LaTeXでコンパイルすると、様々な補助ファイルやログファイルが生成されるので、きれい好きの人はそれについて不満を感じることがあると思う。
-それで、作業用ディレクトリを設置して、そういうファイルの一切合財を入れてしまうとソースディレクトリをきれいに保つことができる。
-そういうソフトにcluttexがあり、きれい好きな人にはお勧めである。
-BuildToolsでは作業用ディレクトリ\_build（名前は変更も可能）を設置し、補助ファイルなどを格納する。
-このことにより、ソースディレクトリを汚さずに済む。
-また、コンパイルのログや補助ファイルを見たいときは\_buildの中を見れば良い。
-非常に単純なのである。
-蛇足になるが、最近Cのビルドツールとして人気のあるmesonも作業ディレクトリを使う。
-これは、一般に作業用ディレクトリをソースディレクトリと区別することが人間にとって非常に分かりやすくなるということの表れである。
+#### Repeating compiling
 
-BuildToolsでは、生成された最終文書（pdfファイル）も作業用ディレクトリにできあがる。
-それをソースファイルディレクトリに置きたいというのは自然は発想だが、それにはmakeまたはrakeを使うと良い。
-rakeはスクリプト言語rubyで書かれたmakeとでもいうべきものであるが、特長はRakefile（rakeのスクリプト）にruby言語を使うことができることである。
-そのことによって、makeよりもはるかに強力で分かりやすい記述ができる。
-話を元に戻すが、最終文書をソースディレクトリに置くには、MakefileまたはRakefileに、作業用ディレクトリからソースディレクトリに最終文書をコピーするコマンドを書いておくのである。
-また、makeやrakeを使うことの利点は、前処理を記述できることである。
-前処理はその文書ごとに異なるので、その記述はユーザに任せる以外にない。
+It often needs to compile source files two times or more because of the cross-reference.
+The repeating times are maybe two or three (or more), but I don't know the details.
+However, there's a great software that calculate the repeating times automatically.
+It is latexmk.
+Latexmk make the build very easy.
+Buildtools uses latexmk to compile rootfiles.
 
-BuildToolsでは、makeまたはrakeを併用することを推奨している。
-特に、前処理からpdf文書のコンパイルまでをバッチ処理として行うにはそれらが必要である。
-（サブファイルのテストはこの限りではない。）
+#### Build directory
 
-#### Texworksとの連携
+Some people might complain about latex because it generates various of auxiliary files and log files.
+If you make a build directory and put all the generated files into it, the source directory can be kept clean.
+One of such program is cluttex and it is recommended to people who like cleanliness.
 
-BuildToolsでは、lbというコマンドでルートファイルのビルドもサブファイルのテストコンパイルも行うことができる。
-それをTexworksのタイプセッティングに登録すると、Texworksから起動できて大変便利である。
-「設定」ー＞「タイプセッティング」タブで設定する。
-+をクリックして新たなコマンドを設定する。名前=>lb、コマンドlb、引数=>\$fullnameで良い。
-設定後はルートファイルで全体のコンパイル、サブファイルは単独のテスト・コンパイルがワンクリックでできるようになる。
+Buildtools makes a temporary directory, which is also called build directory, and put all the temporary files and generated document.
+The default name of the directory is `_build`.
+It makes the source directory keep clean.
+If you want to see log or auxiliary files, search the build directory for them.
+It's very simple.
+Although it is superfluous to say so, meson build system which is very popular as a C build tool also uses build directory.
+This shows us that separating build directory from source directory is very easy to understand.
 
-## BuildToolsの構成
+Lb, one of the tools in Buildtools, generate a final pdf document in the build directory.
+However, many users probably want to put it in the source directory.
+It is a natural idea.
+If you want to do so, use make or rake.
 
-BuildToolsは大きく分けて次のような部分から構成されている。
+Rake is a similar program to make.
+Its advantage is using ruby language in the Rakefile, which is the script file of rake.
+Because ruby language is very strong and flexible, the script file can be readable and structured.
 
-- 「newtex」 新規ソースファイルの作成を支援するツール。 
-- 「lb」 Latex Build。ルートファイルをコンパイル、またはttexを使ってサブファイルのテストコンパイルをする。
-- 「ttex」 Test laTex。サブファイルのテストコンパイルをする。通常は、lbから呼び出されて使う。
-- アーカイブ作成を支援するツール。
-- インストーラ
-- ユーティリティ群。上記のプログラムを下支えする。
+To get back to the subject how to put a final pdf document in the source directory, you just write a cp command in your Makefile or Rakefile to copy the pdf document under the build directory into source directory.
+Furthermore, the advantage to use make or rake is that it's possible to specify preprocessing code in the Makefile or Rakefile.
+Because preprocessing depends on the document and what tools the user choose, it's difficult for Buildtools to cover the preprocessing.
+Compared with that, Makefile or Rakefile are really flexible so that you can write your own preprocessing in it.
 
-文書作成の手順は次のようなフローを仮定している。
+It is recommended that users should use make or rake with Buildtools.
 
-1. 文書全体の構成を決める。章立てを決める。
-2. newtexを使ってフォルダとソースファイルの雛形を作成する。
-3. Makefile、Rakefile、表紙（cover.tex）、プリアンブル部（helper.tex）の雛形を必要に応じて書き換える。
-4. 本文の作成と、テストコンパイル。
-5. 前処理の作成。
-6. 最終ビルド。
+#### combination with Texworks
 
-上記の3から5は行ったり来たりすることになり、必ずしもこの順に作業が進むわけではない。
+Lb, one of the tools in Buildtools, can either compile a rootfile or test-compile a subfile.
+If you specify it into proccessing tools in the texworks dialog, you can run lb from texworks and it's so convenient.
+Click edit, preference, then typesetting tab.
+Click plus button in the processing tools part, then put `lb`, `lb`, `$fullname` in name, program and arguments box respectively.
+Once you set it, you can compile a rootfile or test-compile a subfile by clicking on the typesetting icon (green triangle icon).
 
-## 主要なツールについて
+## Buildtools structure
 
-それぞれのツールの簡単なヘルプは--helpオプションをつけて実行することにより表示される。
-例えば、newtexに--helpオプションをつけて実行すると、次のようなメッセージが表示される。
+Buildtools is made up of the following five parts.
+
+- `newtex`: It generates source file templates. This is used at the beginning of making documents.
+- `lb`: It calls latexmk or ttex to compile source files.
+- `arl`: It makes an archive file.
+- installer
+- a group of utilities. They are used by the tools above.
+
+The following shows the steps to build documents.
+
+1. Make the structure, especially the chapters, of the document..
+2. Run newtex and make folders and templates of the document.
+3. Modify the templates of Makefile, Rakefile, cover page (cover.tex) and preamble (cover.tex).
+4. Write the body of the document and test-compile.
+5. If necessary, make script files for the preprocessing.
+6. Compile the rootfile to generate the final pdf document.
+
+The step three to five above are usually repeated and the process is not necessarily in the order above.
+
+## Main tools
+
+Each tool shows its help message if it is run with `--help` option.
+For example, newtex shows the following message.
 
     $ newtex --help
     Usage:
@@ -146,47 +161,51 @@ BuildToolsは大きく分けて次のような部分から構成されている�
         If some bad things happen, make.tex.bak is the backup file copied from the original main.tex.
         If everything is OK, you can remove make.tex.bak.
 
-各ツールのドキュメントとしては
+The document of each tool is:
 
-- 各ツールの--helpオプションによるヘルプ・メッセージ
-- このドキュメントにおける以下の記述
+- The help message shown by each command with `--help` option.
+- The description below in this document.
 
-だけである。
-より詳細を知りたい場合はソースコードを見ていただきたい。
-Buildtoolsのすべてのツールはシェル・スクリプトで書かれている。
-それぞれのスクリプトは短く、シェル・スクリプトをご存知の方であれば、比較的簡単にソースコードを理解できる。
+No other document exists.
+If you want to know more, see the source code.
+All the tools in Buildtools are shell scripts.
+If you are familiar to shell scripts, you can easily understand them because they are short.
 
 #### newtex
 
-    $ newtex [-en | -ja] bookname
+    $ newtex [-en|-ja] bookname
     $ newtex
 
-新規にLaTeXの文書を作るときに骨組みを作るスクリプト。
-newtexを使う前に全体の構成と章立てを決めておくと良い。
+Newtex is used when you make a new latex document.
+It is recommended that you should decide the structure and chapters in advance.
 
-このプログラムは2回に分けて使う。
+This script is run twice.
 
-1. newtex [-en | -ja] bookname で新規にフォルダbooknameを作成し、その中に雛形とskeleton.txtというファイルを作る。
-なお、booknameは文書（通常は書籍）のタイトル名である。
-例えば、「LaTeX入門」という本を作る場合は、「newtex LaTeX入門」とタイプすることになる。
-オプションで文書の言語について、-enが英語、-jaが日本語を指定することができる。
-2. skeleton.txtを編集する。このファイルは章（ダブルクォートで囲む）と章ごとに取り込むファイルの名前（ファイル名に空白は使えない）を指定する。
-3. booknameフォルダで端末を起動し、newtexを引数なしで起動すると、ルートファイル、サブファイル、その他のファイルの雛形が作られる。
+1. Type `newtex [-en|-ja] bookname`, then it makes `bookname` folder and a text file `skeketon.tex` in it.
+`bookname` is the name of the document (it is usually a book).
+For example, if you make a book "LaTeX for beginners", you type `newtex 'LaTeX for beginners'`.
+You can specify the language with options.
+The option `-en` is English and `-ja` is Japanese.
+2. Edit skeleton.txt.
+In this file, you specify chapters, which are surrounded by double quotes, and corresponding file names with no spaces in it.
+3. Change the current directory to `bookname` folder and run `newtex` without any arguments, then it changes the rootfile and generates subfile templates.
 
 #### lb
 
     $ lb [LaTeXfile]
 
-引数省略の場合はmain.texが引数で与えられた場合と同じ動作をする。
-引数のLaTeXファイルをビルドするスクリプトであり、これだけで足りることが多い。
+If the argument is left out, `lb` behaves as if `main.tex` is specified as an argument.
+`Lb` is a script to build LaTeX source files and you usually don't need anything except it.
 
-- 引数がルートファイルの場合はそれをlatexmkを使ってビルドする。サブファイルの場合はttexでビルドする。
-- 引数がルートファイルの場合は、synctexを使わない。
-- 引数がサブファイルの場合は、synctexを使い、コンパイル後にlb.confで指定されたプリビューワを起動する。
-- カレント・ディレクトリ（通常はルートファイルのあるディレクトリになる）にlb.confがあれば、それを読み込んで変数の初期化をする
-- エンジン指定を省略するとスクリプトが自分で予測する。
+- If the argument is rootfile, then `lb` compiles it with `latexmk`. If the argument is subfile, then `lb` runs `ttex` specifying the subfile as an argument.
+- If the argument is rootfile, `lb` compiles it without synctex.
+- If the argument is subfile, `lb` runs `ttex` and `ttex` compiles the subfile with synctex.
+After compilation, `lb` runs previewer specified in `lb.conf`.
+- If there exists `lb.conf` in the current directory (it usually contains the rootfile), `lb` reads it and initialize some variables.
+- If the variable `engine` in `lb.conf` is null string, then `lb` guesses an appropriate engine by itself.
+However, it is recommended that you should specify the engine in `lb.conf`.
 
-lb.confというファイルで初期値の設定ができる。
+You can specify the default values in `lb.conf` to initialize some variables.
 
     rootfile=main.tex
     builddir=_build
@@ -194,139 +213,165 @@ lb.confというファイルで初期値の設定ができる。
     latex_option=-halt-on-error
     preview=texworks
 
-- rootfileはルートファイルの名前。ただし、lbの引数でルートファイルを指定した場合は、引数を優先する。
-- builddirは作業ディレクトリを指定する。
-そのディレクトリには補助ファイルや出力ファイル、対象がサブファイルの場合は仮のルートファイルが出力される。
-空文字列を指定すると、作業ディレクトリは生成されず、ソースファイルの置かれているディレクトリが作業ディレクトリになる。
-- engineはLaTeXエンジンを指定する。latex、platex、pdflatex、xelatex、lualatexを指定することができる。その他のエンジンはサポートしていない。
-- latex_optionはエンジンに与えるオプション。-output-directoryはlbが自動的に与えるので、ここに書いてはいけない。
-- previewはできあがったpdfを見るためのプリビューワ。ただし、サブファイルのときのみ動作する。
-
-#### ttex
-
-    $ ttex [-b builddir] -e latex_engine [-p dvipdf] [-v previewr] -r rootfile subfile
-
-サブファイルに仮ルートファイルをつけてコンパイルする。
-コンパイルは1回だけ。
-そのため相互参照は反映されない。
-（これはテストのためのスクリプトであって、最終仕上げではないから相互参照はさほど重要ではない、という考えに基いている）。
-また、該当のサブファイル以外のファイルにあるラベルを参照することはできない。
-単独で使うことも可能だがlbを通して呼び出すのが普通の使い方。
-オプションについては下記の通り。
-
-- -b 作業ディレクトリを指定する。デフォルトは\_buildである。
-- -e latexエンジンを指定する。エンジンの種類についての制限はないが、latex、platex、pdflatex、xelatex、lualatexのいずれかが指定されることを想定している。
-- -p エンジンがlatexまたはplatexである場合は、dviファイルが出力される。
-そのdviからpdfを出力するためのアプリケーションを指定する。
-デフォルトはdvipdfmxである。
-その他に、dvipdfmやdvipdfを指定することができる。
-- -v プリビューアを指定する。
-evinceなど、pdfを表示できるアプリケーションを指定する。
-ソースファイルをtexworksで編集している場合は、ここにtexworksを指定するのが良い。
-- -r ルートファイルを指定する。
+- `rootfile` is the name of the rootfile. If you specify the name of the rootfile as an argument to `lb`, then the argument takes precedence.
+- `builddir` is the name of the build directory.
+Auxiliary files and output files are put in the build directory.
+If the argument of `lb` is a subfile, then the temporary rootfile is also put in the build directory.
+If `builddir` is empty, then no temporary directory is generated and the source file directory becomes a build directory.
+- `engine` is the name of a latex engine. `latex`, `platex`, `pdflatex`, `xelatex` and `lualatex` can be specified. Other engines are not supported.
+- `latex_option` is a list of options to specify as an argument to the engine. `-output-directory` is automatically specified by `lb`, so it must not be specified here.
+- `preview` is the name of a pdf previewer to show the document. It is run only if the argument of `lb` is a subfile.
 
 #### arl
 
    $ arl [-b|-g|-z] [rootfile]
 
-arlという名前は、ARchive LaTeX filesから。
-ルートファイルの関連ファイル（下記参照）を検索してアーカイブを作る。
-ルートファイルが省略された場合は、main.texを指定されたものとして処理する。
+The name `arl` comes from "ARchive LaTeX files".
+It searches the rootfile for its related files (refer the following) and make an archive file.
+If the argument is left out, then it runs as if `main.tex` is specified as an argument.
 
-- 前処理プログラムがある場合、そのプログラムを実行してからarlを起動する必要がある。
-- arlがアーカイブするのは、LaTeXソースファイルと、includegraphicsされる画像ファイルのみ。
-- したがってMakefileや、前処理のソースファイル（例えばgnuplotのソース）などはアーカイブされない。
+- If there are preprocessing programs, you need to execute them before running arl.
+- Arl archives the latex source files and the graphic files included by `\includegraphics` command.
+- Therefore, `Makefile` or the preprocessing script files are not archived.
 
-Makefileにターゲットを作り（例えばarという名前のターゲット）、arlで作ったアーカイブにtarでMakefileや前処理ソースファイルを追加するスクリプトを書いておくと便利である。
-同様のことはRakefileでもｄきる。
+It is a good way to make a target (for example, its name is 'ar') in Makefile and write a recipe to add Makefile and the preprocessing files into the archive file made by `arl`.
+You can do the same thing with Rakefile.
 
-アーカイブを圧縮するオプション -g、-b、-zで、それぞれ、tar.gz, tar.bz2, zipをサポート。
+There are options `-g`, `-b` and `-z` to compress the archive file into `tar.gz`, `tar.bz2` and `zip` file respectively.
 
-#### ユーティリティ群
+#### Utilities
 
-この項はスクリプトをメンテナンスするのでなければ読む必要はない。
+You don't need to read this subsection except maintaining the scripts.
 
     $ srf subfile
 
-subfileからルートファイルを探し、その結果（絶対パス）を出力する。
-srfは「Search Root File」の意味。
+This script `srf` searches for the rootfile of the given subfile and outputs its absolute path.
+`srf` comes from "Search for Root File".
 
     $ tfiles [-p|-a|-i] [rootfile]
 
-rootfileのサブファイルの一覧を取得する。
-引数のルートファイルが省略された場合は、main.texが指定されたものとして処理する。
+It outputs a list of subfiles of the given rootfile.
+If the argument is left out, then it is run as if `main.tex` is specified as an argument.
 
-- オプション無し => ルートファイルが取り込むサブファイル（\\begin{document}から\\end{document}までのinclude/inputコマンドで指定されたファイル）のリストを標準出力に出力する
-- -p  プリアンブルで取り込まれるサブファイルのリストを標準出力に出力する
-- -a  オプション無しのリストにルートファイルを加えて標準出力に出力する
-- -i  includeコマンドで取り込まれるファイルのみを標準出力に出力する。
-ただし、includeonlyで指定されなかったファイルは除かれる。
+- No option: It outputs a list of subfiles, specified from `\begin{document}` to `\end{document}`. They are the arguments of `\include` or `\input` command.
+- `-p`: It outputs a list of subfiles specified with the `\input` commands in the preamble of the rootfile.
+- `-a`: It outputs a list, outputted with no option, and the rootfile itself.
+- `-i`: It outputs a list of subfiles specified with both `\include` and `\includeonly` command.
 
-注意：出力されるファイルのリストは改行で区切られている。
+The files in the list are separated with new lines.
 
     $ tftype [-r|-s|-q] files ...
 
-LaTeXのソースファイルの種類を調べるスクリプト。
+It outputs or returns the type of the given latex files.
 
-- -r （デフォルト）引数のファイルの中からルートファイルのみを抽出して出力する
-- -s 引数のファイルの中からサブファイルのみを抽出して出力する
-- -q （quiet）上記の出力を抑制する。引数は1つのファイルのみで、そのファイルタイプをexitステータスで返す。
-exitステータスが0はルートファイル、1はサブファイル、エラーが生じた場合は2となる。
+- `-r`: It outputs rootfiles which is in the argument files. If no options are given, It behaves as if this option is specified.
+- `-s`: It outputs subfiles which is in the argument files.
+- `-q`: It doesn't output anything. The number of the argument must be one. It returns an exit status code of the file type.
+If the code is 0 or 1, then the file is a rootfile or subfile respectively.
+Otherwise an error happens.
 
--qオプションを使うことが最も多い。
+Using `-q` option is the most common.
 
     $ gfiles files ...
 
-引数は、latexのソースファイル（の列）である。
-与えられたファイルの中で\\includegraphicsによって取り込まれる画像ファイルの一覧を返す。
+The argument is a list of latex source files.
+It outputs graphic files which are included by `\includegraphics` commands in the given files.
 
     $ ltxengine rootfile
 
-コンパイルを行うLaTeXエンジンを予想する（本来ユーザが明示すべきだが・・・）
-例えば、
+It guesses a latex engine to compile the rootfile, although it is recommended that the engine should be specified by the user.
+For example,
 
     \usepackage[luatex]{graphicx}
 
-というコマンドがプリアンブルにあれば、エンジンはlualatexと予想がつく。
+If this command exists in the preamble, it guesses that the engine is probably lualatex.
 
-### インストールとアンインストール
+    $ ttex [-b builddir] -e latex_engine [-p dvipdf] [-v previewr] -r rootfile subfile
 
-インストール用のスクリプト install.sh を使う。
+It generates a temporary rootfile of the subfile and compile it.
+The compilation is done only once.
+Therefore, no cross-reference is carried out.
+This comes from the idea that `ttex` is a script for test to see how the pdf file looks like and cross-reference is not so important.
+The cross-reference to the other files doesn't work neither.
+This script can be run directly on the command line, but usually it is called by `lb`.
+The following shows the options.
+
+- `-b`: Specify a build directory. The default is `_build`.
+- `-e`: Specify a latex engine. There is no restriction on the engine, but it assumes that latex, platex, pdflatex, xelatex or lualatex is specified.
+- `-p`: Specify an application that translates dvi into pdf. This is used only when the engine is latex or platex, because they outputs a dvi file.
+The default is dvipdfmx.
+Other possible application is dvipdfm and dvipdf.
+- `-v`: Specify a pdf previewer like evince.
+If you edit the source file with texworks, it is a good idea to specify texworks here.
+- `-r`: Specify the original rootfile.
+
+### Installation and uninstallation
+
+#### Prerequisite
+
+- Linux and bash:
+It is tested on Debian and Ubuntu.
+However, it probably works on other linux distributions.
+Bash is required because this script includes bash commands.
+
+- LaTeX:
+There are two options to install LaTeX.
+One is installing the LaTeX applications provided by your distribution.
+The other is installing TexLive.
+
+- make or rake:
+These applications are not necessarily required to run the tools in Buildtools.
+However, it is recommended that they are used under the control of make or rake.
+You don't need to install both of them.
+Choose one which you like.
+Make is a traditional build tool originally aimed at C compiler.
+Rake is a build tool similar to make.
+It is one of the ruby application.
+The advantage to use rake is that you can put any ruby codes into Rakefile, which is the script file of rake.
+Generally speaking, Rakefile is easy to understand than Makefile.
+
+#### Installation
+
+Use the script install.sh.
 
     $ bash install.sh [-s|-u]
 
-シェルスクリプトなどの実行ファイルは\$HOME/binに、テンプレートは\$HOME/share/ltxtoolsに保存される。
-debianやubuntuでは、ログイン時に\$HOME/binがあれば、bashの実行ディレクトリのパス\$PATHに追加される。
-インストール時に新規に \$HOME/bin を作成した場合には、再ログインしないと、それが実行ディレクトリに追加されないので注意が必要。
-rootになってインストールすると/usr/local/bin、/usr/local/share/ltxtoolsにそれぞれ実行ファイル、テンプレートをインストール。
-debianの場合は、
+This script installs the executable files into `$HOME/bin` and the templates into `$HOME/share/ltxtools`.
+Debian and Ubuntu adds the directory `$HOME/bin` into `PATH` environment variable if it exists at the login time.
+The script makes the directory `$HOME/bin` if it doesn't exist.
+In that case you need to re-login to put the directory into the `PATH` environment variable.
+If you run `sudo` or `su` to become a root user before the installation, the executable and template files are put into `/user/local/bin` and `/usr/local/share/ltxtools` respectively.
+
+If your OS is debian, type the following.
 
     $ su -
     # bash install.sh
 
-ubuntuの場合は
+Or if it's ubuntu,
 
     $ sudo bash install.sh
 
-オプションで個人レベルのインストールか、システムレベルのインストールかを指定することも可能。
+You can specify an option to install them in the user space or system space.
 
-- -s システムレベルのインストール。システムへの書き込み権限が必要。
-- -u ユーザレベルのインストール。かならず一般ユーザで行うこと。仮にrootでインストールすると/root/bin、/root/share/ltxtoolsにインストールされる、つまりrootの個人用としてインストールされる。
+- `-s`: The installation is done in the system level. You need the write privilege to the system area.
+- `-u`: The installation is done in the user level. You should do it as a user, not root. If you do it as a root, the scripts and templates are put into `/root/bin` and `/root/share/ltxtools` respectively. This means the installation is done to the root user's private space.
 
-アンインストールは uninstall.shで行う。
-一般ユーザで実行すれば、\$HOME以下のインストールファイルが削除される。
+#### Uninstallation
+
+Use the script uninstall.sh.
 
     $ bash uninstall.sh [-s|-u]
 
-rootで実行すれば、/usr/local以下のインストールファイルが削除される。
-debianの場合は、
+If you do this as a user without any options, the files under `$HOME` are removed.
+If you do this as a root without any options, the files under `/usr/local` are removed.
+If your OS is debian,
 
     $ su -
     # bash uninstall.sh
 
-ubuntuの場合は、
+Or ubuntu,
 
     $ sudo bash uninstall.sh
 
-オプション -s, -u で、システムレベルか、個人レベルかを明示することも可能。
+You can specify an option `-s` or `-u` to uninstall the files in the system area or user area respectively.
 

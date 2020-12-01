@@ -5,6 +5,7 @@
 
 # Ignore Readme.html file generated from Readme.md by pandoc
 Readme.html
+Readme.ja.html
 
 # Ignore _build directory
 example/example1/_build
