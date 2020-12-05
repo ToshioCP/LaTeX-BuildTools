@@ -134,9 +134,9 @@ Buildtools is made up of the following five parts.
 
 The following shows the steps to build documents.
 
-1. Make the structure, especially the chapters, of the document..
+1. Make the structure, especially the chapters/sections, of the document..
 2. Run newtex and make folders and templates of the document.
-3. Modify the templates of Makefile, Rakefile, cover page (cover.tex) and preamble (cover.tex).
+3. Modify the templates of Makefile, Rakefile, cover page (cover.tex) and preamble (cover.tex) if necessary.
 4. Write the body of the document and test-compile.
 5. If necessary, make script files for the preprocessing.
 6. Compile the rootfile to generate the final pdf document.
@@ -152,14 +152,9 @@ For example, newtex shows the following message.
     Usage:
       newtex --help
         Show this message.
-      newtex [-en | -ja] bookname
-        A directory bookname is made and some template files are generated under the directory.
-        Then, bookname/skeleton.txt needs to be edited to specify chapters and subfiles.
-      cd bookname
+      Newtex.conf needs to be edited before running newtex.
       newtex
-        Chapters and input commands are added to main.tex and corresponding subfiles are generated.
-        If some bad things happen, make.tex.bak is the backup file copied from the original main.tex.
-        If everything is OK, you can remove make.tex.bak.
+        A directory is made and some template files are generated under the directory.
 
 The document of each tool is:
 
@@ -173,22 +168,18 @@ If you are familiar to shell scripts, you can easily understand them because the
 
 #### newtex
 
-    $ newtex [-en|-ja] bookname
     $ newtex
 
 Newtex is used when you make a new latex document.
-It is recommended that you should decide the structure and chapters in advance.
+irst, decide the structure and chapters and make `newtex.conf` in advance.
+This script makes a directory and generates template files according to `newtex.conf`.
 
-This script is run twice.
-
-1. Type `newtex [-en|-ja] bookname`, then it makes `bookname` folder and a text file `skeketon.tex` in it.
-`bookname` is the name of the document (it is usually a book).
-For example, if you make a book "LaTeX for beginners", you type `newtex 'LaTeX for beginners'`.
-You can specify the language with options.
-The option `-en` is English and `-ja` is Japanese.
-2. Edit skeleton.txt.
-In this file, you specify chapters, which are surrounded by double quotes, and corresponding file names with no spaces in it.
-3. Change the current directory to `bookname` folder and run `newtex` without any arguments, then it changes the rootfile and generates subfile templates.
+1. There is `newtex.conf` file in the Buildtools source files.
+Modify it to fit your environment and tex source files you will make.
+2. Execute `newtex`.
+Then it make a directory which name is the same as `title` in `newtex.conf`.
+However, the space characters in the value of `title` is converted to underscore in the name of the directory.
+The script also generates template files under the directory.
 
 #### lb
 
@@ -336,11 +327,11 @@ Use the script install.sh.
 
     $ bash install.sh [-s|-u]
 
-This script installs the executable files into `$HOME/bin` and the templates into `$HOME/share/ltxtools`.
+This script installs the executable files into `$HOME/bin`.
 Debian and Ubuntu adds the directory `$HOME/bin` into `PATH` environment variable if it exists at the login time.
 The script makes the directory `$HOME/bin` if it doesn't exist.
-In that case you need to re-login to put the directory into the `PATH` environment variable.
-If you run `sudo` or `su` to become a root user before the installation, the executable and template files are put into `/user/local/bin` and `/usr/local/share/ltxtools` respectively.
+In that case, you need to re-login to put the directory into the `PATH` environment variable.
+If you run `sudo` or `su` to become a root user before the installation, the executable files are put into `/user/local/bin`.
 
 If your OS is debian, type the following.
 
@@ -354,7 +345,8 @@ Or if it's ubuntu,
 You can specify an option to install them in the user space or system space.
 
 - `-s`: The installation is done in the system level. You need the write privilege to the system area.
-- `-u`: The installation is done in the user level. You should do it as a user, not root. If you do it as a root, the scripts and templates are put into `/root/bin` and `/root/share/ltxtools` respectively. This means the installation is done to the root user's private space.
+- `-u`: The installation is done in the user level. You should do it as a user, not root. If you do it as a root, the scripts are put into `/root/bin`.
+This means the installation is done to the root user's private space.
 
 #### Uninstallation
 

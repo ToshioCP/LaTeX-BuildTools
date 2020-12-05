@@ -135,14 +135,9 @@ Buildtoolsは大きく分けて次のような部分から構成されている�
     Usage:
       newtex --help
         Show this message.
-      newtex [-en | -ja] bookname
-        A directory bookname is made and some template files are generated under the directory.
-        Then, bookname/skeleton.txt needs to be edited to specify chapters and subfiles.
-      cd bookname
+      Newtex.conf needs to be edited before running newtex.
       newtex
-        Chapters and input commands are added to main.tex and corresponding subfiles are generated.
-        If some bad things happen, make.tex.bak is the backup file copied from the original main.tex.
-        If everything is OK, you can remove make.tex.bak.
+        A directory is made and some template files are generated under the directory.
 
 各ツールを説明する文書は
 
@@ -156,20 +151,20 @@ Buildtoolsのすべてのツールはシェル・スクリプトで書かれて�
 
 #### newtex
 
-    $ newtex [-en | -ja] bookname
     $ newtex
 
-新規にLaTeXの文書を作るときに骨組みを作るスクリプト。
-`newtex`を使う前に全体の構成と章立てを決めておくと良い。
+新規にLaTeXの文書を作るときに使うスクリプト。
+`newtex`を使う前に全体の構成と章立てを決めておき、それを事前に`newtex.conf`に書いておく。
+このスクリプトは、`newtex.conf`に書かれた指示に従って、新しくディレクトリを作り、テンプレート・ファイルを生成する。
 
 このプログラムは2回に分けて使う。
 
-1. `newtex [-en | -ja] bookname` で新規にフォルダ`bookname`を作成し、その中に雛形と`skeleton.txt`というファイルを作る。
-なお、`bookname`は文書（通常は書籍）のタイトル名である。
-例えば、「LaTeX入門」という本を作る場合は、`newtex LaTeX入門`とタイプすることになる。
-オプションで文書の言語について、`-en`が英語、`-ja`が日本語を指定することができる。
-2. `skeleton.txt`を編集する。このファイルは章（ダブルクォートで囲む）と章ごとに取り込むファイルの名前（ファイル名に空白は使えない）を指定する。
-3. `bookname`フォルダで端末を起動し、`newtex`を引数なしで起動すると、ルートファイル、サブファイルの雛形が作られる。
+1. Buildtoolsのソースファイルの中に`newtex.conf`ファイルがある。
+これを書き直して、ユーザの環境やこれから作るLaTeXファイルに合うようにする。
+2. `newtex`を実行する。
+このスクリプトは、`newtex.conf`の中で指定されたタイトル名と同じ名前のディレクトリを新たに作成する。
+ただし、タイトル中の空白文字はアンダースコアに変換されてディレクトリ名となる。
+スクリプトは、そのディレクトリの下にテンプレート・ファイルを生成する。
 
 #### lb
 
@@ -314,10 +309,10 @@ rakeを使うことの利点は、そのスクリプトであるRakefileの中�
 
     $ bash install.sh [-s|-u]
 
-シェルスクリプトなどの実行ファイルは`$HOME/bin`に、テンプレートは`$HOME/share/ltxtools`に保存される。
+シェルスクリプトなどの実行ファイルは`$HOME/bin`に保存される。
 debianやubuntuでは、ログイン時に`$HOME/bin`があれば、bashの実行ディレクトリのパスを表す環境変数`PATH`に追加される。
 インストール時に新規に `$HOME/bin` を作成した場合には、再ログインしないと、それが実行ディレクトリに追加されないので注意が必要。
-rootになってインストールすると`/usr/local/bin`、`/usr/local/share/ltxtools`にそれぞれ実行ファイル、テンプレートをインストール。
+rootになってインストールすると`/usr/local/bin`に実行ファイルをインストール。
 debianの場合は、
 
     $ su -
@@ -330,7 +325,7 @@ ubuntuの場合は
 オプションで個人レベルのインストールか、システムレベルのインストールかを指定することも可能。
 
 - `-s` システムレベルのインストール。システムへの書き込み権限が必要。
-- `-u` ユーザレベルのインストール。かならず一般ユーザで行うこと。仮にrootでインストールすると`/root/bin`、`/root/share/ltxtools`にインストールされる、つまりrootの個人用としてインストールされる。
+- `-u` ユーザレベルのインストール。かならず一般ユーザで行うこと。仮にrootでインストールすると`/root/bin`にインストールされる、つまりrootの個人用としてインストールされる。
 
 #### アンインストール
 
