@@ -1,0 +1,169 @@
+\subsection{newtex.conf}
+The script `newtex' makes a directory and generates template files in it.
+This is used at the beginning of the work.
+
+First, a configuration file `newtex.conf' needs to be made.
+There is a template file included in the Buildtools source files.
+\begin{verbatim}
+# This is a configuration file for newtex.
+# The name of this file is newtex.conf
+# A string between # and new line is a commnet and it is ignored
+ by newtex.
+# Empty line is also ignored. 
+
+title="Tutorial"
+# document name
+
+# lb.conf
+# Lb.conf has six lines.
+# The following six lines are copied to lb.conf.
+rootfile=main.tex
+builddir=_build
+engine=pdflatex
+latex_option=-halt-on-error
+dvipdf=
+preview=evince
+
+# documentclass
+documentclass=article
+
+# chapters/sections and subfile names
+#   Chapters/sections and subfile names must be surrounded by
+ double quotes.
+#   Subfile names have no suffix or ".tex" suffix.
+# If your LaTeX file is not big and no subfile is necessary, then
+ leave out the following lines.
+section="Installation" "installation"
+section="Run lb to compile tex files" "lb"
+section="Generate templates" "generate_templates"   # Subfiles
+ are NOT allowed to include space characters. Use underscore
+ instead of space. 
+section="Edit tex files" "edit_tex_files"
+section="Test compile" "test_compile"
+section="Preprocessing" "preprocessing"
+section="Use rake" "rake"
+\end{verbatim}
+It is a good way to modify this file to fit your work.
+
+In this tutorial, I want to show you how to make this tutorial pdf file with Buildtools.
+The file above is exactly the same as the newtex.conf file as I used to make it.
+
+A string after hash mark (\#) in a line is comment and it is ignored by newtex.
+Empty lines are also ignored.
+The remaining lines are instructions to newtex.
+Each line has a `key=value' structure.
+The keys are:
+\begin{description}
+\item[title] The title of the document you make.
+\item[rootfile] The name of the rootfile.
+\item[builddir] The name of the build directory
+\item[engine] A latex engine to compile source files
+\item[latex\_option] The options you want to give to the latex engine
+\item[dvipdf] A program that converts dvi to pdf.
+\item[preview] A pdf viewer
+\item[documentclass] The name of the documentclass you want to use
+\item[chapter] Chapters and corresponding subfiles
+\item[section] Sections and corresponding subfiles
+\end{description}
+If you make a book (big document) and use book documentclass, use `chapter' and `section' key.
+If you make an article (small document) and use article documentclass, use `section' key only.
+
+\subsection{Run newtex}
+After you finish editing newtex.conf, just type:
+\begin{verbatim}
+$ newtex
+\end{verbatim}
+Then, newtex makes a directory of which the name is `Tutorial', which is the same as the title in newtex.conf.
+If the title includes space characters, they are converted to underscore.
+For example, a title `A tutorial for beginners' is converted to `A\_tutorial\_for\_beginners'.
+This is because a file name includes space character sometimes causes problems.
+Newtex also generates temlate files under the directory.
+\begin{verbatim}
+$ cd Tutorial
+$ ls
+Makefile            generate_templates.tex  main.tex
+Rakefile            helper.tex              preprocessing.tex
+cover.tex           installation.tex        rake.tex
+edit_tex_files.tex  lb.conf                 test_compile.tex
+gecko.png           lb.tex
+\end{verbatim}
+
+Look at some important files.
+\begin{verbatim}
+$ cat lb.conf
+rootfile=main
+builddir=_build
+engine=pdflatex
+latex_option=-halt-on-error
+dvipdf=
+preview=evince
+\end{verbatim}
+The contents of this file is the copy of the part of newtex.conf.
+\begin{verbatim}
+$ cat main.tex
+\documentclass{article}
+\input{helper.tex}
+\title{Tutorial}
+\author{} % Write your name if necessary.
+\begin{document}
+\maketitle
+% If you want a table of contents here, uncomment the following
+ line.
+%\tableofcontents
+
+\section{Installation}
+  \input{installation.tex}
+\section{Run lb to compile tex files}
+  \input{lb.tex}
+\section{Generate templates}
+  \input{generate_templates.tex}
+\section{Edit tex files}
+  \input{edit_tex_files.tex}
+\section{Test compile}
+  \input{test_compile.tex}
+\section{Preprocessing}
+  \input{preprocessing.tex}
+\section{Use rake}
+  \input{rake.tex}
+\end{document}
+\end{verbatim}
+The first line specifies a documentclass which is the same as the value of documentclass key in newtex.conf.
+The second line has an input command which includes `helper.tex'.
+Helper.tex has a role to include packages with \verb|\usepackage| command, define macros with \verb|\newcommand| command and so on.
+Most of the lines in the preamble are described in helper.tex.
+It is a good idea to make your own helper.tex because users often use the same preamble in different documents.
+If you have your helper.tex, copy and overwrite this file.
+
+You need to edit the fourth line.
+For example,
+\begin{verbatim}
+\author{Toshio Sekiya}
+\end{verbatim}
+You can add `{\textbackslash}date', `{\textbackslash}thanks', `{\textbackslash}begin\{abstract\}' and `{\textbackslash}end\{abstract\}' if you like.
+If you want to make a table of contents, then uncomment the eighth line.
+After that, the lines are sections and {\textbackslash}input commands to include subfiles.
+
+Rakefile contains instructions to rake.
+You don't need to modify it so far.
+Try to use it.
+\begin{verbatim}
+$ rake
+ ... ...
+ ... ...
+$ ls
+Makefile            gecko.png               main.tex
+Rakefile            generate_templates.tex  preprocessing.tex
+Tutorial.pdf        helper.tex              rake.tex
+_build              installation.tex        test_compile.tex
+cover.tex           lb.conf
+edit_tex_files.tex  lb.tex
+$ ls _build
+main.aux  main.fdb_latexmk  main.fls  main.log  main.out  main.pdf
+$ evince Tutorial.pdf
+\end{verbatim}
+Rake ran lb to compile main.tex and after that it copied \_build/main.pdf to Tutorial.pdf.
+Evince shows Tutorial.pdf as follows.
+\begin{center}
+\includegraphics[width=8cm]{Tutorial_1.png}
+\end{center}
+

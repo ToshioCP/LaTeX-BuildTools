@@ -1,0 +1,75 @@
+Sometimes, you want to do something before compiling your tex source files.
+For example,
+\begin{itemize}
+\item Some graphic files are generated with a program like gnuplot.
+\item Some tex files are generated with a program like pandoc.
+\end{itemize}
+
+Here in this tutorial I want to show you how to use pandoc as a preprocessing program.
+Pandoc is a document converter.
+It supports many types of format like markdown, latex, html and pdf.
+In this tutorial, `Readme.md' in the Buildtools source files is converted to `readme.tex', which is a latex source file.
+
+Most distributions have a pandoc package, so you can install it easily.
+If your distribution is ubuntu, type
+\begin{verbatim}
+$ sudo apt-get install pandoc
+\end{verbatim}
+
+To generate `readme.tex', type
+\begin{verbatim}
+$ pandoc -o readme.tex ../Readme.md
+\end{verbatim}
+
+You need to do two more things to put it into main.tex.
+
+First, add {\textbackslash}input command to include readme.tex at the end of main.tex.
+\begin{verbatim}
+\documentclass{article}
+\input{helper.tex}
+ ... ...
+ ... ...
+\section{Use rake}
+  \input{rake.tex}
+\input{readme.tex}
+\end{document}
+\end{verbatim}
+In addition, uncommnet the eighth line to let {\textbackslash}tableofcontents command to work.
+\begin{verbatim}
+ ... ...
+\maketitle
+% If you want a table of contents here, uncomment the following
+ line.
+\tableofcontents
+ ... ...
+\end{verbatim}
+
+Second, {\textbackslash}tightlist command needs to be defined.
+Helper.tex is the best place to define it.
+\begin{verbatim}
+ ... ...
+ ... ...
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+ ... ...
+ ... ...
+\end{verbatim}
+This code is extracted from \url{https://github.com/jgm/pandoc-templates/blob/master/default.latex}.
+
+Now you can compile it with rake.
+\begin{verbatim}
+$ rake
+\end{verbatim}
+
+\begin{center}
+\includegraphics[width=10cm]{tableofcontents.png}
+\end{center}
+
+Now the contents of `Readme.md' appears as the section eight in the table of contents.
+
+We ran pandoc by hand in this section.
+If Readme.md is upgraded, we need to run pandoc again.
+It is a tiresome work and it should be done automatically.
+One good way is modify Rakefile so that rake does the preprocessing work automatically before compiling.
+It will be shown in the next section.
+

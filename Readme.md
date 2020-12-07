@@ -210,7 +210,7 @@ Auxiliary files and output files are put in the build directory.
 If the argument of `lb` is a subfile, then the temporary rootfile is also put in the build directory.
 If `builddir` is empty, then no temporary directory is generated and the source file directory becomes a build directory.
 - `engine` is the name of a latex engine. `latex`, `platex`, `pdflatex`, `xelatex` and `lualatex` can be specified. Other engines are not supported.
-- `latex_option` is a list of options to specify as an argument to the engine. `-output-directory` is automatically specified by `lb`, so it must not be specified here.
+- `latex_option` is a list of options to specify as an argument to the engine through `latexmk`. `-output-directory` is automatically given to `latexmk` by `lb` even if `lb.conf`doesn't exist.
 - `preview` is the name of a pdf previewer to show the document. It is run only if the argument of `lb` is a subfile.
 
 #### arl
@@ -296,7 +296,7 @@ Other possible application is dvipdfm and dvipdf.
 If you edit the source file with texworks, it is a good idea to specify texworks here.
 - `-r`: Specify the original rootfile.
 
-### Installation and uninstallation
+## Installation and uninstallation
 
 #### Prerequisite
 
@@ -325,15 +325,15 @@ Generally speaking, Rakefile is easy to understand than Makefile.
 
 Use the script install.sh.
 
-    $ bash install.sh [-s|-u]
+    $ bash install.sh
 
 This script installs the executable files into `$HOME/bin`.
 Debian and Ubuntu adds the directory `$HOME/bin` into `PATH` environment variable if it exists at the login time.
 The script makes the directory `$HOME/bin` if it doesn't exist.
 In that case, you need to re-login to put the directory into the `PATH` environment variable.
-If you run `sudo` or `su` to become a root user before the installation, the executable files are put into `/user/local/bin`.
+If you run `sudo` or `su` to become the root user before the installation, the executable files are put into `/user/local/bin`.
 
-If your OS is debian, type the following.
+If your OS is debian, type the following to be the root user.
 
     $ su -
     # bash install.sh
@@ -342,28 +342,20 @@ Or if it's ubuntu,
 
     $ sudo bash install.sh
 
-You can specify an option to install them in the user space or system space.
-
-- `-s`: The installation is done in the system level. You need the write privilege to the system area.
-- `-u`: The installation is done in the user level. You should do it as a user, not root. If you do it as a root, the scripts are put into `/root/bin`.
-This means the installation is done to the root user's private space.
-
 #### Uninstallation
 
 Use the script uninstall.sh.
 
-    $ bash uninstall.sh [-s|-u]
+    $ bash uninstall.sh
 
-If you do this as a user without any options, the files under `$HOME` are removed.
-If you do this as a root without any options, the files under `/usr/local` are removed.
-If your OS is debian,
+If you run this as a user, the files under `$HOME` are removed.
+If you run this as a root, the files under `/usr/local` are removed.
+If your OS is debian, type the following to be the root user.
 
     $ su -
     # bash uninstall.sh
 
-Or ubuntu,
+Or if it's ubuntu,
 
     $ sudo bash uninstall.sh
-
-You can specify an option `-s` or `-u` to uninstall the files in the system area or user area respectively.
 

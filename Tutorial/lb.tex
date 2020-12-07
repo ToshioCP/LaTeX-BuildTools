@@ -1,0 +1,149 @@
+\subsection{First step}
+Lb is the main script in Buildtools.
+This section describes how to use it with a small example.
+
+First, make a directory named \verb|example| and change your current directory to it.
+\begin{verbatim}
+$ makedir example
+$ cd example
+\end{verbatim}
+
+Then make a tex source file in the directory.
+Run your favourite editor and copy the following text, then save it as the name \verb|main.tex|.
+\begin{verbatim}
+\documentclass{article}
+\begin{document}
+Hello \LaTeX !!
+\end{document}
+\end{verbatim}
+
+Then, just type \verb|lb|.
+\begin{verbatim}
+$ lb
+\end{verbatim}
+Then, it runs latexmk and pdflatex and compile \verb|main.tex| with them.
+Messages appear on your screen, and that shows the process of the compilation.
+If there is a line 
+\begin{verbatim}
+Output written on _build/main.pdf (1 page, 19263 bytes).
+\end{verbatim}
+then the compilation completes correctly.
+Check the directory.
+\begin{verbatim}
+$ ls -l
+total 8
+drwxrwxr-x 2 user user 4096 Dec  6 11:59 _build
+-rw-rw-r-- 1 user user   72 Dec  6 11:59 main.tex
+\end{verbatim}
+A new directory \verb|_build| is generated.
+Look at the files in the directory.
+\begin{verbatim}
+$ cd _build
+$ ls
+\end{verbatim}
+There are auxliary files and the target file \verb|main.pdf|.
+See \verb|main.pdf| with your pdf-viewer, for example evince.
+\begin{verbatim}
+$ evince main.pdf
+\end{verbatim}
+\begin{center}
+\includegraphics[width=3cm]{hellolatex.png}
+\end{center}
+
+\subsection{Use lb.conf}
+In the previous subsection, lb runs pdflatex.
+The reason whoy lb chose pdflatex is the documentclass `article'.
+It can also be compiled by lualatex or xelatex, but pdflatex has been a standard latex engine for ages.
+
+If you want to use, for example, lualatex to compile, you need to specify it in \verb|lb.conf|.
+This configuration file has six items.
+\begin{description}
+\item[rootfile] Rootfile is the main tex file, which usually includes {\textbackslash}begin\{document\} and {\textbackslash}end\{document\}. Other tex files are called `subfile'.
+\item[builddir] This is a temporary directory includes all the auxliary files and the target file, which is usually a pdf file.
+\item[engine] This specifies a latex engine, which is one of pdflatex, xelatex, lualatex, latex and platex.
+\item[latex\_option] This specifies options to give \verb|latexmk|. The option `-halt-on-error' is given to \verb|latexmk| even if lb.conf doesn't exist.
+\item[dvipdf] This is a program which converts dvi into pdf, which is used only with latex or platex. It is unnecessary with other latex engines. `dvipdfmx' is the best so far.
+\item[preview] Pdf viewer. This is used to preview the subfile given as an argument.
+\end{description}
+
+Run your editor and type the following and save it as the name \verb|lb.conf|.
+\begin{verbatim}
+rootfile=main
+builddir=_build
+engine=lualatex
+latex_option=-halt-on-error
+dvipdf=
+preview=evince
+\end{verbatim}
+Then, type
+\begin{verbatim}
+$ lb
+\end{verbatim}
+Then, it uses lualatex to compile.
+
+If you want to change the name of the tex file to `example.tex', then modify the first line in lb.conf to
+\begin{verbatim}
+rootfile=example
+\end{verbatim}
+or
+\begin{verbatim}
+rootfile=example.tex
+\end{verbatim}
+The suffix can be left out.
+
+In addition, you might put all the axiliary files and the target file in the same directory as the source directory.
+Then change the second line in lb.conf to
+\begin{verbatim}
+builddir=
+\end{verbatim}
+This specifies null string for builddir item and that means no build directory is made.
+
+Let's try to run \verb|lb| with the following \verb|lb.conf|
+\begin{verbatim}
+rootfile=example
+builddir=
+engine=latex
+latex_option=-halt-on-error
+dvipdf=dvipdfmx
+preview=evince
+\end{verbatim}
+Now, the engine is latex and dvipdf program is dvipdfmx.
+\begin{verbatim}
+$ rm -r _build
+$ mv main.tex example.tex
+$ lb
+\end{verbatim}
+Then messages appear.
+It includes the following line.
+\begin{verbatim}
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020)
+ (preloaded format=latex)
+  ... ...
+  ... ...
+Output written on example.dvi (1 page, 332 bytes).
+Transcript written on example.log.
+Latexmk: Examining 'example.log'
+=== TeX engine is 'pdfTeX'
+Latexmk: Log file says output to 'example.dvi'
+Latexmk: All targets (example.dvi) are up-to-date
+example.dvi -> example.pdf
+[1]
+3662 bytes written
+\end{verbatim}
+This tells us that the engine was `latex'%
+\footnote{
+In Texlive2020, `latex' command calls `pdftex' instead of `tex' which is the original TeX program.
+}.
+It generates dvi file instead of pdf file.
+After that, dvipdfmx is run by latexmk and it translates the dvi file into a pdf file.
+The name `dvipdfmx' doesn't appear in the message but `example.dvi -{\textgreater} example.pdf' is outputed by dvipdfmx.
+So we know that dvipdfmx was run by latexmk in the build process.
+\begin{verbatim}
+$ ls
+example.aux  example.fdb_latexmk  example.log  example.tex
+example.dvi  example.fls          example.pdf  lb.conf
+\end{verbatim}
+There's no temprary directory like \_build because we specified null string for builddir.
+
+One of the important feature of lb is compiling a subfile separately.
+This will be explained in the section  \ref{sec:testcompile} `Test compile' (p. \pageref{sec:testcompile}).

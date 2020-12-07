@@ -171,13 +171,13 @@ require 'rake/clean'
   @graphic_files += \`gfiles #{file}\`.split("\n")
 end
 
-task default: ${directory_name}.pdf
+task default: "${directory_name}.pdf"
 
-file ${directory_name}.pdf => ${builddir}/${rootfile}.pdf do
+file "${directory_name}.pdf" => "${builddir}/${rootfile}.pdf" do
   sh "cp ${builddir}/${rootfile}.pdf ${directory_name}.pdf"
 end
 
-file ${builddir}/${rootfile}.pdf => (@tex_files+@graphic_files) do
+file "${builddir}/${rootfile}.pdf" => (@tex_files+@graphic_files) do
   sh "lb ${rootfile}.tex"
 end
 
@@ -191,7 +191,7 @@ task :ar do
   sh "mv ${rootfile}.tar.gz ${directory_name}.tar.gz"
 end
 
-task :zip dp
+task :zip do
   sh "arl -z ${rootfile}.tex"
   sh "zip ${rootfile}.zip Rakefile"
   sh "mv ${rootfile}.zip ${directory_name}.zip"
@@ -314,7 +314,7 @@ cat <<EOF >helper.tex
 %\begin{tikzpicture}
 %  \draw[very thin,->] (0,0) .. controls (0,0.2) and (0.05,0.25) .. (0.25,0.25);
 %\end{tikzpicture}
-}
+%}
 % concave south east arrow 上に凸で減少
 %\newcommand{\ccsearrow}{
 %\begin{tikzpicture}
@@ -362,7 +362,7 @@ else # article, report
 
 cat <<EOF >> ${rootfile}.tex
 \maketitle
-% If you want table of contents here, uncomment the following line.
+% If you want a table of contents here, uncomment the following line.
 %\tableofcontents
 EOF
 
