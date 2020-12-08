@@ -1,0 +1,33 @@
+\documentclass{ltjsarticle}
+\input{helper.tex}
+\title{チュートリアル}
+\author{} % Write your name if necessary.
+\begin{document}
+\maketitle
+% If you want table of contents here, uncomment the following line.
+\tableofcontents
+
+\begin{abstract}
+このチュートリアルには9つのセクションがある。
+チュートリアルとしての内容はセクション1からセクション8までに書かれている。
+最後のセクション9はBuildtoolsのソースファイルに含まれるReadme.ja.mdのコピーである。
+\end{abstract}
+
+\section{インストール}
+  \input{installation.tex}
+\section{lbを使ったコンパイル}
+  \input{lb.tex}
+\section{テンプレートの生成}
+  \input{generate_templates.tex}
+\section{TeXソースファイルの編集}
+  \input{edit_tex_files.tex}
+\section{テスト・コンパイル}
+  \input{test_compile.tex}
+\section{プリプロセッシング}
+  \input{preprocessing.tex}
+\section{rakeによる自動化}
+  \input{rake.tex}
+\section{アーカイブの作成}
+  \input{tarball.tex}
+\input{readme.tex}
+\end{document}

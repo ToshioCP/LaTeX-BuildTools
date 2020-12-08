@@ -1,0 +1,504 @@
+\hypertarget{buildtools}{%
+\section{Buildtools}\label{buildtools}}
+
+\hypertarget{buildtoolsux4f5cux6210ux306eux80ccux666f}{%
+\subsection{Buildtools作成の背景}\label{buildtoolsux4f5cux6210ux306eux80ccux666f}}
+
+\hypertarget{latextoolsux3068buildtoolsux306eux95a2ux4fc2}{%
+\paragraph{LatextoolsとBuildtoolsの関係}\label{latextoolsux3068buildtoolsux306eux95a2ux4fc2}}
+
+大きな文書、例えば100ページを越える本などをLaTeXで作る場合は、小さい文書の作成と異なる様々な問題を考える必要がある。
+
+\begin{itemize}
+\tightlist
+\item
+  ソースファイルの分割
+\item
+  分割コンパイル
+\item
+  文書の一括置換
+\item
+  前処理（LaTeXコンパイル前に処理する作業）
+\end{itemize}
+
+これらを支援するツール群がLatextoolsであり、2つのグループに別れている。
+
+\begin{itemize}
+\tightlist
+\item
+  Buildtools。ソースファイルの新規作成、ビルド、分割コンパイルを支援するツール群
+\item
+  Substools。ソースファイルに対する一括置換をするツール群
+\end{itemize}
+
+このように、BuildtoolsはLatextoolsを構成する一部であるが、同時にその中核をなすツール群である。
+このドキュメントではBuildtoolsを解説する。
+
+\hypertarget{ux30bdux30fcux30b9ux30d5ux30a1ux30a4ux30ebux306eux5206ux5272}{%
+\paragraph{ソースファイルの分割}\label{ux30bdux30fcux30b9ux30d5ux30a1ux30a4ux30ebux306eux5206ux5272}}
+
+LaTeXソースファイルを単にここではソースファイルと呼ぶ。
+大きな文書を1つのソースファイルに記述するのは適切でない。
+なぜなら、ファイルが大きくなると、エディタで編集するのが極めて困難になるからである。
+そこで、文書を分割することになる。
+通常は\texttt{\textbackslash{}begin\{document\}}と\texttt{\textbackslash{}end\{document\}}を含む1つのファイルと、そのファイルから\texttt{\textbackslash{}include}または\texttt{\textbackslash{}input}で呼び出される複数のファイルに分割する。
+前者をルートファイル、後者をサブファイルという。
+\texttt{\textbackslash{}include}と\texttt{\textbackslash{}input}はどちらもサブファイルの取り込みのコマンドだが、違いがある。
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{\textbackslash{}include}はネストはできない。\texttt{\textbackslash{}include}はボディ（\texttt{\textbackslash{}begin\{document\}}と\texttt{\textbackslash{}end\{document\}}の間の部分）にのみ書くことができる。\texttt{\textbackslash{}includeonly}でファイルのリストが指定されている場合は、そのリストに書かれているファイルのみが\texttt{\textbackslash{}include}で取り込め、リストにないファイルの\texttt{\textbackslash{}include}は無視される。\texttt{\textbackslash{}includeonly}はプリアンブルのみに書くことができる。\texttt{\textbackslash{}include}はファイルを取り込む前に\texttt{\textbackslash{}clearpage}をする。
+\item
+  \texttt{\textbackslash{}input}は単にファイルを取り込むだけで\texttt{\textbackslash{}clearpage}はしない。このコマンドはネストできる。
+\end{itemize}
+
+文書をコンパイルによって作成することをビルドと呼ぶ。
+ビルドはLaTeXのコンパイルだけでなく、前処理（例えばgnuplotによる画像生成だったり、データからtikzのグラフを生成したりなど）も含める。
+ビルドは最終的にルートファイルをコンパイルすることによって完了する。
+LaTeXソースファイルをコンパイルするプログラムにはいくつかあり、それをエンジンと呼んでいる。
+Buildtoolsでサポートしているエンジンには、latex、platex、pdflatex、xelatex、lualatexがある。
+コンパイルは文書が大きくなればなるほど時間がかかるようになる。
+1箇所だけを変更する場合も同じだけ時間がかかる。
+文書の編集の途中で出来栄えをチェックするためにコンパイルすること（これをテストするなどということがある）は頻繁に起こるが、そのたびに長い時間がかかる。
+文書が大きくなればなるほどこの問題は深刻になる。
+そこで、サブファイルのみをコンパイルできるようにする方法がいろいろ考えられた。
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{\textbackslash{}includeonly}コマンドの引数（サブファイルのリスト）からコンパイルしたくないファイルをコメントアウトする
+\item
+  subfilesパッケージを用いる
+\end{itemize}
+
+とくにsubfilesパッケージはよくできており、推薦する方も多い。
+ただ、パッケージを取り込み、そのコマンドを適切に使うことが必要である。
+もちろん、上記のコンパイル時間の問題からすれば、それくらいは何ともないことであるが。
+
+これ以外の方法としては、サブファイル単独のコンパイル用に特別のプリアンブル部などを付け加える方法がある。
+具体的には、サブファイルを「\texttt{\textbackslash{}documentclass}から\texttt{\textbackslash{}begin\{document\}}まで」と「\texttt{\textbackslash{}end\{document\}}」でサンドイッチにする。
+そのときにサブファイル自体を変更するのではなく、プリアンブルなどを記述したファイルからサブファイルを\texttt{\textbackslash{}input}で取り込むようにする。
+そのサブファイルを取り込むファイルを「仮のルートファイル」と呼んだりする。
+それに対して元々のルートファイルを「オリジナルのルートファイル」と呼ぶこともある。
+仮のルートファイルのプリアンブル部は、オリジナルのルートファイルのコピーである。
+この方法の良い点は
+
+\begin{itemize}
+\tightlist
+\item
+  ソースファイルにパッケージの取り込みや特別な命令を書き込む必要がない。
+\item
+  したがって、ソースファイルを配布するにあたって、被配布者に特定のパッケージをインストールさせる必要がない。
+\end{itemize}
+
+つまり、ソースファイルをなんら変更することなく、サブファイルのみのコンパイルが可能だというのが長所である。
+ただ、そのためには仮のルートファイルを生成するプログラムが必要である。
+Buildtoolsでは、\texttt{ttex}というシェルスクリプトでそれを行っている。
+
+\hypertarget{ux30b3ux30f3ux30d1ux30a4ux30ebux306eux30eaux30d4ux30fcux30c8ux7e70ux308aux8fd4ux3057}{%
+\paragraph{コンパイルのリピート（繰り返し）}\label{ux30b3ux30f3ux30d1ux30a4ux30ebux306eux30eaux30d4ux30fcux30c8ux7e70ux308aux8fd4ux3057}}
+
+最終的に文書をコンパイルするときには、相互参照などを実現するためにコンパイルを複数回行わなければならない。
+その回数は2回であったり、3回であったりするらしいが、筆者はその事情をよく知らない。
+が、ここに優れたプログラムがあり、必要回数を判断し、必要なだけコンパイルしてくれる。
+latexmkというプログラムである。
+latexmkを用いることによって、ビルドは非常に楽になる。
+Buildtoolsではルートファイルのコンパイルにlatexmkを使用する。
+
+\hypertarget{ux4f5cux696dux7528ux30c7ux30a3ux30ecux30afux30c8ux30eaux306eux8a2dux7f6e}{%
+\paragraph{作業用ディレクトリの設置}\label{ux4f5cux696dux7528ux30c7ux30a3ux30ecux30afux30c8ux30eaux306eux8a2dux7f6e}}
+
+LaTeXでコンパイルすると、様々な補助ファイルやログファイルが生成されるので、きれい好きの人はそれについて不満を感じることがあると思う。
+それで、作業用ディレクトリを設置して、そういうファイルの一切合財を入れてしまうとソースディレクトリをきれいに保つことができる。
+そういうソフトにcluttexがあり、きれい好きな人にはお勧めである。
+Buildtoolsでは作業用ディレクトリ\texttt{\_build}（名前は変更も可能）を設置し、補助ファイルなどを格納する。
+このことにより、ソースディレクトリを汚さずに済む。
+また、コンパイルのログや補助ファイルを見たいときは\texttt{\_build}の中を見れば良い。
+非常に単純なのである。
+蛇足になるが、最近Cのビルドツールとして人気のあるmesonも作業ディレクトリを使う。
+これは、一般に作業用ディレクトリをソースディレクトリと区別することが人間にとって非常に分かりやすくなるということの表れである。
+
+Buildtoolsでは、生成された最終文書（pdfファイル）も作業用ディレクトリにできあがる。
+それをソースファイルディレクトリに置きたいというのは自然は発想だが、それにはmakeまたはrakeを使うと良い。
+rakeはスクリプト言語rubyで書かれたmakeとでもいうべきものであるが、特長はRakefile（rakeのスクリプト）にruby言語を使うことができることである。
+そのことによって、makeよりもはるかに強力で分かりやすい記述ができる。
+話を元に戻すが、最終文書をソースディレクトリに置くには、MakefileまたはRakefileに、作業用ディレクトリからソースディレクトリに最終文書をコピーするコマンドを書いておくのである。
+また、makeやrakeを使うことの利点は、前処理を記述できることである。
+前処理はその文書やユーザの使うツールに依存するので、Buildtoolsでカバーするのは難しい。
+それに比べて、MakefileやRakefileはフレキシブルなので、前処理を記述するのに適しているのである。
+
+Buildtoolsでは、makeまたはrakeを併用することを推奨している。
+
+\hypertarget{texworksux3068ux306eux9023ux643a}{%
+\paragraph{Texworksとの連携}\label{texworksux3068ux306eux9023ux643a}}
+
+Buildtoolsでは、\texttt{lb}というコマンドでルートファイルのビルドもサブファイルのテストコンパイルも行うことができる。
+それをTexworksのタイプセッティングに登録すると、Texworksから起動できて大変便利である。
+「設定」ー＞「タイプセッティング」タブで設定する。
++をクリックして新たなコマンドを設定する。名前=\textgreater{}\texttt{lb}、コマンド=\textgreater{}\texttt{lb}、引数=\textgreater{}\texttt{\$fullname}で良い。
+設定後はルートファイルで全体のコンパイル、サブファイルは単独のテスト・コンパイルがワンクリックでできるようになる。
+
+\hypertarget{buildtoolsux306eux69cbux6210}{%
+\subsection{Buildtoolsの構成}\label{buildtoolsux306eux69cbux6210}}
+
+Buildtoolsは大きく分けて次のような部分から構成されている。
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{newtex}: 新規ソースファイルの作成を支援するツール。
+\item
+  \texttt{lb}: Latex
+  Build。ルートファイルをコンパイル、または\texttt{ttex}を使ってサブファイルのテストコンパイルをする。
+\item
+  アーカイブ作成を支援するツール。
+\item
+  インストーラ
+\item
+  ユーティリティ群。上記のプログラムを下支えする。
+\end{itemize}
+
+文書作成は、次の手順で行われる。
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  文書全体の構成を決める。章立てを決める。
+\item
+  \texttt{newtex}を使ってフォルダとソースファイルの雛形を作成する。
+\item
+  \texttt{Makefile}、\texttt{Rakefile}、表紙（\texttt{cover.tex}）、プリアンブル部（\texttt{helper.tex}）の雛形を必要に応じて書き換える。
+\item
+  本文の作成と、テストコンパイル。
+\item
+  前処理の作成。
+\item
+  最終ビルド。
+\end{enumerate}
+
+上記の3から5は行ったり来たりすることになり、必ずしもこの順に作業が進むわけではない。
+
+\hypertarget{ux4e3bux8981ux306aux30c4ux30fcux30ebux306bux3064ux3044ux3066}{%
+\subsection{主要なツールについて}\label{ux4e3bux8981ux306aux30c4ux30fcux30ebux306bux3064ux3044ux3066}}
+
+それぞれのツールの簡単なヘルプは\texttt{-\/-help}オプションをつけて実行することにより表示される。
+例えば、\texttt{newtex}に\texttt{-\/-help}オプションをつけて実行すると、次のようなメッセージが表示される。
+
+\begin{verbatim}
+$ newtex --help
+Usage:
+  newtex --help
+    Show this message.
+  Newtex.conf needs to be edited before running newtex.
+  newtex
+    A directory is made and some template files are generated under the directory.
+\end{verbatim}
+
+各ツールを説明する文書は
+
+\begin{itemize}
+\tightlist
+\item
+  各ツールの\texttt{-\/-help}オプションによるヘルプ・メッセージ
+\item
+  このドキュメントにおける以下の記述
+\end{itemize}
+
+だけである。 より詳細を知りたい場合はソースコードを見ていただきたい。
+Buildtoolsのすべてのツールはシェル・スクリプトで書かれている。
+それぞれのスクリプトは短く、シェル・スクリプトをご存知の方であれば、比較的簡単にソースコードを理解できる。
+
+\hypertarget{newtex}{%
+\paragraph{newtex}\label{newtex}}
+
+\begin{verbatim}
+$ newtex
+\end{verbatim}
+
+新規にLaTeXの文書を作るときに使うスクリプト。
+\texttt{newtex}を使う前に全体の構成と章立てを決めておき、それを事前に\texttt{newtex.conf}に書いておく。
+このスクリプトは、\texttt{newtex.conf}に書かれた指示に従って、新しくディレクトリを作り、テンプレート・ファイルを生成する。
+
+このプログラムは2回に分けて使う。
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Buildtoolsのソースファイルの中に\texttt{newtex.conf}ファイルがある。
+  これを書き直して、ユーザの環境やこれから作るLaTeXファイルに合うようにする。
+\item
+  \texttt{newtex}を実行する。
+  このスクリプトは、\texttt{newtex.conf}の中で指定されたタイトル名と同じ名前のディレクトリを新たに作成する。
+  ただし、タイトル中の空白文字はアンダースコアに変換されてディレクトリ名となる。
+  スクリプトは、そのディレクトリの下にテンプレート・ファイルを生成する。
+\end{enumerate}
+
+\hypertarget{lb}{%
+\paragraph{lb}\label{lb}}
+
+\begin{verbatim}
+$ lb [LaTeXfile]
+\end{verbatim}
+
+引数省略の場合は\texttt{main.tex}が引数で与えられた場合と同じ動作をする。
+\texttt{lb}は引数のLaTeXファイルをビルドするスクリプトであり、これだけで足りることが多い。
+
+\begin{itemize}
+\tightlist
+\item
+  引数がルートファイルの場合はそれを\texttt{latexmk}を使ってビルドする。サブファイルの場合は\texttt{ttex}でビルドする。
+\item
+  引数がルートファイルの場合は、synctexを使わない。
+\item
+  引数がサブファイルの場合は、synctexを使い、コンパイル後に\texttt{lb.conf}で指定されたプリビューワを起動する。
+\item
+  カレント・ディレクトリ（通常はルートファイルのあるディレクトリになる）に\texttt{lb.conf}があれば、それを読み込んで変数の初期化をする
+\item
+  \texttt{lb.conf}でエンジン指定を省略すると\texttt{lb}が自分でエンジンを予測する。しかし、\texttt{lb.conf}でエンジンを指定するほうが好ましい。
+\end{itemize}
+
+\texttt{lb.conf}で初期値の設定ができる。
+
+\begin{verbatim}
+rootfile=main.tex
+builddir=_build
+engine=
+latex_option=-halt-on-error
+preview=texworks
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{rootfile}はルートファイルの名前。ただし、\texttt{lb}の引数でルートファイルを指定した場合は、引数を優先する。
+\item
+  \texttt{builddir}は作業ディレクトリを指定する。
+  そのディレクトリには補助ファイルや出力ファイル、対象がサブファイルの場合は仮のルートファイルが出力される。
+  空文字列を指定すると、作業ディレクトリは生成されず、ソースファイルの置かれているディレクトリが作業ディレクトリになる。
+\item
+  \texttt{engine}はLaTeXエンジンを指定する。latex、platex、pdflatex、xelatex、lualatexを指定することができる。その他のエンジンはサポートしていない。
+\item
+  \texttt{latex\_option}は\texttt{latexmk}を通じてエンジンに与えるオプション。\texttt{lb.conf}が存在しない場合でも、\texttt{-output-directory}は\texttt{lb}が自動的にエンジンに与える。
+\item
+  \texttt{preview}はできあがったpdfを見るためのプリビューワ。ただし、サブファイルのときのみ動作する。
+\end{itemize}
+
+\hypertarget{arl}{%
+\paragraph{arl}\label{arl}}
+
+\$ arl {[}-b\textbar{}-g\textbar{}-z{]} {[}rootfile{]}
+
+\texttt{arl}という名前は、ARchive LaTeX filesから。
+ルートファイルの関連ファイル（下記参照）を検索してアーカイブを作る。
+ルートファイルが省略された場合は、\texttt{main.tex}を指定されたものとして処理する。
+
+\begin{itemize}
+\tightlist
+\item
+  前処理プログラムがある場合、そのプログラムを実行してから\texttt{arl}を起動する必要がある。
+\item
+  \texttt{arl}がアーカイブするのは、LaTeXソースファイルと、\texttt{includegraphics}される画像ファイルのみ。
+\item
+  したがって\texttt{Makefile}や、前処理のソースファイル（例えばgnuplotのソース）などはアーカイブされない。
+\end{itemize}
+
+Makefileにターゲットを作り（例えば\texttt{ar}という名前のターゲット）、\texttt{arl}で作ったアーカイブにtarでMakefileや前処理ソースファイルを追加するスクリプトを書いておくと便利である。
+同様のことはRakefileでもｄきる。
+
+アーカイブを圧縮するオプション
+\texttt{-g}、\texttt{-b}、\texttt{-z}で、それぞれ、tar.gz, tar.bz2,
+zipをサポート。
+オプションが与えられなかった場合は、圧縮なしのtarballを作る。
+
+\hypertarget{ux30e6ux30fcux30c6ux30a3ux30eaux30c6ux30a3ux7fa4}{%
+\paragraph{ユーティリティ群}\label{ux30e6ux30fcux30c6ux30a3ux30eaux30c6ux30a3ux7fa4}}
+
+この項はスクリプトをメンテナンスするのでなければ読む必要はない。
+
+\begin{verbatim}
+$ srf subfile
+\end{verbatim}
+
+\texttt{subfile}からルートファイルを探し、その結果（絶対パス）を出力する。
+\texttt{srf}は「Search Root File」の意味。
+
+\begin{verbatim}
+$ tfiles [-p|-a|-i] [rootfile]
+\end{verbatim}
+
+rootfileのサブファイルの一覧を取得する。
+引数のルートファイルが省略された場合は、\texttt{main.tex}が指定されたものとして処理する。
+
+\begin{itemize}
+\tightlist
+\item
+  オプション無し =\textgreater{}
+  ルートファイルが取り込むサブファイル（\texttt{\textbackslash{}begin\{document\}}から\texttt{\textbackslash{}end\{document\}}までの\texttt{include}または\texttt{input}コマンドで指定されたファイル）のリストを標準出力に出力する
+\item
+  \texttt{-p}
+  プリアンブルで取り込まれるサブファイルのリストを標準出力に出力する
+\item
+  \texttt{-a}
+  オプション無しのリストにルートファイルを加えて標準出力に出力する
+\item
+  \texttt{-i}
+  \texttt{include}コマンドで取り込まれるファイルのみを標準出力に出力する。
+  ただし、\texttt{includeonly}で指定されなかったファイルは除かれる。
+\end{itemize}
+
+注意：出力されるファイルのリストは改行で区切られている。
+
+\begin{verbatim}
+$ tftype [-r|-s|-q] files ...
+\end{verbatim}
+
+LaTeXのソースファイルの種類を調べるスクリプト。
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{-r}
+  （デフォルト）引数のファイルの中からルートファイルのみを抽出して出力する
+\item
+  \texttt{-s} 引数のファイルの中からサブファイルのみを抽出して出力する
+\item
+  \texttt{-q}
+  （quiet）上記の出力を抑制する。引数は1つのファイルのみで、そのファイルタイプをexitステータスで返す。
+  exitステータスが0はルートファイル、1はサブファイル、エラーが生じた場合は2となる。
+\end{itemize}
+
+\texttt{-q}オプションを使うことが最も多い。
+
+\begin{verbatim}
+$ gfiles files ...
+\end{verbatim}
+
+引数は、latexのソースファイル（の列）である。
+与えられたファイルの中で\texttt{\textbackslash{}includegraphics}によって取り込まれる画像ファイルの一覧を返す。
+
+\begin{verbatim}
+$ ltxengine rootfile
+\end{verbatim}
+
+コンパイルを行うLaTeXエンジンを予想する（本来ユーザが明示すべきだが・・・）
+例えば、
+
+\begin{verbatim}
+\usepackage[luatex]{graphicx}
+\end{verbatim}
+
+というコマンドがプリアンブルにあれば、エンジンはlualatexと予想がつく。
+
+\begin{verbatim}
+$ ttex [-b builddir] -e latex_engine [-p dvipdf] [-v previewr] -r rootfile subfile
+\end{verbatim}
+
+サブファイルに仮ルートファイルをつけてコンパイルする。
+コンパイルは1回だけ。 そのため相互参照は反映されない。
+（これはテストのためのスクリプトであって、最終仕上げではないから相互参照はさほど重要ではない、という考えに基いている）。
+また、該当のサブファイル以外のファイルにあるラベルを参照することはできない。
+単独で使うことも可能だがlbを通して呼び出すのが普通の使い方。
+オプションについては下記の通り。
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{-b}
+  作業ディレクトリを指定する。デフォルトは\texttt{\_build}である。
+\item
+  \texttt{-e}
+  latexエンジンを指定する。エンジンの種類についての制限はないが、latex、platex、pdflatex、xelatex、lualatexのいずれかが指定されることを想定している。
+\item
+  \texttt{-p}
+  エンジンがlatexまたはplatexである場合は、dviファイルが出力される。
+  そのdviからpdfを出力するためのアプリケーションを指定する。
+  デフォルトはdvipdfmxである。
+  その他に、dvipdfmやdvipdfを指定することができる。
+\item
+  \texttt{-v} プリビューアを指定する。
+  evinceなど、pdfを表示できるアプリケーションを指定する。
+  ソースファイルをtexworksで編集している場合は、ここにtexworksを指定するのが良い。
+\item
+  \texttt{-r} ルートファイルを指定する。
+\end{itemize}
+
+\hypertarget{ux30a4ux30f3ux30b9ux30c8ux30fcux30ebux3068ux30a2ux30f3ux30a4ux30f3ux30b9ux30c8ux30fcux30eb}{%
+\subsection{インストールとアンインストール}\label{ux30a4ux30f3ux30b9ux30c8ux30fcux30ebux3068ux30a2ux30f3ux30a4ux30f3ux30b9ux30c8ux30fcux30eb}}
+
+\hypertarget{ux30a4ux30f3ux30b9ux30c8ux30fcux30ebux306bux5fc5ux8981ux306aux74b0ux5883}{%
+\paragraph{インストールに必要な環境}\label{ux30a4ux30f3ux30b9ux30c8ux30fcux30ebux306bux5fc5ux8981ux306aux74b0ux5883}}
+
+\begin{itemize}
+\item
+  Linuxとbash。
+  DebianとUbuntuではテストされているが、おそらくその他のlinuxディストリビューションでも動作すると思われる。
+  Bashコマンドを用いてスクリプトが記述されているので、bashは必要である。
+\item
+  LaTeXシステム。 LaTeXのインストールには２つのオプションがある。
+  1つはディストリビューションに付属のシステムをインストールすることである。
+  他方はTexLiveをインストールすることである。
+\item
+  makeまたはrake。
+  これらのツールはBuildtoolsにとって、必ずしも必要というわけではない。
+  しかし、makeまたはrakeのもとで、Buildtoolsを実行することが望ましい。
+  この2つに両方をインストールする必要はない。
+  どちらか1つを選んでインストールすれば良い。
+  makeは長く使われているビルド・ツールで、元々はCコンパイラの制御に用いられてきた。
+  rakeはこれに似たツールで、rubyで書かれたアプリケーションである。
+  rakeを使うことの利点は、そのスクリプトであるRakefileの中で任意のrubyコードを記述できることである。
+  一般に、RakefileはMakefileよりも読みやすく、理解しやすい。
+\end{itemize}
+
+\hypertarget{ux30a4ux30f3ux30b9ux30c8ux30fcux30eb}{%
+\paragraph{インストール}\label{ux30a4ux30f3ux30b9ux30c8ux30fcux30eb}}
+
+インストール用のスクリプト\texttt{install.sh}を使う。
+
+\begin{verbatim}
+$ bash install.sh
+\end{verbatim}
+
+シェルスクリプトなどの実行ファイルは\texttt{\$HOME/bin}に保存される。
+debianやubuntuでは、ログイン時に\texttt{\$HOME/bin}があれば、bashの実行ディレクトリのパスを表す環境変数\texttt{PATH}に追加される。
+インストール時に新規に \texttt{\$HOME/bin}
+を作成した場合には、再ログインしないと、それが実行ディレクトリに追加されないので注意が必要。
+rootになってインストールすると\texttt{/usr/local/bin}に実行ファイルをインストール。
+debianの場合は、
+
+\begin{verbatim}
+$ su -
+# bash install.sh
+\end{verbatim}
+
+ubuntuの場合は
+
+\begin{verbatim}
+$ sudo bash install.sh
+\end{verbatim}
+
+\hypertarget{ux30a2ux30f3ux30a4ux30f3ux30b9ux30c8ux30fcux30eb}{%
+\paragraph{アンインストール}\label{ux30a2ux30f3ux30a4ux30f3ux30b9ux30c8ux30fcux30eb}}
+
+アンインストールは\texttt{uninstall.sh}で行う。
+一般ユーザで実行すれば、\texttt{\$HOME}以下のインストールファイルが削除される。
+
+\begin{verbatim}
+$ bash uninstall.sh
+\end{verbatim}
+
+rootで実行すれば、\texttt{/usr/local}以下のインストールファイルが削除される。
+debianの場合は、
+
+\begin{verbatim}
+$ su -
+# bash uninstall.sh
+\end{verbatim}
+
+ubuntuの場合は、
+
+\begin{verbatim}
+$ sudo bash uninstall.sh
+\end{verbatim}

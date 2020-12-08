@@ -21,7 +21,8 @@ To generate `readme.tex', type
 $ pandoc -o readme.tex ../Readme.md
 \end{verbatim}
 
-You need to do two more things to put it into main.tex.
+You need to do two more things.
+One is changing main.tex and the other is changing helper.tex
 
 First, add {\textbackslash}input command to include readme.tex at the end of main.tex.
 \begin{verbatim}
@@ -29,8 +30,8 @@ First, add {\textbackslash}input command to include readme.tex at the end of mai
 \input{helper.tex}
  ... ...
  ... ...
-\section{Use rake}
-  \input{rake.tex}
+\section{Make tarball}
+  \input{tarball.tex}
 \input{readme.tex}
 \end{document}
 \end{verbatim}
@@ -65,7 +66,7 @@ $ rake
 \includegraphics[width=10cm]{tableofcontents.png}
 \end{center}
 
-Now the contents of `Readme.md' appears as the section eight in the table of contents.
+Now the contents of `Readme.md' appears as the section nine in the table of contents.
 
 We ran pandoc by hand in this section.
 If Readme.md is upgraded, we need to run pandoc again.

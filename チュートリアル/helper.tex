@@ -1,0 +1,74 @@
+% Helper.tex is a tex file included into the preamble in the rootfile.
+% This file contails mainly \usepackage commands and \newcommand commands.
+% You need to rewrite this file to fit your tex file.
+
+% Packages
+\usepackage{amsmath,amssymb}
+\usepackage[luatex]{graphicx}
+\usepackage{tikz}
+%\usetikzlibrary{calc}
+
+%\usepackage{fancybox}
+\usepackage{booktabs}
+
+%\usepackage[margin=2.4cm]{geometry}
+
+\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+
+% Sample macro for English
+%\newcommand{\solution}{\begin{flushleft}\textbf{Solution:}\end{flushleft}}
+%\newcommand{\proof}{\begin{flushleft}\textbf{Proof}\end{flushleft}}
+%\newcommand{\qed}{\begin{flushright}\textbf{q. e. d.}\end{flushright}}
+%\newcommand{\answer}[1]{\begin{flushleft}\textbf{Exercise~\ref{#1}}\end{flushleft}}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Theorem environment.
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{lemma}{Lemma}[section]
+%\newtheorem{corollary}{Corollary}[section]
+%\newtheorem{definition}{Definition}[section]
+%\newtheorem{example}{Example}[section]
+%\newtheorem{exercise}{Exercise}[section]
+
+% Sample macro for Japanese
+% マクロのサンプル（解答、証明、q.e.d.、解答）
+%\newcommand{\solution}{\begin{flushleft}\textbf{解:}\end{flushleft}}
+%\newcommand{\proof}{\begin{flushleft}\textbf{証明}\end{flushleft}}
+%\newcommand{\qed}{\begin{flushright}\textbf{証明終}\end{flushright}}
+
+% 定理環境（定理、補題、系、定義、例、練習問題）
+%\newtheorem{theorem}{定理}[section]
+%\newtheorem{lemma}{補題}[section]
+%\newtheorem{corollary}{系}[section]
+%\newtheorem{definition}{定義}[section]
+%\newtheorem{example}{例}[section]
+%\newtheorem{exercise}{問題}[section]
+
+% 凹凸増減表の矢印 ----------------------------------------------------------------------------
+% concave north east arrow 上に凸で増加
+%\newcommand{\ccnearrow}{
+%\begin{tikzpicture}
+%  \draw[very thin,->] (0,0) .. controls (0,0.2) and (0.05,0.25) .. (0.25,0.25);
+%\end{tikzpicture}
+%}
+% concave south east arrow 上に凸で減少
+%\newcommand{\ccsearrow}{
+%\begin{tikzpicture}
+%  \draw[very thin,->] (0,0) .. controls (0.2,0) and (0.25,-0.05) .. (0.25,-0.25);
+%\end{tikzpicture}
+%}
+% convex north east arrow 下に凸で増加
+%\newcommand{\cvnearrow}{
+%\begin{tikzpicture}
+%  \draw[very thin,->] (0,0) .. controls (0.2,0) and (0.25,0.05) .. (0.25,0.25);
+%\end{tikzpicture}
+%}
+% convex south east arrow 下に凸で減少
+%\newcommand{\cvsearrow}{
+%\begin{tikzpicture}
+%  \draw[very thin,->] (0,0) .. controls (0,-0.2) and (0.05,-0.25) .. (0.25,-0.25);
+%\end{tikzpicture}
+%}
+%-----------------------------------------------------------------------------------------------

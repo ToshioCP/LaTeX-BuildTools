@@ -52,7 +52,7 @@ $ evince main.pdf
 
 \subsection{Use lb.conf}
 In the previous subsection, lb runs pdflatex.
-The reason whoy lb chose pdflatex is the documentclass `article'.
+The reason why lb chose pdflatex is the documentclass `article'.
 It can also be compiled by lualatex or xelatex, but pdflatex has been a standard latex engine for ages.
 
 If you want to use, for example, lualatex to compile, you need to specify it in \verb|lb.conf|.
@@ -63,7 +63,7 @@ This configuration file has six items.
 \item[engine] This specifies a latex engine, which is one of pdflatex, xelatex, lualatex, latex and platex.
 \item[latex\_option] This specifies options to give \verb|latexmk|. The option `-halt-on-error' is given to \verb|latexmk| even if lb.conf doesn't exist.
 \item[dvipdf] This is a program which converts dvi into pdf, which is used only with latex or platex. It is unnecessary with other latex engines. `dvipdfmx' is the best so far.
-\item[preview] Pdf viewer. This is used to preview the subfile given as an argument.
+\item[preview] Pdf viewer. This is used to preview the pdf file when lb is given a subfile as an argument.
 \end{description}
 
 Run your editor and type the following and save it as the name \verb|lb.conf|.
@@ -91,8 +91,7 @@ rootfile=example.tex
 \end{verbatim}
 The suffix can be left out.
 
-In addition, you might put all the axiliary files and the target file in the same directory as the source directory.
-Then change the second line in lb.conf to
+In addition, if you want to put all the axiliary files and the target file in the source directory, change the second line in lb.conf to:
 \begin{verbatim}
 builddir=
 \end{verbatim}

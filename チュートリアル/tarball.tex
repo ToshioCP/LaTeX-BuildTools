@@ -1,0 +1,60 @@
+ソースファイルを配布したい、という場合もあるかもしれない。
+そのようなときには、それをアーカイブすることが必要になる。
+Buildtoolsに含まれるスクリプトのarlは、ルートファイルが取り込むサブファイルや画像ファイルを検索し、それらアーカイブする。
+このアーカイブされたファイルのうち、tarというコマンドで作られたものをtarballという。
+\begin{itemize}
+\item -gオプションが与えられると、gzipで圧縮されたtarballを作る。
+\item -bオプションが与えられると、bzip2で圧縮されたtarballを作る。
+\item -zオプションが与えられると、zipファイルを作る。
+\item オプションが与えられなければ、非圧縮のtarballを作る。
+\end{itemize}
+
+もし、プリプロセッシングで生成されるlatexソースファイルなどがある場合は、arlの実行前にそれらを生成しておかなければならない。
+\begin{verbatim}
+$ arl
+$ tar -tf main.tar
+main.tex
+edit_tex_files.tex
+generate_templates.tex
+installation.tex
+lb.tex
+preprocessing.tex
+rake.tex
+readme.tex
+tarball.tex
+test_compile.tex
+helper.tex
+Tutorial_1.png
+Tutorial_2.png
+hellolatex.png
+tableofcontents.png
+test_installation.png
+\end{verbatim}
+
+Rakefileも当然ながら、tarballに含めなければならない。
+\begin{verbatim}
+$ tar -rf main.tar Rakefile
+\end{verbatim}
+そして、gzipなどに圧縮してtarballが完成する。
+\begin{verbatim}
+$ gzip main.tar
+\end{verbatim}
+
+以上の手続きは、実はすでにRakefileに記述されている。
+「rake ar」とタイプすることにより、rakeがtarballを自動生成してくれる。
+\begin{verbatim}
+$ rm main.tar.gz
+$ rake ar
+arl main.tex
+tar -rf main.tar Rakefile
+gzip main.tar
+mv main.tar.gz チュートリアル.tar.gz
+\end{verbatim}
+最後にできあがるtarballの名前は「チュートリアル.tar.gz」である。
+
+もしも、zipファイルを作りたければ、「rake zip」とタイプする。
+
+このセクションで、チュートリアルは終わりである。
+次のセクションはBuildtoolsのソースファイルに含まれるReadme.ja.mdのコピーである。
+この文書には、Buildtoolsを作成した背景や個々のスクリプトの特長と使い方が書かれている。
+

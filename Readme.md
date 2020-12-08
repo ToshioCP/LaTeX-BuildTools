@@ -229,6 +229,7 @@ It is a good way to make a target (for example, its name is 'ar') in Makefile an
 You can do the same thing with Rakefile.
 
 There are options `-g`, `-b` and `-z` to compress the archive file into `tar.gz`, `tar.bz2` and `zip` file respectively.
+If no option is given, `arl` just make a tarball without compression.
 
 #### Utilities
 
