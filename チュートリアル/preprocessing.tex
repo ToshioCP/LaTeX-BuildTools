@@ -7,8 +7,8 @@
 
 このチュートリアルではプリプロセッサとしてpandocを使う方法を紹介したい。
 pandocは文書コンバータである。
-マークダウン、latex、html、pdfなど多くの種類の文書を変換することができる。
-このチュートリアルでは、Buildtoolsのソースファイルの中にある「Readme.ja.md」が「readme.tex」というlatexソースファイルに変換される。
+markdown、latex、html、pdfなど多くの種類の文書を変換することができる。
+このチュートリアルでは、Buildtoolsのソースファイルの中にある「Readme.ja.md」を「readme.tex」というlatexソースファイルに変換してみる。
 
 たいていのディストリビューションではpandocパッケージが備わっているので、インストールは簡単である。
 例えばubuntuでは
@@ -19,7 +19,7 @@ $ sudo apt-get install pandoc
 
 readme.texを生成するには次のようにタイプする。
 \begin{verbatim}
-$ pandoc -o readme.tex ../Readme.md
+$ pandoc -o readme.tex ../Readme.ja.md
 \end{verbatim}
 
 この他に2つほどmain.texとhelper.texに変更を加える必要がある。
@@ -44,7 +44,7 @@ $ pandoc -o readme.tex ../Readme.md
  ... ...
 \end{verbatim}
 
-2番めは、{\textbackslash}tightlistを万度を定義することが必要である。
+2番めは、{\textbackslash}tightlistのマクロを定義することが必要である。
 Helper.texがその定義を書くのに最も適した場所である。
 \begin{verbatim}
  ... ...

@@ -215,7 +215,7 @@ If `builddir` is empty, then no temporary directory is generated and the source 
 
 #### arl
 
-   $ arl [-b|-g|-z] [rootfile]
+    $ arl [-b|-g|-z] [rootfile]
 
 The name `arl` comes from "ARchive LaTeX files".
 It searches the rootfile for its related files (refer the following) and make an archive file.

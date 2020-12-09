@@ -15,8 +15,8 @@ $ cp newtex.ja.conf (作成したディレクトリ)/newtex.conf
 # A string between # and new line is a commnet and it is ignored by newtex.
 # Empty line is also ignored. 
 
-title="チュートリアル"
 # document name
+title="チュートリアル"
 
 # lb.conf
 # Lb.conf has six lines.
@@ -46,11 +46,11 @@ section="プリプロセッシング" "preprocessing"
 section="rakeによる自動化" "rake"
 section="アーカイブの作成" "tarball"
 \end{verbatim}
-ここではこのチュートリアルの文書自身をどのように作成するかを説明する。
-上記のファイルはこの作成時に用いたnewtex.confと全く同一の内容である。
+ここではチュートリアルの文書自身をどのように作成するかを説明する。
+上記のファイルはその時に用いたnewtex.confと全く同一の内容である。
 
 ハッシュマーク（\#）から改行まではコメントで、newtexはこの部分を無視する。
-空行も同様に無視される。
+空行も同様に無視する。
 残りの行がnewtexへの指示が書かれたものである。
 
 それぞれの行は「キー=値」の形式になっている。
@@ -71,14 +71,14 @@ ltjsbookのようなドキュメントクラスを使い、書籍のような大
 ltjsarticleのようなドキュメントクラスを使い、小さな（あるいはさほど大きくない）文書を作る場合は、「section」キーのみを用いる。
 
 \subsection{newtexの実行}
-newtex.confの編集が終わり、保存したら、以下のようにタイプする。
+newtex.confを編集、保存したら、以下のようにタイプする。
 \begin{verbatim}
 $ newtex
 \end{verbatim}
-すると、newtexは「チュートリアル」というnewtex.confに記された表題と同じ名前のディレクトリを作る。
-おしも、表題に半角の空白文字が含まれている場合は、それらはアンダースコア（\_）に変換される。
+すると、newtexは「チュートリアル」というnewtex.confに記された表題キーの値と同じ名前のディレクトリを作る。
+もし表題に半角の空白文字が含まれている場合は、それらはアンダースコア（\_）に変換される。
 例えば、英語の表題で「A tutorial for beginners」は、「A\_tutorial\_for\_beginners」に変換され、それがディレクトリ名となる。
-これは、空白文字を含むファイル名が問題を引き起こす場合があるための処理である。
+これは、空白文字を含むファイル名は問題を引き起こすことがあるので、それを避けるためである。
 newtexはさらに雛形となるファイルをそのディレクトリの下に生成する。
 \begin{verbatim}
 $ cd チュートリアル
@@ -101,7 +101,7 @@ latex_option=-halt-on-error
 dvipdf=
 preview=evince
 \end{verbatim}
-このファイルの内容は、newtex.confの一部のコピーである。
+このファイルの内容は、newtex.confの一部をコピーしたものである。
 \begin{verbatim}
 $ cat main.tex
 \documentclass{ltjsarticle}
@@ -131,7 +131,7 @@ $ cat main.tex
   \input{tarball.tex}
 \end{document}
 \end{verbatim}
-最初の行はドキュメントクラスの指定で、newtex.confのdovumentclassキーの値が引数になっている。
+最初の行はドキュメントクラスの指定で、newtex.confのdocumentclassキーの値が引数になっている。
 2番めの行ではhelper.texを取り込むinputコマンドが書かれている。
 helper.texは\verb|\usepackage|コマンドでパッケージを取り込んだり、\verb|\newcommand|コマンドでマクロを定義するなどの役割がある。
 プリアンブルの記述のほとんどはhelper.texに書かれている。
@@ -140,11 +140,10 @@ helper.texは\verb|\usepackage|コマンドでパッケージを取り込んだ�
 自分専用helper.texを持っているユーザはこのテンプレートを上書きすると良い。
 
 4行目は書き直しが必要である。
-例えば、
+例えば、次のように。
 \begin{verbatim}
 \author{関谷　敏雄}
 \end{verbatim}
-のように。
 `{\textbackslash}date'、`{\textbackslash}thanks'、abstract環境などを必要に応じて付け加えて良い。
 また、目次が必要であれば、8行目のハッシュマークを外して、アンコメントする。
 残りの行は、セクションとそのセクションの内容を記述したサブファイルを取り込むための{\textbackslash}inputコマンドである。

@@ -55,13 +55,13 @@ $ evince main.pdf
 lbがpdflatexを選択した理由は、ドキュメントクラスが「article」だったからである。
 articleのコンパイルにはlualatexやxelatexも可能だが、長い間pdflatexがスタンダードであった。
 
-例えば、lualatexでコンパイルしたい、というようなとき、それは\verb|lb.conf|しなければならない。
-こお初期化ファイルには6つの項目がある。
+例えば、lualatexでコンパイルしたいというときには、\verb|lb.conf|にそれを記述しなければならない。
+この初期化ファイルには6つの項目がある。
 \begin{description}
 \item[rootfile] ルートファイルとは、メインのlatexファイルである。それは通常、{\textbackslash}begin\{document\}と{\textbackslash}end\{document\}を含んでいる。他のファイルはサブファイルという。
-\item[builddir] ビルド・ディレクトリは一時的なディレクトリともいわれ、すべての補助ファイルとターゲット・ファイル（通常はpdf）が置かれる。
+\item[builddir] ビルド・ディレクトリの名前を指定する。それは一時的なディレクトリともいわれ、すべての補助ファイルとターゲット・ファイル（通常はpdf）が置かれる。
 \item[engine] これはlatexエンジン（ソースファイルをコンパイルするプログラム）を指定する。pdflatex、xelatex、lualatex、latex、platexを指定することができる。
-\item[latex\_option] これは\verb|latexmk|に与えるオプションである。lb.confが無くてもlbは`-halt-on-error'のオプションを自動的に与える。
+\item[latex\_option] これは\verb|latexmk|に与えるオプションである。lb.confが無くてもlbは`-halt-on-error'のオプションを自動的に与える。オプションはエンジンにも与えられる。
 \item[dvipdf] これはdviファイルをpdfファイルに変換するコンバータである。これはlatexまたはplatexがエンジンに指定されたときのみ必要であり、他のエンジンでは必要ない。dvipdfmxが最も良いとされている。
 \item[preview] Pdfビューワである。lbが引数にサブファイルを与えられたときにコンパイル後にこれを起動する。
 \end{description}
@@ -81,7 +81,7 @@ $ lb
 \end{verbatim}
 すると、今度はlualatexを使ってコンパイルが実行されている。
 
-もしも、ソースファイルの名前を`example.tex'とシた場合にあ、lb.confの1行目を変更する。
+もしも、ソースファイルの名前を`example.tex'とする場合には、lb.confの1行目を変更する。
 \begin{verbatim}
 rootfile=example
 \end{verbatim}
@@ -92,7 +92,6 @@ rootfile=example.tex
 このように、拡張子は省略できる。
 
 更に、すべての補助ファイルとターゲット・ファイルをソースディレクトリに起きたいときは2行目を変更する。
-Then change the second line in lb.conf to
 \begin{verbatim}
 builddir=
 \end{verbatim}

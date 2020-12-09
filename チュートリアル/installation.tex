@@ -25,7 +25,7 @@ $ sudo apt-get install texlive-full
 
 \subsubsection{Makeまたはrake}
 これらのアプリケーションはBuildtoolsに含まれるツールの実行には直接的には必要ではない。
-しかしながら、これらのツールはmakeまたはrakeのコントロールの下で実行することが望ましい。
+しかしながら、Buildtoolsはmakeまたはrakeのコントロールの下で実行することが望ましい。
 makeとrakeの両方をインストールする必要はなく、どちらかひとつ、好みのものをインストールすれば十分である。
 
 Makeは古くから使われているビルド・ツールで、元々はCコンパイラ用に開発されたものである。
@@ -63,9 +63,8 @@ $ sudo apt-get install rake
 \begin{verbatim}
 $ bash install.sh
 \end{verbatim}
-このスクリプトは実行スクリプトを\verb|\$HOME/bin|にインストールする。
-DebianとUbuntuでは、\verb|\$HOME/bin|ディレクトリがログイン時に存在すれば、それを\verb|PATH|環境変数に追加する。
-\verb|install.sh|スクリプトは、\verb|\$HOME/bin|が存在しなければ、それを作成するが、その場合はディレクトリを\verb|PATH|に追加するために再ログインが必要である。
+このスクリプトは実行スクリプトを\verb|\$HOME/bin|の下に（ディレクトリが存在しなければ、作成して）インストールする。
+スクリプトが\verb|\$HOME/bin|を作成した場合は再ログインが必要である。
 この方法は、ユーザのプライベート・ディレクトリにスクリプトを配置するので、他のユーザはスクリプトにアクセスすることはできない。
 このインストールをユーザ・レベル・インストールまたはプライベート・インストールという。
 
@@ -74,4 +73,6 @@ ubuntuの場合は、
 \begin{verbatim}
 $ sudo bash install.sh
 \end{verbatim}
-とタイプすれば、システムレベルのインストールができる。
+とタイプすると、install.shは\verb|/user/local/bin|にスクリプトをインストールする。
+これによって、そのマシンにログインするすべてのユーザでスクリプトを使うことができるようになる。
+

@@ -62,11 +62,11 @@ This configuration file has six items.
 \item[builddir] This is a temporary directory includes all the auxliary files and the target file, which is usually a pdf file.
 \item[engine] This specifies a latex engine, which is one of pdflatex, xelatex, lualatex, latex and platex.
 \item[latex\_option] This specifies options to give \verb|latexmk|. The option `-halt-on-error' is given to \verb|latexmk| even if lb.conf doesn't exist.
-\item[dvipdf] This is a program which converts dvi into pdf, which is used only with latex or platex. It is unnecessary with other latex engines. `dvipdfmx' is the best so far.
+\item[dvipdf] This is a program which converts dvi into pdf, which is used only with latex or platex. It is unnecessary with other latex engines. `dvipdfmx' is the best at present.
 \item[preview] Pdf viewer. This is used to preview the pdf file when lb is given a subfile as an argument.
 \end{description}
 
-Run your editor and type the following and save it as the name \verb|lb.conf|.
+Run your editor, type the following and save it as the name \verb|lb.conf|.
 \begin{verbatim}
 rootfile=main
 builddir=_build
@@ -79,7 +79,7 @@ Then, type
 \begin{verbatim}
 $ lb
 \end{verbatim}
-Then, it uses lualatex to compile.
+it used lualatex to compile.
 
 If you want to change the name of the tex file to `example.tex', then modify the first line in lb.conf to
 \begin{verbatim}
@@ -97,7 +97,7 @@ builddir=
 \end{verbatim}
 This specifies null string for builddir item and that means no build directory is made.
 
-Let's try to run \verb|lb| with the following \verb|lb.conf|
+Let's try to run \verb|lb| with the following \verb|lb.conf|.
 \begin{verbatim}
 rootfile=example
 builddir=
