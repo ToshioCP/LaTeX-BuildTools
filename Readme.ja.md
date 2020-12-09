@@ -340,3 +340,12 @@ ubuntuの場合は、
 
     $ sudo bash uninstall.sh
 
+##  ライセンス
+
+Copyright (C) 2020  ToshioCP (関谷 敏雄)
+
+Buildtoolsはフリーソフトウェアであり、フリーソフトウェア財団によって発行されたGNU 一般公衆利用許諾書(バージョン3またはそれ以降のバージョン)の定める条件の下で再頒布または改変することができます。
+
+Buildtoolsは有用であることを願って頒布されますが、*全くの無保証* です。商業可能性の保証や特定の目的への適合性は、言外に示されたものも含め全く存在しません。
+詳しくは[GNU GENERAL PUBLIC LICENSE](https://www.gnu.org/licenses/gpl-3.0.html)をご覧ください。
+八田真行氏による[GNU 一般公衆利用許諾書の非公式日本語訳](https://gpl.mhatta.org/gpl.ja.html)もご覧ください。
