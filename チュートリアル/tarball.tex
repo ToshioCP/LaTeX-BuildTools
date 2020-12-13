@@ -31,7 +31,9 @@ tableofcontents.png
 test_installation.png
 \end{verbatim}
 
-Rakefileも当然ながら、tarballに含めなければならない。
+Rakefileを圧縮ファイルに加える場合は、その記述を変更しなければならない。
+上記の圧縮ファイルの内容はすでにプリプロセッシングが済んだ内容になっているので、Rakefileからプリプロセッシングの部分は削除しなければならない。
+具体的には3から8行目、27から29行目を削除する。
 \begin{verbatim}
 $ tar -rf main.tar Rakefile
 \end{verbatim}
@@ -42,6 +44,7 @@ $ gzip main.tar
 
 以上の手続きは、実はRakefileに記述されている。
 「rake ar」とタイプすることにより、rakeがtarballを自動生成してくれる。
+ただし、上記の述べた変更をRakefileにあらかじめ加えておかなければならない。
 \begin{verbatim}
 $ rm main.tar.gz
 $ rake ar
