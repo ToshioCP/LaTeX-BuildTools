@@ -1,8 +1,8 @@
-# Buildtools
+# Latex-Buildtools
 
-## The background of Buildtools
+## The background of Latex-Buildtools
 
-#### Buildtools is a part of Latextools
+#### Latex-Buildtools is a part of the tools to make a big document with LaTeX
 
 If you make a long document, for example, a book with more than a hundred pages, you need to consider various things which isn't necessary in creating a short document.
 
@@ -11,12 +11,12 @@ If you make a long document, for example, a book with more than a hundred pages,
 - Replace something with another in the whole document
 - Preprocessing (processes before compiling latex source files)
 
-Latextools support these things and it includes two parts.
+Tools support these things includes two parts.
 
-- Buildtools. It is tools which support creating templates of source files, building and partial compiling.
-- Substools. It is tools which perform replacements in the whole document.
+- Latex-Buildtools, shortly Buildtools. It is the tools which support creating templates of source files, building and partial compiling.
+- Latex-Substools, shortly Substools. It is the tools which perform replacements in the whole document.
 
-Buildtools is a part of Latextools and also a core tools in it.
+Buildtools is a core tools to accomplish the task above.
 This document describes Buildtools only.
 
 #### Dividing a source file
@@ -231,7 +231,7 @@ You can do the same thing with Rakefile.
 There are options `-g`, `-b` and `-z` to compress the archive file into `tar.gz`, `tar.bz2` and `zip` file respectively.
 If no option is given, `arl` just make a tarball without compression.
 
-#### Utilities
+## Utilities
 
 You don't need to read this subsection except maintaining the scripts.
 

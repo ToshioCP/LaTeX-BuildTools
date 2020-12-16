@@ -1,11 +1,11 @@
-\hypertarget{buildtools}{%
-\section{Buildtools}\label{buildtools}}
+\hypertarget{latex-buildtools}{%
+\section{Latex-Buildtools}\label{latex-buildtools}}
 
-\hypertarget{buildtoolsux4f5cux6210ux306eux80ccux666f}{%
-\subsection{Buildtools作成の背景}\label{buildtoolsux4f5cux6210ux306eux80ccux666f}}
+\hypertarget{latex-buildtoolsux4f5cux6210ux306eux80ccux666f}{%
+\subsection{Latex-Buildtools作成の背景}\label{latex-buildtoolsux4f5cux6210ux306eux80ccux666f}}
 
-\hypertarget{latextoolsux3068buildtoolsux306eux95a2ux4fc2}{%
-\paragraph{LatextoolsとBuildtoolsの関係}\label{latextoolsux3068buildtoolsux306eux95a2ux4fc2}}
+\hypertarget{buildtoolsux306flatexux3067ux5927ux304dux306aux6587ux66f8ux3092ux4f5cux308dux3068ux304dux306bux7528ux3044ux308bux30c4ux30fcux30ebux306eux3072ux3068ux3064}{%
+\paragraph{BuildtoolsはLaTeXで大きな文書を作ろときに用いるツールのひとつ}\label{buildtoolsux306flatexux3067ux5927ux304dux306aux6587ux66f8ux3092ux4f5cux308dux3068ux304dux306bux7528ux3044ux308bux30c4ux30fcux30ebux306eux3072ux3068ux3064}}
 
 大きな文書、例えば100ページを越える本などをLaTeXで作る場合は、小さい文書の作成と異なる様々な問題を考える必要がある。
 
@@ -21,17 +21,17 @@
   前処理（LaTeXコンパイル前に処理する作業）
 \end{itemize}
 
-これらを支援するツール群がLatextoolsであり、2つのグループに別れている。
+これらを支援する2つのツールがある。
 
 \begin{itemize}
 \tightlist
 \item
-  Buildtools。ソースファイルの新規作成、ビルド、分割コンパイルを支援するツール群
+  Latex-Buildtools、または単にBuildtools。ソースファイルの新規作成、ビルド、分割コンパイルを支援するツール群
 \item
-  Substools。ソースファイルに対する一括置換をするツール群
+  Latex-Substools、または単にSubstools。ソースファイルに対する一括置換をするツール群
 \end{itemize}
 
-このように、BuildtoolsはLatextoolsを構成する一部であるが、同時にその中核をなすツール群である。
+Buildtoolsは上記の作業の中でその中核をなすツール群である。
 このドキュメントではBuildtoolsを解説する。
 
 \hypertarget{ux30bdux30fcux30b9ux30d5ux30a1ux30a4ux30ebux306eux5206ux5272}{%
@@ -316,7 +316,7 @@ zipをサポート。
 オプションが与えられなかった場合は、圧縮なしのtarballを作る。
 
 \hypertarget{ux30e6ux30fcux30c6ux30a3ux30eaux30c6ux30a3ux7fa4}{%
-\paragraph{ユーティリティ群}\label{ux30e6ux30fcux30c6ux30a3ux30eaux30c6ux30a3ux7fa4}}
+\subsection{ユーティリティ群}\label{ux30e6ux30fcux30c6ux30a3ux30eaux30c6ux30a3ux7fa4}}
 
 この項はスクリプトをメンテナンスするのでなければ読む必要はない。
 
