@@ -5,7 +5,7 @@
 # 2. First, srf searches the directory to which the given subfile belongs.
 #    If srf doesn't find it, then it searches the parent directory of the directory above.
 # 3. If srf find it, it outputs the absolute path of the rootfile. Otherwise it stops searching.
- 
+
 # srfの検索機能
 # 1. 引数がサブファイルでなく、ルートファイルだった場合はそのルートファイルの絶対パスを出力する。
 # 2. 検索はサブファイルのディレクトリをまず行い、見つからなければその親ディレクトリを検索する。
@@ -64,13 +64,13 @@ fi
 
 for rootfile in $(tftype -r *.tex); do
   for x in $(tfiles "$rootfile"); do
-    if [[ $x == $subfile ]]; then
+    if [[ $x == $subfile || $x == "./$subfile" ]]; then
       echo "$(realpath "$rootfile")"
       exit 0
     fi
   done
   for x in $(tfiles -p "$rootfile"); do
-    if [[ $x == $subfile ]]; then
+    if [[ $x == $subfile || $x == "./$subfile" ]]; then
       echo "$(realpath "$rootfile")"
       exit 0
     fi
