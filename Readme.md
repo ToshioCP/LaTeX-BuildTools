@@ -24,8 +24,8 @@ It is good to divide a file into each section.
 Part and chapter will be directories.
 Subsection and subsubsection will be described in the section file.
 
-| Part-Subsubsection | Directory / File |
-|: -----: |: -----------: |
+| Part-Subsubsection | Directory/File |
+|:------:|:-----------:|
 | Part |  directory |
 | Chapter | directory |
 | Section |  file |
