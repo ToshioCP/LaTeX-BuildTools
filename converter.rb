@@ -10,7 +10,7 @@
     buf.each do |s|
       unless s.match?(/^\\begin\{verbatim\}/) || s.match?(/^%/)
         # Put some codes to translate the string pointed by s
-        # s = s.gsub!(/latex/) {"\\LaTeX"}
+        # s.gsub!(/latex/) {"\\LaTeX"}
       end
     end
     File.write(dst, buf.join)
