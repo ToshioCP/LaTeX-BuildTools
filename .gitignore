@@ -12,5 +12,5 @@ example/example1/_build
 example/example2/_build
 example/example3/_build
 
-#Ignore test directory
-test
+# Ignore local sample directory
+代数学

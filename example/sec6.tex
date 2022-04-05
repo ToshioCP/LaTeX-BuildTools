@@ -1,0 +1,18 @@
+\section{Insert and renumber files}
+
+If you want to put a new sec file between sec1 and sec2, create a file
+with any number between 1 and 2. For example, name the file ``sec1.5''.
+You can leave it as it is, but if you want to change the file numbers to
+1,2,3,4 \ldots, use the renumber command.
+
+\begin{verbatim}
+$ renumber
+\end{verbatim}
+
+This makes:
+
+\begin{verbatim}
+sec1.tex => sec1.tex
+sec1.5.tex => sec2.tex
+sec2.tex => sec3.tex
+\end{verbatim}

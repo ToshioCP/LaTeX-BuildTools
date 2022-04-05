@@ -1,0 +1,45 @@
+
+\section{Typeset}
+
+Compiling source files with lualatex is called a ``typeset''. The
+typeset requires lualatex to be run more than once for cross-references.
+There is a program called latexmk that manages it. Buildtools uses
+latexmk. Thanks to that, the user does not have to run lualatex multiple
+times. Just type:
+
+\begin{verbatim}
+$ rake
+\end{verbatim}
+
+After that, the typeset is done automatically.
+
+Typeset take time for large documents. It's a waste of time to typeset
+an entire document to see minor corrections. In that case, use the
+part\_typeset command. This is a program that typesets only one subfile.
+However, section and cross-reference numbers are not reflected
+correctly. It is for confirmation only.
+
+\begin{verbatim}
+$ part_typeset 1-1-1
+\end{verbatim}
+
+This command typessets only the file part1/chap1/sec1. If there is no
+part and only chap and sec, for example, ``part\_typeset 1-2'' will
+typeset the chap1/sec2 file. Typesetting only one file in this way is
+called a partial typeset.
+
+There is a directory `example', where you can try the rake command.
+
+The typeset produces various intermediate files. These are stored in the
+\_build directory. When you want to delete the intermediate files, type
+as follows.
+
+\begin{verbatim}
+$ rake clean
+\end{verbatim}
+
+If you want to delete the target pdf file as well, then type:
+
+\begin{verbatim}
+4 rake clobber
+\end{verbatim}

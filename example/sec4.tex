@@ -1,0 +1,63 @@
+
+\section{Preprocessing}
+
+Preprocessing is executed before the typeset. For example, converting a
+markdown file to a LaTeX file is preprocessing.
+
+\begin{verbatim}
+sec1.md == (pandoc) ==> sec1.tex == (lualatex) ==> XXX.pdf
+\end{verbatim}
+
+Pandoc is a program that converts one document to another type
+document..
+
+\begin{verbatim}
+https://pandoc.org/
+\end{verbatim}
+
+Since the preprocessing is done automatically, the only thing users need
+to do is putting the extension to the source file. For example, put
+`.md' to a markdown file sec1.
+
+The user can add their own preprocessing program. For example, suppose
+that you want to add a new extension ``src.tex'' and transfer
+``m(1,2,3,4)'' into bmatrix environment.
+
+\begin{verbatim}
+\begin{bmatrix}1&2\\3&4\end{bmatrix}
+\end{verbatim}
+
+You can do this with ruby's gsub or gsub! methods. The preprocessing
+created by the user is described in a file called ``converter.rb'' and
+placed in the top directory.
+
+\begin{verbatim}
+{ :'src.tex' => lambda do |src, dst|
+    buf = File.read(src)
+    buf = buf.split(/(\\begin\{verbatim\}.*?\\end\{verbatim\}\n)/m)
+    buf = buf.map do |s|
+      s.match?(/^\\begin\{verbatim\}/) ? s : s.split(/(%.*$)/)
+    end
+    buf = buf.flatten
+    buf.each do |s|
+      unless s.match?(/^\\begin\{verbatim\}/) || s.match?(/^%/)
+        s.gsub!(/m\((\d),(\d),(\d),(\d)\)/) {"\\begin{bmatrix}#{$1}&#{$2}\\\\#{$3}&#{$4}\\end{bmatrix}"}
+      end
+    end
+    File.write(dst, buf.join)
+  end }
+\end{verbatim}
+
+From the 3rd line to the 7th line, the verbatim environment, the comment
+part and the other parts are separated. In the 9th line, lines without
+verbatim and comments are selected. The conversion is performed in the
+10th line. Various conversions are possible by customizing the 10th
+line. Note that the conversion will not be reflected if gsub is used
+instead of gsub! (With an exclamation mark).
+
+The contents of the converter.rb are executed without being checked by
+the program. If there is an error in it, it may cause a serious damage.
+Therefore, it is recommended to backup the files in advance. Also, it is
+very dangerous to execute a program created by another person without
+checking its contents. Make a converter after you fully understand these
+risks.

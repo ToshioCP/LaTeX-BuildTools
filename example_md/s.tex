@@ -1,0 +1,433 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage{longtable,booktabs}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\author{}
+\date{}
+
+\begin{document}
+
+日本語の``Readme.ja.md''があります。
+
+\hypertarget{latex-buildtools}{%
+\section{Latex-Buildtools}\label{latex-buildtools}}
+
+The current version is written in ruby. Old bash version has been moved
+to the bash branch.
+
+\hypertarget{background}{%
+\subsubsection{Background}\label{background}}
+
+It gets more difficult to create and maintain a document if it becomes
+larger. The same goes to LaTeX. The followings are some solutions to
+avoid such difficulties.
+
+\begin{itemize}
+\tightlist
+\item
+  Splitting and organizing source files
+\item
+  individual typesetting
+\item
+  Preprocessing
+\end{itemize}
+
+Buildtools is a set of tools that supports them.
+
+\hypertarget{source-file-splitting-and-organising}{%
+\subsubsection{Source file splitting and
+organising}\label{source-file-splitting-and-organising}}
+
+It is appropriate to organize a book into parts, chapters, sections if
+it has more than 300 pages. LaTeX has commands of part, chapter,
+section, subsection and subsubsection. It is good to divide a file into
+each section. Part and chapter will be directories. Subsection and
+subsubsection will be described in the section file.
+
+\begin{longtable}[]{@{}cc@{}}
+\toprule
+Part-Subsubsection & Directory / File\tabularnewline
+\midrule
+\endhead
+Part & directory\tabularnewline
+Chapter & directory\tabularnewline
+Section & file\tabularnewline
+Subsection & in a section file\tabularnewline
+Subsubsection & in a section file\tabularnewline
+\bottomrule
+\end{longtable}
+
+This can be expressed in the directory structure as follows, for
+example.
+
+\begin{verbatim}
+--+-- part1 --+-- chap1 --+-- sec1
+  |           |           +-- sec2
+  |           +-- chap2 ----- sec1
+  +-- part2 --+-- chap1 --+-- sec1
+              |           +-- sec2
+              +-- chap2 ----- sec1
+\end{verbatim}
+
+If a book has about 100 pages, it doesn't need any parts. In that case,
+the structure becomes as follows.
+
+\begin{verbatim}
+--+-- chap1 --+-- sec1
+  |           +-- sec2
+  |           +-- sec3
+  +-- chap1 --+-- sec1
+              +-- sec2
+              +-- sec3
+\end{verbatim}
+
+For smaller documents, section is enough.
+
+\begin{verbatim}
+--+-- sec1
+  +-- sec2
+  +-- sec3
+  +-- sec4
+  +-- sec5
+\end{verbatim}
+
+These structures depend on the size of the documents. In the above
+figure, the file extension is omitted.
+
+There are advantages and disadvantages to limiting the directory/file
+names to part1, chap2 and sec1 (sec1.tex etc. if you add an extension).
+The advantage is that the order of the files is clear and the program
+can easily find the file. The disadvantage is that the contents of the
+file cannot be known from the file name. In Buildtools, the former is
+taken more important and the file are named to part, chap and sec.
+
+The above files are called subfiles. Subfiles are included from the root
+file. The program automatically makes these connections, so the user
+does not have to write the \textbackslash input\{\} commands in the tex
+source files.
+
+Files other than the sec files can be placed anywhere, but it's a good
+idea to put all the image files together in one directory.
+
+\begin{verbatim}
+--+-- part1 --+-- chap1 --+-- sec1
+  |           |           +-- sec2
+  |           +-- chap2 ----- sec1
+  +-- part2 --+-- chap1 --+-- sec1
+  +           |           +-- sec2
+  +           +-- chap2 ----- sec1
+  +-- image --+-- photo.jpg
+              +-- diagram.png
+              +-- sample.png
+\end{verbatim}
+
+When including these files from the body files, refer to them by the
+relative path from the top directory.
+
+\begin{verbatim}
+\includegraphics{image/photo.jpg}
+\end{verbatim}
+
+This saves you from having to change the command pathnames if the body
+file moves across chaps and parts. The program will automatically
+convert the pathnames for \textbackslash input and
+\textbackslash incudegraphics into absolute paths.
+
+\hypertarget{typeset}{%
+\subsubsection{Typeset}\label{typeset}}
+
+Compiling source files with lualatex is called a ``typeset''. The
+typeset requires lualatex to be run more than once for cross-references.
+There is a program called latexmk that manages it. Buildtools uses
+latexmk. Thanks to that, the user does not have to run lualatex multiple
+times. Just type:
+
+\begin{verbatim}
+$ rake
+\end{verbatim}
+
+After that, the typeset is done automatically.
+
+Typeset take time for large documents. It's a waste of time to typeset
+an entire document to see minor corrections. In that case, use the
+part\_typeset command. This is a program that typesets only one subfile.
+However, section and cross-reference numbers are not reflected
+correctly. It is for confirmation only.
+
+\begin{verbatim}
+$ part_typeset 1-1-1
+\end{verbatim}
+
+This command typessets only the file part1/chap1/sec1. If there is no
+part and only chap and sec, for example, ``part\_typeset 1-2'' will
+typeset the chap1/sec2 file. Typesetting only one file in this way is
+called a partial typeset.
+
+There is a directory `example', where you can try the rake command.
+
+The typeset produces various intermediate files. These are stored in the
+\_build directory. When you want to delete the intermediate files, type
+as follows.
+
+\begin{verbatim}
+$ rake clean
+\end{verbatim}
+
+If you want to delete the target pdf file as well, then type:
+
+\begin{verbatim}
+4 rake clobber
+\end{verbatim}
+
+\hypertarget{preprocessing}{%
+\subsubsection{Preprocessing}\label{preprocessing}}
+
+Preprocessing is executed before the typeset. For example, converting a
+markdown file to a LaTeX file is preprocessing.
+
+\begin{verbatim}
+sec1.md == (pandoc) ==> sec1.tex == (lualatex) ==> XXX.pdf
+\end{verbatim}
+
+Pandoc is a program that converts one document to another type
+document..
+
+\begin{verbatim}
+https://pandoc.org/
+\end{verbatim}
+
+Since the preprocessing is done automatically, the only thing users need
+to do is putting the extension to the source file. For example, put
+`.md' to a markdown file sec1.
+
+The user can add their own preprocessing program. For example, suppose
+that you want to add a new extension ``src.tex'' and transfer
+``m(1,2,3,4)'' into bmatrix environment.
+
+\begin{verbatim}
+\begin{bmatrix}1&2\\3&4\end{bmatrix}
+\end{verbatim}
+
+You can do this with ruby's gsub or gsub! methods. The preprocessing
+created by the user is described in a file called ``converter.rb'' and
+placed in the top directory.
+
+\begin{verbatim}
+{ :'src.tex' => lambda do |src, dst|
+    buf = File.read(src)
+    buf = buf.split(/(\\begin\{verbatim\}.*?\\end\{verbatim\}\n)/m)
+    buf = buf.map do |s|
+      s.match?(/^\\begin\{verbatim\}/) ? s : s.split(/(%.*$)/)
+    end
+    buf = buf.flatten
+    buf.each do |s|
+      unless s.match?(/^\\begin\{verbatim\}/) || s.match?(/^%/)
+        s.gsub!(/m\((\d),(\d),(\d),(\d)\)/) {"\\begin{bmatrix}#{$1}&#{$2}\\\\#{$3}&#{$4}\\end{bmatrix}"}
+      end
+    end
+    File.write(dst, buf.join)
+  end }
+\end{verbatim}
+
+From the 3rd line to the 7th line, the verbatim environment, the comment
+part and the other parts are separated. In the 9th line, lines without
+verbatim and comments are selected. The conversion is performed in the
+10th line. Various conversions are possible by customizing the 10th
+line. Note that the conversion will not be reflected if gsub is used
+instead of gsub! (With an exclamation mark).
+
+The contents of the converter.rb are executed without being checked by
+the program. If there is an error in it, it may cause a serious damage.
+Therefore, it is recommended to backup the files in advance. Also, it is
+very dangerous to execute a program created by another person without
+checking its contents. Make a converter after you fully understand these
+risks.
+
+\hypertarget{initialization}{%
+\subsubsection{Initialization}\label{initialization}}
+
+If you want to create a new document, use newtex. Newtex makes a new
+directory and initializes it. The directory contains templates.
+
+\begin{verbatim}
+$ ls
+Rakefile  cover.tex  gecko.png  helper.tex  main.tex
+\end{verbatim}
+
+In most cases, the Rakefile works. It rarely needs to be rewritten.
+
+\begin{itemize}
+\tightlist
+\item
+  cover.tex is the source file of a cover page. This file is not needed
+  if you use the \textbackslash maketitile command.
+\item
+  gecko.png is an image file of a gecko used in cover.tex. You can also
+  modify cover.tex to use another image file.
+\item
+  helper.tex is part of the preamble. It mainly includes packages and
+  define macros (\textbackslash newcommand etc).
+\item
+  main.tex is the root file. You don't have to write the
+  \textbackslash input\{\} commands to i subfiles. Importing is done
+  automatically.
+\end{itemize}
+
+If you want to create your own converter, put a file named
+``converter.rb'' in this directory.
+
+If your document is large, create a part-chap-sec directories/files, and
+if it is small, write only sec files in the top directory.
+
+\hypertarget{insert-and-renumber-files}{%
+\subsubsection{Insert and renumber
+files}\label{insert-and-renumber-files}}
+
+If you want to put a new sec file between sec1 and sec2, create a file
+with any number between 1 and 2. For example, name the file ``sec1.5''.
+You can leave it as it is, but if you want to change the file numbers to
+1,2,3,4 \ldots, use the renumber command.
+
+\begin{verbatim}
+$ renumber
+\end{verbatim}
+
+This makes:
+
+\begin{verbatim}
+sec1.tex => sec1.tex
+sec1.5.tex => sec2.tex
+sec2.tex => sec3.tex
+\end{verbatim}
+
+\hypertarget{archive}{%
+\subsubsection{Archive}\label{archive}}
+
+The document can be archived after you finish your work.
+
+\begin{verbatim}
+$ arch_tex -b
+\end{verbatim}
+
+This will archive all documents and Rakefile, lib\_latex\_utils.rb,
+converter.rb into a bzip2 file. At this time, readme.md, which is a
+brief explanation file, is also included. People who get the archive do
+not need Buildtools. All they need is a program to unzip the archive and
+ruby \hspace{0pt}\hspace{0pt}environment.
+
+You can choose a compression converter by giving an option to arch\_tex.
+Three compression types are supprted.
+
+\begin{itemize}
+\tightlist
+\item
+  -b: bzip2
+\item
+  -g: gzip
+\item
+  -z: zip
+\end{itemize}
+
+\hypertarget{install-and-uninstall}{%
+\subsubsection{Install and uninstall}\label{install-and-uninstall}}
+
+You need ruby \hspace{0pt}\hspace{0pt}and tex environment. Ruby 2.7 is
+used to develop Buildtools, but it may work even if the ruby version is
+\hspace{0pt}\hspace{0pt}2.0 or later. Texlive is recommended for the tex
+environment.
+
+The TeX engine is lualatex. If you want to use another engine, Modify
+Rakefile. Only a small modification is enough.
+
+Linux was the OS to develop Buildtools, but I think that it will also
+work on Windows.
+
+To install, tyoe as follows for Linux
+
+\begin{verbatim}
+$ sudo ruby ​​install.rb
+\end{verbatim}
+
+The executable file is set in /usr/local/bin and the library
+(lib\_latex\_utils) is set in \$LOAD\_PATH{[}0{]}. The variable
+\$LOAD\_PATH{[}0{]} points /usr/local/lib/site\_ruby/2.7.0 etc usually.
+But it depends on the system. If you have used rbenv to install ruby,
+the library destination is under the .rbenv directory of your home
+directory.
+
+At the time of installation, newtex and arch\_tex are rewritten.
+
+Uninstall:
+
+\begin{verbatim}
+$ sudo ruby ​​install.rb-
+\end{verbatim}
+
+\hypertarget{licence}{%
+\subsubsection{licence}\label{licence}}
+
+Copyright (C) 2022 ToshioCP (Toshio Sekiya)
+
+Buildtools is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+Buildtools is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+\href{https://www.gnu.org/licenses/gpl-3.0.html}{GNU General Public
+License} for more details.
+
+\end{document}

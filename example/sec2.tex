@@ -1,0 +1,97 @@
+\section{Source file splitting and organising}
+
+It is appropriate to organize a book into parts, chapters, sections if
+it has more than 300 pages. LaTeX has commands of part, chapter,
+section, subsection and section. It is good to divide a file into
+each section. Part and chapter will be directories. Subsection and
+section will be described in the section file.
+
+\begin{center}
+\begin{tabular}{cc}
+  \hline
+  Part-section & Directory/File \\
+  \hline
+  Part & directory \\
+  Chapter & directory \\
+  Section & file \\
+  Subsection & in a section file \\
+  subsubsection & in a section file \\
+  \hline
+\end{tabular}
+\end{center}
+
+This can be expressed in the directory structure as follows, for
+example.
+
+\begin{verbatim}
+--+-- part1 --+-- chap1 --+-- sec1
+  |           |           +-- sec2
+  |           +-- chap2 ----- sec1
+  +-- part2 --+-- chap1 --+-- sec1
+              |           +-- sec2
+              +-- chap2 ----- sec1
+\end{verbatim}
+
+If a book has about 100 pages, it doesn't need any parts. In that case,
+the structure becomes as follows.
+
+\begin{verbatim}
+--+-- chap1 --+-- sec1
+  |           +-- sec2
+  |           +-- sec3
+  +-- chap1 --+-- sec1
+              +-- sec2
+              +-- sec3
+\end{verbatim}
+
+For smaller documents, section is enough.
+
+\begin{verbatim}
+--+-- sec1
+  +-- sec2
+  +-- sec3
+  +-- sec4
+  +-- sec5
+\end{verbatim}
+
+These structures depend on the size of the documents. In the above
+figure, the file extension is omitted.
+
+There are advantages and disadvantages to limiting the directory/file
+names to part1, chap2 and sec1 (sec1.tex etc. if you add an extension).
+The advantage is that the order of the files is clear and the program
+can easily find the file. The disadvantage is that the contents of the
+file cannot be known from the file name. In Buildtools, the former is
+taken more important and the file are named to part, chap and sec.
+
+The above files are called subfiles. Subfiles are included from the root
+file. The program automatically makes these connections, so the user
+does not have to write the {\textbackslash}input\{\} commands in the tex
+source files.
+
+Files other than the sec files can be placed anywhere, but it's a good
+idea to put all the image files together in one directory.
+
+\begin{verbatim}
+--+-- part1 --+-- chap1 --+-- sec1
+  |           |           +-- sec2
+  |           +-- chap2 ----- sec1
+  +-- part2 --+-- chap1 --+-- sec1
+  +           |           +-- sec2
+  +           +-- chap2 ----- sec1
+  +-- image --+-- photo.jpg
+              +-- diagram.png
+              +-- sample.png
+\end{verbatim}
+
+When including these files from the body files, refer to them by the
+relative path from the top directory.
+
+\begin{verbatim}
+\includegraphics{image/photo.jpg}
+\end{verbatim}
+
+This saves you from having to change the command pathnames if the body
+file moves across chaps and parts. The program will automatically
+convert the pathnames for {\textbackslash}input and
+{\textbackslash}incudegraphics into absolute paths.

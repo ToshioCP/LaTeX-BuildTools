@@ -24,13 +24,13 @@ It is good to divide a file into each section.
 Part and chapter will be directories.
 Subsection and subsubsection will be described in the section file.
 
-| Part-Subsubsection | Directory / File |
-|: -----: |: -----------: |
-| Part |  directory |
-| Chapter | directory |
-| Section |  file |
-| Subsection |  in a section file |
-| Subsubsection |  in a section file |
+| Part-Subsubsection | Directory / File   |
+|:------------------:|:------------------:|
+| Part               |  directory         |
+| Chapter            |  directory         |
+| Section            |  file              |
+| Subsection         |  in a section file |
+| Subsubsection      |  in a section file |
 
 This can be expressed in the directory structure as follows, for example.
 
@@ -184,7 +184,8 @@ The preprocessing created by the user is described in a file called "converter.r
     buf = buf.flatten
     buf.each do |s|
       unless s.match?(/^\\begin\{verbatim\}/) || s.match?(/^%/)
-        s.gsub!(/m\((\d),(\d),(\d),(\d)\)/) {"\\begin{bmatrix}#{$1}&#{$2}\\\\#{$3}&#{$4}\\end{bmatrix}"}
+        s.gsub!(/m\((\d),(\d),(\d),(\d)\)/)
+         {"\\begin{bmatrix}#{$1}&#{$2}\\\\#{$3}&#{$4}\\end{bmatrix}"}
       end
     end
     File.write(dst, buf.join)
