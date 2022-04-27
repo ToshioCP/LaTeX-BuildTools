@@ -2,7 +2,9 @@
 exec ruby -x "$0" "$@"
 #!ruby
 
+require 'fileutils'
 require 'base64'
+
 # The followig line will be replaced with a string literal when installed.
 rakefile = File.read('Rakefile')
 
@@ -67,12 +69,12 @@ cover_tex = <<'EOS'
 \restoregeometry
 EOS
 
-helper_tex = <<'EOS'
-\usepackage{amsmath,amssymb}
-\usepackage[luatex]{graphicx}
-\usepackage{tikz}
-\usepackage[margin=2.4cm]{geometry}
-\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+helper_tex = <<EOS
+\\usepackage{amsmath,amssymb}
+\\usepackage[luatex]{graphicx}
+\\usepackage{tikz}
+\\usepackage[margin=2.4cm]{geometry}
+\\usepackage[colorlinks=true,linkcolor=black]{hyperref}
 EOS
 
 gecko_png = <<'EOS'
@@ -465,11 +467,134 @@ pyG1pFFwXqrApANTHVjEIUXF4GtqLasoZmWliqzFOAilQAlSwZvIlhM4Opq8CrvtXORz5pwtcAsA
 AAAASUVORK5CYII=
 EOS
 
-dir = ARGV[0]
-raise "#{dir} already exists." if Dir.exist? dir
-Dir.mkdir dir
-File.write("#{dir}/Rakefile", rakefile)
-File.write("#{dir}/main.tex", main_tex)
-File.write("#{dir}/helper.tex", helper_tex)
-File.write("#{dir}/cover.tex", cover_tex)
-File.write("#{dir}/gecko.png", Base64.decode64(gecko_png))
+def usage
+  $stderr.print "Usage: [option] directory\n"
+  $stderr.print "option:\n"
+  $stderr.print "  --help: Show this message.\n"
+  $stderr.print "  --book: Use book documentclass. (default)\n"
+  $stderr.print "  --article: Use article documentclass.\n"
+  $stderr.print "  --beamer: Use beamer documentclass. It produces a presentation slide.\n"
+end
+
+case ARGV[0]
+when "--help" then usage(); exit(1)
+when "--book" then opt = :book; dir = ARGV[1]
+when "--article" then opt = :article; dir = ARGV[1]
+when "--beamer" then opt = :beamer; dir = ARGV[1]
+else opt = :book; dir = ARGV[0]
+end
+
+raise "#{dir} already exists." if Dir.exist?(dir)
+Dir.mkdir(dir)
+if opt == :book
+  File.write("#{dir}/Rakefile", rakefile)
+  File.write("#{dir}/main.tex", main_tex)
+  File.write("#{dir}/helper.tex", helper_tex)
+  File.write("#{dir}/cover.tex", cover_tex)
+  File.write("#{dir}/gecko.png", Base64.decode64(gecko_png))
+elsif opt == :article
+  main_tex = <<~'EOS'
+  \documentclass{ltjsarticle}
+  \input{helper.tex}
+  \title{Title}
+  \author{Author}
+  \begin{document}
+  \maketitle
+  \tableofcontents
+
+  \end{document}
+  EOS
+  File.write("#{dir}/Rakefile", rakefile)
+  File.write("#{dir}/main.tex", main_tex)
+  File.write("#{dir}/helper.tex", helper_tex)
+elsif opt == :beamer
+  main_tex = <<~EOS
+  \\documentclass[utf8]{beamer}
+  \\mode<presentation>
+  {
+    \\usetheme{Warsaw}
+    \\setbeamercovered{transparent}
+  }
+  \\input{helper.tex}
+  % Don't show navigation symbol => If you want to show it, comment out the following line.
+  \\setbeamertemplate{navigation symbols}{}
+  \\title[short_title] % (optional, use only with long paper titles)
+  {titile}
+  \\subtitle
+  {substitile}
+  \\author[short_author] % (optional, use only with lots of authors)
+  {author \\\\ \\texttt{sample_address@email.com}}
+  % - Give the names in the same order as the appear in the paper.
+  % - Use the \\inst{?} command only if the authors have different
+  %   affiliation.
+  \\institute[short_institute] % (optional, but mostly needed)
+  {
+  %  \\inst{1}%
+    Department of Mathematics and Technology\\\\
+    School of Education and Humanities\\\\
+    XXXX University
+  }
+  % - Use the \\inst command only if there are several affiliations.
+  % - Keep it simple, no one is interested in your street address.
+  \\date[short_date] % (optional, should be abbreviation of conference name)
+  {XXXX meeting on Wednesday, April 27 2022}
+  % - Either use conference name or its abbreviation.
+  % - Not really informative to the audience, more for people (including
+  %   yourself) who are reading the slides online
+  \\subject{subject}
+  % If you have a file called "university-logo-filename.xxx", where xxx
+  % is a graphic format that can be processed by lualatex,
+  % resp., then you can add a logo as follows:
+  % \\pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+  % \\logo{\\pgfuseimage{university-logo}}
+  \\begin{document}
+  \\begin{frame}
+    \\titlepage
+  \\end{frame}
+  \\begin{frame}{Outline}
+    \\tableofcontents
+  %  \\begin{center}
+  %    \\includegraphics[width=6cm,keepaspectratio]{photo.jpg}
+  %  \\end{center}
+  \\end{frame}
+
+  \\end{document}
+  EOS
+  helper_tex = <<~EOS
+  \\usepackage{luatexja}
+  % 和文のデフォルトをゴシック体に
+  \\renewcommand{\kanjifamilydefault}{\gtdefault}
+  \\usepackage[absolute,overlay]{textpos}
+  \\usepackage{amsmath,amssymb}
+  \\usepackage[luatex]{graphicx}
+  \\usepackage{tikz}
+  \\usepackage[margin=2.4cm]{geometry}
+  \\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+  EOS
+  sample_tex = <<~'EOS'
+  % This is a sample latex file for the beamer documentclass.
+  \begin{frame}{introduction}
+  About something
+  \begin{itemize}
+    \item item 1
+    \item<2> item 2
+  \end{itemize}
+  About another thing
+  \begin{enumerate}
+    \item<3> item 1
+    \item<3-4> item 2
+  \end{enumerate}
+  \alert{alert message, which is red.}
+  \end{frame}
+  % Show a photo that extends to the whole slide view.
+  \begin{frame}
+  \begin{textblock*}{128mm}(0pt,0pt)
+  \includegraphics[width=128mm,height=96mm,keepaspectratio]{photo.jpg}
+  \end{textblock*}
+  \end{frame}
+  EOS
+  File.write("#{dir}/Rakefile", rakefile)
+  File.write("#{dir}/main.tex", main_tex)
+  File.write("#{dir}/helper.tex", helper_tex)
+  File.write("#{dir}/sample.tex", sample_tex)
+end

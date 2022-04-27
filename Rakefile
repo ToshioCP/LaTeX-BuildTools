@@ -5,7 +5,6 @@ include Latex_Utils
 if File.file?("converter.rb")
   add_conv(eval(File.read("converter.rb")))
 end
-src_dir = '.'
 build_dir = "_build"
 raise "main.tex not exist." unless File.exist?('main.tex')
 buf = File.read('main.tex')
@@ -20,7 +19,7 @@ Dir.mkdir(build_dir) unless Dir.exist?(build_dir)
 task default: "#{title}.pdf"
 
 file "#{title}.pdf" => "#{build_dir}/main_temp.pdf" do
-  sh "cp #{build_dir}/main_temp.pdf #{title}.pdf"
+  cp "#{build_dir}/main_temp.pdf", "#{title}.pdf"
 end
 
 file "#{build_dir}/main_temp.pdf" => "#{build_dir}/main_temp.tex" do
@@ -28,20 +27,20 @@ file "#{build_dir}/main_temp.pdf" => "#{build_dir}/main_temp.tex" do
 end
 
 file "#{build_dir}/main_temp.tex" => subfiles do
-  mk_main_temp src_dir, build_dir, subfiles
+  mk_main_temp '.', build_dir, subfiles
 end
 
 pairs.each do |src, dst|
-  file "#{build_dir}/#{dst}" => "#{src_dir}/#{src}" do
-    conv src_dir, src, "#{build_dir}/#{dst}"
+  file "#{build_dir}/#{dst}" => src do
+    conv '.', src, "#{build_dir}/#{dst}"
   end
 end
 
 all_graphics_files = []
 srcs.each do |src|
-  graphics_files = get_graphics_files(src_dir, src)
-  file "#{src_dir}/#{src}" => graphics_files do
-    sh "touch #{src_dir}/#{src}"
+  graphics_files = get_graphics_files('.', src)
+  file src => graphics_files do
+    sh "touch #{src}"
   end
   all_graphics_files += graphics_files
 end

@@ -83,7 +83,7 @@ title = title == nil ? "Untitled" : title
 temp_dir = get_temp_name()
 raise "#{temp_dir} exists. It can't be a temporary directory." if Dir.exist?(temp_dir)
 Dir.mkdir(temp_dir)
-rakefile.sub!(/require 'lib_latex_utils.rb'/,"require './lib_latex_utils.rb'")
+rakefile.sub!(/require 'lib_latex_utils.rb'/,"require_relative 'lib_latex_utils.rb'")
 File.write("#{temp_dir}/Rakefile", rakefile)
 File.write("#{temp_dir}/lib_latex_utils.rb", latex_utils)
 if File.file?("converter.rb")
