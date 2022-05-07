@@ -1,34 +1,15 @@
 require 'minitest/autorun'
+require 'fileutils'
 require '../lib_latex_utils.rb'
-include Latex_Utils
+include FileUtils
+include LatexUtils
 
 module Lib_for_test
   # make directories to write a file like 'dir1/dir2/dir3/file'
   def dfwrite path,content
     return unless path.instance_of? String
-    if path.include?('/')
-      dirs = path.split('/')
-      dirs.pop
-      dirs = dirs.inject([]){|ds, d| ds == [] ? ds << d : ds << "#{ds[-1]}/#{d}"}
-      dirs.each {|d| Dir.mkdir(d) unless Dir.exist?(d)}
-    end
+    mkdir_p(File.dirname(path))
     File.write(path,content)
-  end
-
-  def rm_all(dir)
-    return unless dir.instance_of?(String)
-    if Dir.exist?(dir)
-      Dir.each_child(dir) do |d|
-        if Dir.exist?("#{dir}/#{d}")
-          rm_all("#{dir}/#{d}")
-        else
-          File.delete("#{dir}/#{d}")
-        end
-      end
-      Dir.rmdir(dir)
-    elsif File.exist?(dir)
-      File.delete(dir)
-    end
   end
 
   def create_1 dir
@@ -163,24 +144,29 @@ class TestLibLatexUtils < Minitest::Test
     @p1 = create_1(@temp1)
     @p2 = create_2(@temp2)
     @p3 = create_3(@temp3)
-    if File.file?("../converter.rb")
-      add_conv(eval(File.read("../converter.rb")))
-    end
   end
 
   def teardown
-    rm_all(@temp1); rm_all(@temp2); rm_all(@temp3)
+    remove_entry_secure(@temp1); remove_entry_secure(@temp2); remove_entry_secure(@temp3)
   end
 
   def test_get_suffix
-    assert_equal 'tex', get_suffix('sec1.tex')
-    assert_equal 'src.tex', get_suffix('sec1.src.tex')
-    assert_equal 'md', get_suffix('sec1.md')
+    assert_equal '.tex', get_suffix('part1/chap2/sec1.tex')
+    assert_equal '.src.tex', get_suffix('sec1.src.tex')
+    assert_equal '.md', get_suffix('sec1.md')
+  end
+  def test_get_basename
+    assert_equal 'sec1', get_basename('sec1.tex')
+    assert_equal 'sec1', get_basename('temp/part1/chap1/sec1.src.tex')
+    assert_equal 'sec1', get_basename('chap1/sec1.md')
   end
   def test_conv
+    @converters = create_converters
+    @converters.merge!(eval(File.read("../converter.rb"))) if File.file?("../converter.rb")
+
     p1c1s1_expected = <<~"EOS"
-    \\input{#{@p1[:abs_a]}}
-    \\includegraphics[width=8cm]{#{@p1[:abs_b]}}
+    \\input{#{@p1[:a]}}
+    \\includegraphics[width=8cm]{#{@p1[:b]}}
     %\\input{#{@p1[:a]}}
     \\begin{verbatim}
     \\includegraphics{#{@p1[:b]}}
@@ -190,11 +176,11 @@ class TestLibLatexUtils < Minitest::Test
     \\hypertarget{introduction}{%
     \\paragraph{introduction}\\label{introduction}}
 
-    Lib\\_Latex\\_Utils is a library. \\includegraphics{#{@p1[:abs_c]}}
+    Lib\\_Latex\\_Utils is a library. \\includegraphics{#{@p1[:c]}}
     EOS
     c1s1_expected = <<~"EOS"
-    \\input{#{@p2[:abs_a]}}
-    \\includegraphics[width=8cm]{#{@p2[:abs_b]}}
+    \\input{#{@p2[:a]}}
+    \\includegraphics[width=8cm]{#{@p2[:b]}}
     %\\input{#{@p2[:a]}}
     \\begin{verbatim}
     \\includegraphics{#{@p2[:b]}}
@@ -204,11 +190,11 @@ class TestLibLatexUtils < Minitest::Test
     \\hypertarget{introduction}{%
     \\paragraph{introduction}\\label{introduction}}
 
-    Lib\\_Latex\\_Utils is a library. \\includegraphics{#{@p2[:abs_c]}}
+    Lib\\_Latex\\_Utils is a library. \\includegraphics{#{@p2[:c]}}
     EOS
     s1_expected = <<~"EOS"
-    \\input{#{@p3[:abs_a]}}
-    \\includegraphics[width=8cm]{#{@p3[:abs_b]}}
+    \\input{#{@p3[:a]}}
+    \\includegraphics[width=8cm]{#{@p3[:b]}}
     %\\input{#{@p3[:a]}}
     \\begin{verbatim}
     \\includegraphics{#{@p3[:b]}}
@@ -218,55 +204,57 @@ class TestLibLatexUtils < Minitest::Test
     \\hypertarget{introduction}{%
     \\paragraph{introduction}\\label{introduction}}
 
-    Lib\\_Latex\\_Utils is a library. \\includegraphics{#{@p3[:abs_c]}}
+    Lib\\_Latex\\_Utils is a library. \\includegraphics{#{@p3[:c]}}
     EOS
     result = "sec1_#{get_temp_name()}.tex"
-    conv(@temp1, "part1/chap1/sec1.src.tex", result)
+    # @converters.exec("#{@temp1}/part1/chap1/sec1.src.tex", result)
+    # @converters.exec(result, result, @temp1)
+    @converters.exec("#{@temp1}/part1/chap1/sec1.src.tex", result)
     actual = File.read(result)
     File.delete(result)
     assert_equal p1c1s1_expected, actual, "conv didn't work."
-    conv(@temp1, "part2/chap3/sec1.md", result)
+    @converters.exec("#{@temp1}/part2/chap3/sec1.md", result)
     actual = File.read(result)
     File.delete(result)
     assert_equal p2c3s1_expected, actual, "conv didn't work."
-    conv(@temp2, "chap1/sec1.src.tex", result)
+    @converters.exec("#{@temp2}/chap1/sec1.src.tex", result)
     actual = File.read(result)
     File.delete(result)
     assert_equal c1s1_expected, actual, "conv didn't work."
-    conv(@temp2, "chap3/sec2.md", result)
+    @converters.exec("#{@temp2}/chap3/sec2.md", result)
     actual = File.read(result)
     File.delete(result)
     assert_equal c3s2_expected, actual, "conv didn't work."
-    conv(@temp3, "sec1.src.tex", result)
+    @converters.exec("#{@temp3}/sec1.src.tex", result)
     actual = File.read(result)
     File.delete(result)
     assert_equal s1_expected, actual, "conv didn't work."
-    conv(@temp3, "sec3.md", result)
+    @converters.exec("#{@temp3}/sec3.md", result)
     actual = File.read(result)
     File.delete(result)
     assert_equal s3_expected, actual, "conv didn't work."
   end
   def test_get_graphics_files
-    assert_equal ["#{@p1[:b]}"], get_graphics_files(@temp1, "part1/chap1/sec1.src.tex")
-    assert_equal ["#{@p1[:c]}"], get_graphics_files(@temp1, "part2/chap3/sec1.md")
-    assert_equal ["#{@p2[:b]}"], get_graphics_files(@temp2, "chap1/sec1.src.tex")
-    assert_equal ["#{@p2[:c]}"], get_graphics_files(@temp2, "chap3/sec2.md")
-    assert_equal ["#{@p3[:b]}"], get_graphics_files(@temp3, "sec1.src.tex")
-    assert_equal ["#{@p3[:c]}"], get_graphics_files(@temp3, "sec3.md")
+    assert_equal ["#{@p1[:b]}"], get_graphics_files("#{@temp1}/part1/chap1/sec1.src.tex")
+    assert_equal ["#{@p1[:c]}"], get_graphics_files("#{@temp1}/part2/chap3/sec1.md")
+    assert_equal ["#{@p2[:b]}"], get_graphics_files("#{@temp2}/chap1/sec1.src.tex")
+    assert_equal ["#{@p2[:c]}"], get_graphics_files("#{@temp2}/chap3/sec2.md")
+    assert_equal ["#{@p3[:b]}"], get_graphics_files("#{@temp3}/sec1.src.tex")
+    assert_equal ["#{@p3[:c]}"], get_graphics_files("#{@temp3}/sec3.md")
   end
   def test_get_input_files
-    assert_equal ["#{@p1[:a]}"], get_input_files(@temp1, "part1/chap1/sec1.src.tex")
-    assert_equal ["#{@p2[:a]}"], get_input_files(@temp2, "chap1/sec1.src.tex")
-    assert_equal ["#{@p3[:a]}"], get_input_files(@temp3, "sec1.src.tex")
+    assert_equal ["#{@p1[:a]}"], get_input_files("#{@temp1}/part1/chap1/sec1.src.tex")
+    assert_equal ["#{@p2[:a]}"], get_input_files("#{@temp2}/chap1/sec1.src.tex")
+    assert_equal ["#{@p3[:a]}"], get_input_files("#{@temp3}/sec1.src.tex")
   end
   def test_get_input_files_recursively
-    assert_equal ["#{@p1[:a]}","#{@p1[:d]}"], get_input_files_recursively(@temp1, "part1/chap1/sec1.src.tex")
-    assert_equal ["#{@p2[:a]}","#{@p2[:d]}"], get_input_files_recursively(@temp2, "chap1/sec1.src.tex")
-    assert_equal ["#{@p3[:a]}","#{@p3[:d]}"], get_input_files_recursively(@temp3, "sec1.src.tex")
+    assert_equal ["#{@p1[:a]}","#{@p1[:d]}"], get_input_files_recursively("#{@temp1}/part1/chap1/sec1.src.tex", @temp1)
+    assert_equal ["#{@p2[:a]}","#{@p2[:d]}"], get_input_files_recursively("#{@temp2}/chap1/sec1.src.tex", @temp2)
+    assert_equal ["#{@p3[:a]}","#{@p3[:d]}"], get_input_files_recursively("#{@temp3}/sec1.src.tex", @temp3)
   end
   def test_get_input_files_from_files
-    files = ["part1/chap1/sec1.src.tex", "main.tex"]
-    assert_equal ["#{@p1[:a]}","helper.tex","cover.tex"], get_input_files_from_files(@temp1, files)
+    paths = ["#{@temp1}/part1/chap1/sec1.src.tex", "#{@temp1}/main.tex"]
+    assert_equal ["#{@p1[:a]}","helper.tex","cover.tex"], get_input_files_from_files(paths)
   end
   def test_renum_src_files
     renum_dir = get_temp_name()
@@ -285,7 +273,7 @@ class TestLibLatexUtils < Minitest::Test
       "part2/chap3/sec1.md",
       "part2/chap3/sec2.md",
     ]
-    rm_all(renum_dir)
+    remove_entry_secure(renum_dir)
     assert_equal files_expected, files
   end
   def test_get_src_paths
@@ -320,95 +308,111 @@ class TestLibLatexUtils < Minitest::Test
     ]
     assert_equal files_expected, files
   end
-  def test_get_src_dst_pairs
-    pairs = get_src_dst_pairs(@temp1)
-    pairs_expected = [
-      [ "part1/chap1/sec1.src.tex", "subfile1.tex"],
-      [ "part1/chap1/sec2.src.tex", "subfile2.tex"],
-      [ "part1/chap2/sec1.src.tex", "subfile3.tex"],
-      [ "part1/chap3/sec1.src.tex", "subfile4.tex"],
-      [ "part2/chap1/sec1.tex", "subfile5.tex"],
-      [ "part2/chap1/sec2.5.tex", "subfile6.tex"],
-      [ "part2/chap2/sec1.tex", "subfile7.tex"],
-      [ "part2/chap2/sec3.tex", "subfile8.tex"],
-      [ "part2/chap3/sec1.md", "subfile9.tex"],
-      [ "part2/chap3/sec2.md", "subfile10.tex"]
-    ]
-    assert_equal pairs_expected, pairs
-    pairs = get_src_dst_pairs(@temp2)
-    pairs_expected = [
-      [ "chap1/sec1.src.tex", "subfile1.tex"],
-      [ "chap1/sec2.src.tex", "subfile2.tex"],
-      [ "chap2/sec1.src.tex", "subfile3.tex"],
-      [ "chap3/sec1.md", "subfile4.tex"],
-      [ "chap3/sec2.md", "subfile5.tex"]
-    ]
-    assert_equal pairs_expected, pairs
-    pairs = get_src_dst_pairs(@temp3)
-    pairs_expected = [
-      [ "sec1.src.tex", "subfile1.tex"],
-      [ "sec2.src.tex", "subfile2.tex"],
-      [ "sec3.md", "subfile3.tex"]
-    ]
-    assert_equal pairs_expected, pairs
-  end
   def test_mk_main_temp
     build_dir = get_temp_name()
-    Dir.mkdir(build_dir)
-    helper_tex = File.realpath("#{@temp1}/helper.tex")
-    cover_tex = File.realpath("#{@temp1}/cover.tex")
+    mkdir_p("#{@temp1}/#{build_dir}")
     files = [
-      "part1/chap1/sec1.src.tex",
-      "part1/chap1/sec2.src.tex",
-      "part1/chap2/sec1.src.tex",
-      "part1/chap3/sec1.src.tex",
-      "part2/chap1/sec1.tex",
-      "part2/chap1/sec2.5.tex",
-      "part2/chap2/sec1.tex",
-      "part2/chap2/sec3.tex",
-      "part2/chap3/sec1.md",
-      "part2/chap3/sec2.md",
+      "subfile1.tex",
+      "subfile2.tex",
+      "subfile3.tex",
+      "subfile4.tex",
+      "subfile5.tex",
+      "subfile6.tex",
+      "subfile7.tex",
+      "subfile8.tex",
+      "subfile9.tex",
+      "subfile10.tex"
     ]
-    mk_main_temp @temp1, build_dir, files
-    mk_temp = File.read("#{build_dir}/main_temp.tex")
+    files.each{|file| File.write("#{@temp1}/#{build_dir}/#{file}", "%sample")}
+    mk_main_temp @temp1, build_dir, files, "main_temp.tex"
+    mk_temp = File.read("#{@temp1}/#{build_dir}/main_temp.tex")
     main_temp_expected = <<~"EOS"
     \\documentclass{ltjsbook}
-    \\input{#{helper_tex}}
+    \\input{helper.tex}
     \\title{代数学}
     \\author{関谷　敏雄}
     \\begin{document}
     \\frontmatter
     \\begin{titlepage}
-    \\input{#{cover_tex}}
+    \\input{cover.tex}
     \\end{titlepage}
     \\tableofcontents
     \\mainmatter
 
-    \\input{part1/chap1/sec1.src.tex}
-    \\input{part1/chap1/sec2.src.tex}
-    \\input{part1/chap2/sec1.src.tex}
-    \\input{part1/chap3/sec1.src.tex}
-    \\input{part2/chap1/sec1.tex}
-    \\input{part2/chap1/sec2.5.tex}
-    \\input{part2/chap2/sec1.tex}
-    \\input{part2/chap2/sec3.tex}
-    \\input{part2/chap3/sec1.md}
-    \\input{part2/chap3/sec2.md}
+    \\input{subfile1.tex}
+    \\input{subfile2.tex}
+    \\input{subfile3.tex}
+    \\input{subfile4.tex}
+    \\input{subfile5.tex}
+    \\input{subfile6.tex}
+    \\input{subfile7.tex}
+    \\input{subfile8.tex}
+    \\input{subfile9.tex}
+    \\input{subfile10.tex}
 
     \\end{document}
     EOS
-    rm_all(build_dir)
+    remove_entry_secure("#{@temp1}/#{build_dir}")
     assert_equal main_temp_expected, mk_temp
   end
+
+  def test_system_flow
+    build_dir = get_temp_name()
+    mkdir_p("#{@temp1}/#{build_dir}")
+    srcs = get_src_paths(@temp1)
+    converters = Converters.new
+    converters.merge!(eval(File.read("../converter.rb")))
+    srcs.each do |src|
+      i = srcs.index(src)+1
+      dst = "#{@temp1}/#{build_dir}/subfile#{i}.tex"
+      src = "#{@temp1}/#{src}"
+      if get_suffix(src) == ".tex"
+        cp src, dst
+      else
+        converters.exec(src, dst)
+      end
+    end
+    files = (1..10).map{|i| "#{build_dir}/subfile#{i}"}
+    mk_main_temp @temp1, build_dir, files, 'main_temp.tex'
+    main_temp_expected = <<~"EOS"
+    \\documentclass{ltjsbook}
+    \\input{helper.tex}
+    \\title{代数学}
+    \\author{関谷　敏雄}
+    \\begin{document}
+    \\frontmatter
+    \\begin{titlepage}
+    \\input{cover.tex}
+    \\end{titlepage}
+    \\tableofcontents
+    \\mainmatter
+
+    \\input{#{build_dir}/subfile1}
+    \\input{#{build_dir}/subfile2}
+    \\input{#{build_dir}/subfile3}
+    \\input{#{build_dir}/subfile4}
+    \\input{#{build_dir}/subfile5}
+    \\input{#{build_dir}/subfile6}
+    \\input{#{build_dir}/subfile7}
+    \\input{#{build_dir}/subfile8}
+    \\input{#{build_dir}/subfile9}
+    \\input{#{build_dir}/subfile10}
+
+    \\end{document}
+    EOS
+    main_temp_actual = File.read("#{@temp1}/#{build_dir}/main_temp.tex")
+    remove_entry_secure("#{@temp1}/#{build_dir}")
+    assert_equal main_temp_expected, main_temp_actual
+  end
+
   def test_num2path
     assert_equal "part1/chap2/sec1.src.tex", num2path("1-2-1",@temp1)
     assert_equal "chap1/sec2.src.tex", num2path("1-2",@temp2)
     assert_equal "sec3.md", num2path("3",@temp3)
   end
-  def test_path2num
-    assert_equal "1-2-1", path2num("part1/chap2/sec1.src.tex")
-    assert_equal "1-2", path2num("chap1/sec2.src.tex")
-    assert_equal "2", path2num("sec2.src.tex")
+
+  def get_temp_name
+    "temp_"+Time.now.to_f.to_s.gsub(/\./,'')
   end
 
 end

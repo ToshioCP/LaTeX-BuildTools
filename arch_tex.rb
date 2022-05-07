@@ -4,8 +4,8 @@ exec ruby -x "$0" "$@"
 
 require 'fileutils'
 include FileUtils
-require 'lib_latex_utils.rb'
-include Latex_Utils
+require_relative 'lib_latex_utils.rb'
+include LatexUtils
 
 # The followig lines will be replaced with a string literal when installed.
 rakefile = File.read('Rakefile')
@@ -43,16 +43,16 @@ def dfwrite path,content
   File.write(path,content)
 end
 
-def rm_all(dir)
-  remove_entry_secure(dir)
-end
-
 def usage
   print "Usage:\n"
   print "arch_tex [opt] [src_dir]\n"
   print "option:\n"
   print "  -?|-h|--help: Show this message.\n"
   print "  -g: gzip (default), -b: bzip2, -z: zip\n"
+end
+
+def get_temp_name
+  "temp_"+Time.now.to_f.to_s.gsub(/\./,'')
 end
 
 case ARGV.size
@@ -83,7 +83,6 @@ title = title == nil ? "Untitled" : title
 temp_dir = get_temp_name()
 raise "#{temp_dir} exists. It can't be a temporary directory." if Dir.exist?(temp_dir)
 Dir.mkdir(temp_dir)
-rakefile.sub!(/require 'lib_latex_utils.rb'/,"require_relative 'lib_latex_utils.rb'")
 File.write("#{temp_dir}/Rakefile", rakefile)
 File.write("#{temp_dir}/lib_latex_utils.rb", latex_utils)
 if File.file?("converter.rb")
@@ -92,9 +91,9 @@ end
 File.write("#{temp_dir}/readme.md", readme)
 File.write("#{temp_dir}/main.tex", File.read('main.tex'))
 files = get_src_paths(src_dir)+['main.tex']
-files = (files + files.map{|f| get_input_files_recursively(src_dir, f)}).flatten.uniq
+files = (files + files.map{|f| get_input_files_recursively(f, src_dir)}).flatten.uniq
 files.each{|f| dfwrite("#{temp_dir}/#{f}", File.read("#{src_dir}/#{f}"))}
-graphics_files = files.map{|f| get_graphics_files(src_dir, f)}.flatten.uniq
+graphics_files = files.map{|f| get_graphics_files("#{src_dir}/#{f}")}.flatten.uniq
 graphics_files.each{|f| dfwrite("#{temp_dir}/#{f}", File.read("#{src_dir}/#{f}"))}
 Dir.chdir(temp_dir)
 files = Dir.glob('**/*')
@@ -111,4 +110,4 @@ else
 end
 
 Dir.chdir('..')
-rm_all(temp_dir)
+remove_entry_secure(temp_dir)

@@ -1,141 +1,228 @@
-module Latex_Utils
+require 'fileutils'
 
-  # src: relative path from src_dir
-  # dst: no relation to src_dir
-  @@conv = {md: lambda {|src, dst| system ("pandoc -o #{dst} #{src}")} }
+# = Module LatexUtils
+#
+# This module is used by the Rakefile in the directory which this file is located in.
 
-  # convert relative paths into absolute paths if the paths appear in input or includegraphics command.
-  def paths_r2a src_dir, src, dst
-    buf = File.read("#{src_dir}/#{src}")
-    buf = buf.split(/(\\begin\{verbatim\}.*?\\end\{verbatim\}\n)/m)
-    buf = buf.map do |s|
-      s.match?(/^\\begin\{verbatim\}/) ? s : s.split(/(%.*$)/)
+module LatexUtils
+  include FileUtils
+
+  class Converters
+    def initialize
+      @list = {:'.md' => lambda {|src, dst| system ("pandoc -o #{dst} #{src}")} }
     end
-    buf = buf.flatten
-    buf.each_with_index do |s, i|
-      unless s.match?(/^\\begin\{verbatim\}/) || s.match?(/^%/)
-        pairs = s.scan(/\\input\{.*?\}/).uniq.map{|t| f=t.match(/\{(.*?)\}/)[1]; [f, File.realpath("#{src_dir}/#{f}")]}
-        pairs.each{|pair| s = s.gsub(/\\input\{#{pair[0]}\}/,"\\input{#{pair[1]}}")}
-        pairs = s.scan(/\\includegraphics\[.*?\]\{.*?\}/).uniq.map{|t| f=t.match(/\{(.*?)\}/)[1]; [f, File.realpath("#{src_dir}/#{f}")]}
-        pairs.each{|pair| s = s.gsub(/\\includegraphics\[(.*?)\]\{#{pair[0]}\}/,"\\includegraphics[\\1]{#{pair[1]}}")}
-        pairs = s.scan(/\\includegraphics\{.*?\}/).uniq.map{|t| f=t.match(/\{(.*?)\}/)[1]; [f, File.realpath("#{src_dir}/#{f}")]}
-        pairs.each{|pair| s = s.gsub(/\\includegraphics\{#{pair[0]}\}/,"\\includegraphics{#{pair[1]}}")}
+    def add suffix, prc
+      h = {suffix.to_sym => prc}
+      @list.merge!(h)
+    end
+    def merge! suffix_prc
+      @list.merge!(suffix_prc)
+    end
+    def each
+      @list.each{|k,v| yeild(k,v)}
+    end
+    def exist? suffix
+      @list.has_key?(suffix)
+    end
+
+    def exec src, dst
+      suffix = get_suffix(src).to_sym
+      if @list.has_key?(suffix)
+        @list[suffix].call(src, dst)
+      else
+        raise "No such converter."
       end
-      buf[i] = s
-    end
-    File.write(dst, buf.join)
-  end
-
-  def get_suffix file
-    file.match(/\.([^\/]*)$/).to_a[1]
-  end
-
-  def add_conv suffix_proc
-    @@conv = @@conv.merge(suffix_proc)
-  end
-
-  def conv src_dir, src, dst
-    if get_suffix(src) == "tex"
-      paths_r2a(src_dir, src, dst)
-    else
-      temp = get_temp_name()+".tex"
-      raise "Converter for #{get_suffix(src)} not exist." if @@conv[get_suffix(src).to_sym] == nil
-      @@conv[get_suffix(src).to_sym].call("#{src_dir}/#{src}", "#{src_dir}/#{temp}")
-      paths_r2a(src_dir, temp, dst)
-      File.delete("#{src_dir}/#{temp}")
     end
   end
 
-  def get_graphics_files_from_tex src_dir, file
-    File.read("#{src_dir}/#{file}").scan(/\\includegraphics(\[.*\])?\{(.*?)\}/).map{|m| m[1]}.uniq
+  def create_converters
+    Converters.new
   end
+  module_function :create_converters
 
-  def get_graphics_files_from_md src_dir, file
-    File.read("#{src_dir}/#{file}").scan(/!\[.*?\]\((.*?)\)/).map{|m| m[0]}.uniq
-  end
-
-  def get_graphics_files src_dir, file
-    case get_suffix(file)
-    when 'tex' then get_graphics_files_from_tex(src_dir, file)
-    when 'src.tex' then get_graphics_files_from_tex(src_dir, file)
-    when 'md'  then get_graphics_files_from_md(src_dir, file)
-    end
-  end
-
-  def get_input_files src_dir, file
-    File.read("#{src_dir}/#{file}").scan(/\\input\{(.*?)\}/).flatten.uniq
-  end
-
-  def get_input_files_recursively src_dir, file
-    return nil unless file.instance_of?(String) && File.exist?("#{src_dir}/#{file}")
-    files = get_input_files(src_dir, file)
-    texfiles = files.select{|f| f =~ /.tex$/}
-    files = files + texfiles.map{|tf| get_input_files_recursively(src_dir, tf)}.flatten
-    files = files.uniq
-  end
-
-  def get_input_files_from_files src_dir, files
-    files.map{|file| get_input_files(src_dir, file)}.flatten.uniq
-  end
-
-  @@patterns = [ /^part(\d+(\.\d+)?)$/, /^chap(\d+(\.\d+)?)$/, /^sec(\d+(\.\d+)?)\./ ]
-
-  def renum_src_files src_dir='.'
-    renum_src_files_0 src_dir, @@patterns
-  end
-
-  #Example: get_src_paths() => ["part1/chap1/sec1.tex","part1/chap1/sec2.src.tex","part1/chap2/sec1.md"]
-  def get_src_paths src_dir='.'
-    paths = get_src_paths_0 src_dir, @@patterns
-    paths = paths.map{|path| path.sub(/#{src_dir}\//,'')}
-    pcs_pat = ['part', 'chap', 'sec'].map{|pcs| Regexp.compile("#{pcs}(\\d+(\\.\\d+)?)")}
-    paths = paths.sort do |p1, p2|
-      result = nil
-      (0 ..2).each do |i|
-        if p1.match?(pcs_pat[i]) && p2.match?(pcs_pat[i]) && p1.match(pcs_pat[i])[1].to_f != p2.match(pcs_pat[i])[1].to_f
-          result = p1.match(pcs_pat[i])[1].to_f <=> p2.match(pcs_pat[i])[1].to_f
-          break
+  class PCS
+    def self.get_src_paths src_dir='.'
+      # Temporary proc
+      parts = get_files([src_dir], /^part(\d+(\.\d+)?)$/, :dir)
+      chaps = get_files(parts, /^chap(\d+(\.\d+)?)$/, :dir)
+      secs =  get_files(chaps, /^sec(\d+(\.\d+)?)\.[^\/]*$/, :file)
+      return [] if secs == [src_dir]
+      secs = secs.sort do |sec1, sec2|
+        p1, c1, s1 = get_pcs(sec1)
+        p2, c2, s2 = get_pcs(sec2)
+        if p1 != p2
+          p1 <=> p2
+        elsif c1 != c2
+          c1 <=> c2
+        else
+          s1 <=> s2
         end
       end
-      result
+      secs.map{|sec| sec.sub(/^#{src_dir}\//,'')}
     end
-    paths
+
+    def self.renum_src_files src_dir='.'
+      parts = get_files([src_dir], /^part(\d+(\.\d+)?)$/, :dir)
+      unless parts == [src_dir]
+        renum_files(parts)
+        parts = get_files([src_dir], /^part(\d+(\.\d+)?)$/, :dir)
+      end
+      chaps = parts.map do |part|
+        chaps = get_files([part], /^chap(\d+(\.\d+)?)$/, :dir)
+        if chaps == [part]
+          chaps
+        else
+          renum_files(chaps)
+          get_files([part], /^chap(\d+(\.\d+)?)$/, :dir)
+        end
+      end.flatten
+      secs = chaps.map do |chap|
+        secs =  get_files([chap], /^sec(\d+(\.\d+)?)\.[^\/]*$/, :file)
+        if secs == [chap]
+          secs
+        else
+          renum_files(secs)
+        end
+      end.flatten
+    end
+
+  private
+
+    def self.get_files dirs, pat, type
+      dirs.map do |dir|
+        fs = Dir.new(dir).select {|f| f.match?(pat)}
+        if type == :dir
+          fs.select{|f| Dir.exist?(f)}
+        else # type is :file
+          fs.select{|f| File.file?(f)}
+        end
+        if fs == []
+          dir
+        else
+          fs.map{|f| "#{dir}/#{f}"}
+        end
+      end.flatten.uniq
+    end
+    def self.get_pcs path
+      if path =~ /part(\d+(\.\d+)?)\/chap(\d+(\.\d+)?)\/sec(\d+(\.\d+)?)\.[^\/]*$/
+        p = $1; c  = $3; s = $5
+      elsif path =~ /chap(\d+(\.\d+)?)\/sec(\d+(\.\d+)?)\.[^\/]*$/
+        p = -99999; c = $1; s = $3
+      elsif path =~ /sec(\d+(\.\d+)?)\.[^\/]*$/
+        p = c = -99999;; s = $1
+      else
+        p = c = s = -99999
+      end
+      [p,c,s]
+    end
+    def self.renum_files(files)
+      files = files.sort {|f,g|  f.match(/(\d+(\.\d+)?)(\.[^\/]*)?$/)[1].to_f <=> g.match(/(\d+(\.\d+)?)(\.[^\/]*)?$/)[1].to_f }
+      rename_rule = []
+      files.each_with_index do |file, i|
+        rename_rule << [file, file.gsub(/(\d+(\.\d+)?)(\.[^\/]*)?$/,"_temp#{i+1}\\3"), file.gsub(/(\d+(\.\d+)?)(\.[^\/]*)?$/,"#{i+1}\\3") ]
+      end
+      rename_rule.each do |rule|
+        File.rename rule[0], rule[1]
+      end
+      rename_rule.each do |rule|
+        File.rename rule[1], rule[2]
+      end
+    end
   end
 
-  #Example: get_src_dst_pairs() => [["part1/chap1/sec1.tex","subfile1.tex"], ["part1/chap1/sec2.src.tex","subfile2.tex], ["part1/chap2/sec1.md","subfile3.tex"]]
-  def get_src_dst_pairs src_dir='.'
-    paths = get_src_paths src_dir
-    (1 .. paths.size).map {|i| [paths[i-1], "subfile#{i}.tex"]}
+  def get_src_paths src_dir='.'
+    PCS.get_src_paths src_dir
   end
+  module_function :get_src_paths
 
-  @main_tex = <<~EOS
-  \\documentclass{ltjsbook}
-  \\input{helper.tex}
-  \\title{Title}
-  \\author{author}
-  \\begin{document}
-  \\maketitle
-  \\tableofcontents
+  def renum_src_files src_dir='.'
+    PCS.renum_src_files(src_dir)
+  end
+  module_function :renum_src_files
 
-  \\end{document}
-  EOS
-
-  def mk_main_temp src_dir, build_dir, files, temp_file='main_temp.tex'
-    if File.exist? "#{src_dir}/main.tex"
-      main_tex = File.read("#{src_dir}/main.tex")
+  # Return: the suffix of the file.
+  # It includes the dot.
+  # Suffix doesn't havve any dots in the middle of itself usually.
+  # But ".src.tex" and ".src.md" are exceptions.
+  def get_suffix file
+    if file =~ /\.src\.tex$/
+      ".src.tex"
+    elsif file =~ /\.src\.md$/
+      ".src.md"
     else
-      main_tex = @main_tex
+      File.extname(file)
     end
-    temp = "#{get_temp_name()}.tex"
-    dst = "#{build_dir}/#{temp_file}"
-    File.write("#{src_dir}/#{temp}", main_tex)
-    conv(src_dir, temp, dst)
-    File.delete("#{src_dir}/#{temp}")
-    main_tex = File.read(dst)
+  end
+  module_function :get_suffix
+
+  def is_tex? file
+    get_suffix(file) == ".tex"
+  end
+  module_function :is_tex?
+
+  def get_basename file
+    file = File.basename(file)
+    file.sub(/#{get_suffix(file)}$/,'')
+  end
+  module_function :get_basename
+
+  # Return: the relative address of graphic files from the top directory
+  def get_graphics_files path
+    case get_suffix(path)
+    when '.tex', '.src.tex'
+      File.read(path).scan(/\\includegraphics(\[.*\])?\{(.*?)\}/).map{|m| m[1]}.uniq
+    when '.md'
+      File.read(path).scan(/!\[.*?\]\((.*?)\)/).map{|m| m[0]}.uniq
+    end
+  end
+  module_function :get_graphics_files
+
+  # get_input_files doesn't check the extension and existence of the path.
+  # Because if is passoble that the path (file) will be created by a converter.
+  # It is the user's responsibility that the path will exist when typesetting with lualatex.
+  def get_input_files path
+    return [] unless is_tex?(path)
+    buf = File.read(path)
+    verbatim_pattern = /(\\begin\{verbatim\}.*?\\end\{verbatim\}\n)/m
+    comment_pattern = /(%.*\n)/
+    buf = buf.gsub(verbatim_pattern, '') # remove verbatim
+    buf = buf.gsub(comment_pattern,'') # remove cmment
+    buf.scan(/\\input\{(.*?)\}/).flatten.uniq
+  end
+  module_function :get_input_files
+
+  def get_input_files_recursively path, base_dir='.'
+    return nil unless path.instance_of?(String) && File.exist?(path)
+    files = get_input_files(path)
+    files = files + files.map{|f| f="#{base_dir}/#{f}"; get_input_files_recursively(f, base_dir)}.flatten
+    files = files.uniq
+  end
+  module_function :get_input_files_recursively
+
+  def get_input_files_from_files paths
+    paths.map{|path| get_input_files(path)}.flatten.uniq
+  end
+  module_function :get_input_files_from_files
+
+  def mk_main_temp src_dir, build_dir, files, main_temp_tex='main_temp.tex'
+    main_tex = <<~EOS
+    \\documentclass{ltjsbook}
+    \\input{helper.tex}
+    \\title{Title}
+    \\author{author}
+    \\begin{document}
+    \\maketitle
+    \\tableofcontents
+
+    \\end{document}
+    EOS
+    mkdir_p("#{src_dir}/#{build_dir}")
+    main_tex = File.read("#{src_dir}/main.tex") if File.exist? "#{src_dir}/main.tex"
     body = files.map{|file| "\\input{#{file}}\n"}.join
     main_tex = main_tex.sub(/\\end{document}/, "#{body}\n\\end{document}")
-    File.write(dst, main_tex)
+    File.write("#{src_dir}/#{build_dir}/#{main_temp_tex}", main_tex)
   end
+  module_function :mk_main_temp
 
   # example of n_n_n and return value:  '1-1-1' => 'part1/chap1/sec1.src.tex', '1-2' => 'chap1/sec2.md', '1' => 'sec1.tex',
   def num2path n_n_n, src_dir='.'
@@ -156,77 +243,6 @@ module Latex_Utils
     return nil if srcs.size != 1
     srcs[0]
   end
-
-  # example of path and return value:  'part1/chap1/sec1.src.tex' => '1-1-1', 'chap1/sec2.md' => '1-2', 'sec1.tex' => '1',
-  def path2num path
-    return nil unless path.instance_of? String
-    path_pcs = /^part(\d+(\.\d+)?)\/chap(\d+(\.\d+)?)\/sec(\d+(\.\d+)?)\.(.+)$/
-    path_cs = /^chap(\d+(\.\d+)?)\/sec(\d+(\.\d+)?)\.(.+)$/
-    path_s = /^sec(\d+(\.\d+)?)\.(.+)$/
-    if path =~ path_pcs
-      "#{$1}-#{$3}-#{$5}"
-    elsif path =~ path_cs
-      "#{$1}-#{$3}"
-    elsif path =~ path_s
-      "#{$1}"
-    else
-       nil
-    end
-  end
-
-private
-
-  def get_temp_name
-    "temp_"+Time.now.to_f.to_s.gsub(/\./,'')
-  end
-
-  def renum_src_files_0 src_dir, patterns
-    size = patterns.size
-    return if size == 0
-    patterns_next = patterns.dup
-    patterns_next.delete_at(0)
-    files = Dir.children(src_dir).select {|f| f.match?(patterns[0])}
-    if files == [] && size >=1
-      renum_src_files_0 src_dir, patterns_next
-    else
-      files.each do |file|
-        renum_src_files_0 "#{src_dir}/#{file}", patterns_next if File.directory?("#{src_dir}/#{file}") && size >= 2
-      end
-      #renumber the 'dir'
-      files = files.sort {|f,g|  f.match(/\d+(\.\d+)?/)[0].to_f <=> g.match(/\d+(\.\d+)?/)[0].to_f }
-      rename_rule = []
-      files.each_with_index do |file, i|
-        rename_rule << ["#{src_dir}/"+file, "#{src_dir}/"+file.gsub(/\d+(\.\d+)?/,"_temp#{i+1}"), "#{src_dir}/"+file.gsub(/\d+(\.\d+)?/, "#{i+1}") ]
-      end
-      rename_rule.each do |rule|
-        File.rename rule[0], rule[1]
-      end
-      rename_rule.each do |rule|
-        File.rename rule[1], rule[2]
-      end
-    end
-  end
-
-  def get_src_paths_0 src_dir, patterns
-    size = patterns.size
-    return [] if size == 0
-    patterns_next = patterns.dup
-    patterns_next.delete_at(0)
-    files = Dir.new(src_dir).select {|f| f.match?(patterns[0])}
-    if files == [] && patterns_next.size >= 1
-      get_src_paths_0(src_dir, patterns_next)
-    else
-      paths = []
-      files.each do |file|
-        if File.directory?("#{src_dir}/#{file}") && patterns_next.size >= 1
-          paths_0 = get_src_paths_0 "#{src_dir}/#{file}", patterns_next
-          paths += paths_0 if paths_0 != nil
-        elsif File.stat("#{src_dir}/#{file}").file? && size == 1
-          paths << "#{src_dir}/#{file}"
-        end
-      end
-      paths
-    end
-  end
+  module_function :num2path
 
 end

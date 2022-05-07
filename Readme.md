@@ -97,8 +97,10 @@ When including these files from the body files, refer to them by the relative pa
 \includegraphics{image/photo.jpg}
 ~~~
 
-This saves you from having to change the command pathnames if the body file moves across chaps and parts.
-The program will automatically convert the pathnames for \\input and \\incudegraphics into absolute paths.
+This means:
+
+- You don't need to change the pathnames in the \\input or \\includegraphics commands even if the body file moves across chaps and parts.
+- Lualatex recognizes the relative paths correctly when its current directory is located to the top directory.
 
 ### Typeset
 
@@ -164,8 +166,8 @@ https://pandoc.org/
 Since the preprocessing is done automatically, the only thing users need to do is putting the extension to the source file.
 For example, put '.md' to a markdown file sec1.
 
-The user can add their own preprocessing program.
-For example, suppose that you want to add a new extension "src.tex" and transfer "m(1,2,3,4)" into bmatrix environment.
+Users can add their own preprocessing program.
+For example, suppose that you want to add a new extension ".src.tex" and transfer "m(1,2,3,4)" into bmatrix environment.
 
 ~~~
 \begin{bmatrix}1&2\\3&4\end{bmatrix}
@@ -175,7 +177,7 @@ You can do this with ruby's gsub or gsub! methods.
 The preprocessing created by the user is described in a file called "converter.rb" and placed in the top directory.
 
 ~~~
-{ :'src.tex' => lambda do |src, dst|
+{ :'.src.tex' => lambda do |src, dst|
     buf = File.read(src)
     buf = buf.split(/(\\begin\{verbatim\}.*?\\end\{verbatim\}\n)/m)
     buf = buf.map do |s|
@@ -197,11 +199,21 @@ The conversion is performed in the 10th line.
 Various conversions are possible by customizing the 10th line.
 Note that the conversion will not be reflected if gsub is used instead of gsub! (With an exclamation mark).
 
+The converted files are saved in the `_build` directory which is just under the top directory.
+Thanks to putting `_build` under the top directory, the relative paths in files are always correct.
+
 The contents of the converter.rb are executed without being checked by the program.
 If there is an error in it, it may cause a serious damage.
 Therefore, it is recommended to backup the files in advance.
 Also, it is very dangerous to execute a program created by another person without checking its contents.
 Make a converter after you fully understand these risks.
+
+Extensions of files here are a bit different from common definitions.
+Since the extension is the part after the last dot of the file name, the extension of "abc.de.fg" is ".fg", not ".de.fg".
+However, this system exceptionally treats ".src.tex" as an extension.
+There are two such exceptions, ".src.tex" and ".src.md".
+For example, the extension of "sec2.5.src.tex" is ".src.tex", not ".5.src.tex" or ".tex".
+The "get_suffix" method takes a file name as an argument and returns its extension (correct extension including exceptions).
 
 ### Initialization
 
@@ -271,7 +283,7 @@ Three compression types are supprted.
 ### Install and uninstall
 
 You need ruby ​​and tex environment.
-Ruby 2.7 is used to develop Buildtools, but it may work even if the ruby version is ​​2.0 or later.
+Ruby 3.1 is used to develop Buildtools, but it may work even if the ruby version is ​​2.0 or later.
 Texlive is recommended for the tex environment.
 
 The TeX engine is lualatex.
@@ -283,20 +295,16 @@ Linux was the OS to develop Buildtools, but I think that it will also work on Wi
 To install, tyoe as follows for Linux
 
 ~~~
-$ sudo ruby ​​install.rb
+$ ruby ​​install.rb
 ~~~
 
-The executable file is set in /usr/local/bin and the library (lib_latex_utils) is set in $LOAD_PATH[0].
-The variable $LOAD_PATH[0] points /usr/local/lib/site_ruby/2.7.0 etc usually.
-But it depends on the system.
-If you have used rbenv to install ruby, the library destination is under the .rbenv directory of your home directory.
-
+The executable file is copied into `$HOME/bin`.
 At the time of installation, newtex and arch_tex are rewritten.
 
 Uninstall:
 
 ~~~
-$ sudo ruby ​​install.rb-
+$ ruby ​​install.rb-
 ~~~
 
 ### licence

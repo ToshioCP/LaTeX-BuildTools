@@ -2,7 +2,7 @@
 exec ruby -x "$0" "$@"
 #!ruby
 
-require 'lib_latex_utils.rb'
-include Latex_Utils
+require_relative 'lib_latex_utils.rb'
+include LatexUtils
 
 renum_src_files
