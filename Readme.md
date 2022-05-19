@@ -145,7 +145,7 @@ $ rake clean
 If you want to delete the target pdf file as well, then type:
 
 ~~~
-4 rake clobber
+$ rake clobber
 ~~~
 
 ### Preprocessing
@@ -292,7 +292,7 @@ Only a small modification is enough.
 
 Linux was the OS to develop Buildtools, but I think that it will also work on Windows.
 
-To install, tyoe as follows for Linux
+To install, type as follows for Linux
 
 ~~~
 $ ruby ​​install.rb
