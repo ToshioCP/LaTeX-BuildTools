@@ -512,7 +512,7 @@ elsif opt == :article
   File.write("#{dir}/helper.tex", helper_tex)
 elsif opt == :beamer
   main_tex = <<~EOS
-  \\documentclass[utf8]{beamer}
+  \\documentclass[utf8,aspectratio=149]{beamer}
   \\mode<presentation>
   {
     \\usetheme{Warsaw}

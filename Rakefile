@@ -9,10 +9,20 @@ if File.file?("converter.rb")
 end
 raise "main.tex not exist." unless File.exist?('main.tex')
 buf = File.read('main.tex')
-t = buf.match(/\\title\{(.*?)\}/).to_a[1]
-case t
-when nil, "" then title = "Title"
-else title = t
+buf = buf.split(/\\begin\{verbatim\}.*?\\end\{verbatim\}/m)
+buf = buf.map{|chunk| chunk.gsub(/%.*\n/,'')}
+title = nil
+buf.each do |chunk|
+  # Beamer has \title[short title]{title} command.
+  # Other documentclasses don't have such short style option.
+  if chunk =~ /\\title(\[(.*?)\])?\s*\{(.*?)\}/
+    t1 = $2; t2 = $3
+    if t1 != nil
+      title = t1
+    elsif t2 != nil
+      title = t2
+    end
+  end
 end
 
 build_dir = @build_dir = "_build" # default build directory. You can customize it.
@@ -42,7 +52,7 @@ file "#{build_dir}/main_temp.pdf" => "#{build_dir}/main_temp.tex" do
   sh "latexmk -lualatex -pdflualatex=\"lualatex --halt-on-error %O %S\" -output-directory=#{build_dir} #{build_dir}/main_temp.tex"
 end
 
-file "#{build_dir}/main_temp.tex" => dsts do
+file "#{build_dir}/main_temp.tex" => dsts+["main.tex", "helper.tex"] do
   mk_main_temp '.', build_dir, dsts, "main_temp.tex"
 end
 
