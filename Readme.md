@@ -235,6 +235,13 @@ This file is not needed if you use the \\maketitile command.
 You can also modify cover.tex to use another image file.
 - helper.tex is part of the preamble.
 It mainly includes packages and define macros (\\newcommand etc).
+You need to add some definition to helper.tex if your source files include Markdown files.
+Markdown is converted to Tex by Pandoc and it generates some commands which are not defined by default.
+For example, \\tightlist command is inserted to itemize environments.
+If you don't define the command in helper.tex, an error happens.
+Such commands are depend on your Markdown source file.
+Refer to the Pandoc template file to know how to define them.
+You can see it by `pandoc --print-default-template=latex`.
 - main.tex is the root file. You don't have to write the \\input{} commands to i subfiles.
 Importing is done automatically.
 

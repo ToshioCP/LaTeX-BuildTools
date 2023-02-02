@@ -14,3 +14,6 @@ example/example3/_build
 
 # Ignore local sample directory
 代数学
+
+# Ignore temporary files
+temp

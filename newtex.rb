@@ -76,6 +76,12 @@ helper_tex = <<EOS
 \\usepackage{tikz}
 \\usepackage[margin=2.4cm]{geometry}
 \\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+% If your source includes Markdown, you may need the following lines.
+% It is because Pandoc generates some undefined commands.
+% Refer to the Pandoc template file to know how to define them.
+% You can see it by 'pandoc --print-default-template=latex'.
+\\providecommand{\\tightlist}{%
+  \\setlength{\\itemsep}{0pt}\\setlength{\\parskip}{0pt}}
 EOS
 
 gecko_png = <<'EOS'
