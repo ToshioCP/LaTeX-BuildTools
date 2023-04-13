@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+require 'lbt'
+include Lbt
+case ARGV[0]
+when "new"
+  case ARGV.size
+  when 2 then create ARGV[1]
+  when 3 then create ARGV[1], ARGV[2]
+  when 4 then create ARGV[1], ARGV[2], ARGV[3]
+  else return
+  end
+when "build"
+  build
+when "part_typeset"
+  return unless ARGV.size == 2
+  part_typeset ARGV[1]
+when "renum"
+  renum
+else
+  $stderr.print <<~EOS
+  Usage: lbt command [argument]
+  The command and argument are one of:
+    new directory [document_style [build_directory]]: create a new working directory.
+      document_style: article, book (default) or beamer
+      build_directory: It will be made under the directory (the first argument). The default is _build.
+    build: build a pdf file from all the source files.
+    part_typeset file_or_numbers: build a pdf file from a single source file.
+      example: part_typeset 1-2-2 => part_typeset part1/chap2/sec2.xxx
+    renum: renumber the source files.
+  EOS
+end

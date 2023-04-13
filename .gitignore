@@ -7,13 +7,11 @@
 Readme.html
 Readme.ja.html
 
-# Ignore _build directory
-example/example1/_build
-example/example2/_build
-example/example3/_build
-
-# Ignore local sample directory
-代数学
+# Ignore `Tutorial` directory
+Tutorial
 
 # Ignore temporary files
 temp
+
+# Ignore gem file
+lbt*.gem
