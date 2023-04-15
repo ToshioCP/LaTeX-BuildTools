@@ -11,9 +11,9 @@ Latex-Buildtoolsを使うには次の3つが必要です。
 
 LbtはRubyのgemとして提供されるので、gemコマンドでインストールします。
 
-~~~
+```
 $ gem install lbt
-~~~
+```
 
 # ソースファイル用ディレクトリとテンプレートの作成
 
@@ -24,26 +24,26 @@ newサブコマンドには、ディレクトリ名、ドキュメントクラ�
 省略した場合のデフォルト値はそれぞれbookと\_buildです。
 ここではltjsarticleドキュメントクラスを使います。
 
-~~~
+```
 $ lbt new Tutorial ltjsarticle
 $ cd Tutorial
 $ ls -a
 .  ..  .config  helper.tex  main.tex
-~~~
+```
 
 .configファイルには作業ディレクトリ名の定義が書かれています。
 
-~~~
+```
 $ cat .config
 build_dir = _build
-~~~
+```
 
 newサブコマンドで作業ディレクトリ名を省略したので、デフォルト値の\_buildになっています。
 これはbuildとpart\_typesetサブコマンド実行時に参照されます。
 
 main.texはLaTeXソースのルートファイルです。
 
-~~~
+```
 $ cat main.tex
 \documentclass{ltjsarticle}
 \input{helper.tex}
@@ -54,7 +54,7 @@ $ cat main.tex
 \tableofcontents
 
 \end{document}
-~~~
+```
 
 タイトルと著者は書き換えが必要です。
 タイトルを「チュートリアル」に、著者を「関谷　敏雄」に変更しておきます。
@@ -62,7 +62,7 @@ $ cat main.tex
 helper.texはプリアンブル部に取り込まれます。
 主にパッケージの取り込みとコマンドの定義をします。
 
-~~~
+```
 $ cat helper.tex
 \usepackage{amsmath,amssymb}
 \usepackage[luatex]{graphicx}
@@ -75,7 +75,7 @@ $ cat helper.tex
 % You can see it by 'pandoc --print-default-template=latex'.
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-~~~
+```
 
 今回はtikzは必要ないので削除しても構いませんが、ここではそのままにしておきます。
 最後の2行は、PandocでMarkdownファイルをLaTeXファイルに変換するときに必要です。
@@ -92,9 +92,9 @@ $ cat helper.tex
 LaTeXのソースファイルからPDFファイルを作ることをタイプセットといいます。
 タイプセットはbuildサブコマンドで実行できます。
 
-~~~
+```
 $ lbt build
-~~~
+```
 
 この実行によってトップディレクトリにPDFファイルが生成されます。
 ファイル名にはタイトルが使われるので、「チュートリアル.pdf」となります。
@@ -105,9 +105,9 @@ LaTexのソースが大きくなると全体のタイプセットに時間がか
 1つのファイルを書いていて、そのPDFの出来栄えを確かめたいときに全体をタイプセットするのは時間がかかりすぎます。
 そのときは、該当のファイルのみをタイプセットすることができます。
 
-~~~
+```
 $ lbt part_typeset 1
-~~~
+```
 
 引数の1はsec1.mdのことです。
 もしsec5.mdをタイプセットしたければ1の代わりに5を使ってください。
@@ -121,6 +121,6 @@ PartやChapterのある大きな文書では、例えばpart1/chap2/sec4.texに�
 これらをsec1.md、sec1.5.md、sec2.mdからsec1.md、sec2.md、sec3.mdのように連続する正整数に直すことをリナンバーと呼ぶことにします。
 renumサブコマンドを実行することでリナンバーできます。
 
-~~~
+```
 $ lbt renum
-~~~
+```

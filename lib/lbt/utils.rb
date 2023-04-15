@@ -3,11 +3,15 @@ require 'fileutils'
 include FileUtils
 
 class String
-  # Add +remove_tex_comment+ instance method to String class.
+  # Remove verbatim environments and comments (including the following new line) from self (LaTeX source).
   def remove_tex_comment
-    # verbatim環境とコメント削除(コメントは改行を含む)
     gsub(/\\begin\{verbatim\}.*\\end\{verbatim\}/m, '').gsub(/%.*\n/,'')
   end
+  # Return a string with the new suffix.
+  # If the suffix is illegal, nil is returned.
+  # Be careful that the suffix begins with a period.
+  #
+  # It redefines itself if it has been defined. For example, rake defines ext method.
   def ext(suffix)
     return nil unless suffix.is_a?(String) && /^\.\w+$/ =~ suffix
     s = File.extname(self)
@@ -16,8 +20,27 @@ class String
 end
 
 module Lbt
+=begin rdoc
+When you create an instance of the PCS class, it keeps the structure of Part-Chapter-Section files.
+For example,
+  +-part1-+-chap1-+-sec1.tex
+  |       |       +-sec2.tex`
+  |       +-chap2-+-sec1.tex`
+  |       |       +-sec2.tex`
+  +-part2-+-chap1-+-sec1.tex
+          |       +-sec2.tex`
+If the files are as above, the PCS instance keeps the six filenames whch are sorted alphabetically.
+=end
   class PCS
-    attr_reader :type, :dir
+    # Type is one of :PCS, :CS and :S
+    # - :PCS => The file structure has part, chap directories.
+    # - :CS  => The file structure has chap directories.
+    # - :S   => The file structure doesn't have any directories.
+    attr_reader :type
+    # The name of the top direcotory
+    attr_reader :dir
+    # Create a new PCS instance.
+    # You can give a top directory as an argument.
     def initialize dir="."
       @dir = dir.dup
       @dir.freeze
@@ -70,18 +93,19 @@ module Lbt
       raise "No [[part/]chap/]sec files exist.\n" if @files.empty?
     end
 
-    # Return an array of the relative pathnames from the base directory.
+    # Return an array of pathnames which are relative from the top directory.
     # The returned pathnames are the copies.
-    # So, even if a user changes them, the original pathnames are not changed.
+    # So, even if a user changes them, the original pathnames in the PCS instance are not changed.
     def to_a
       @files.map {|s| s.dup}
     end
-
+    # Executes the block with each pathname.
     def each
       @files.each {|f| yield(f)}
     end
   end
 
+  # Return a hash (key: extension, value: Proc object) of converters.
   def get_converters
     converters = {'.md':  lambda {|src, dst| system("pandoc -o #{dst} #{src}")} }
     if File.file?("converters.rb")
@@ -97,7 +121,7 @@ module Lbt
     files = Dir.children(".").reject{|f| f == build_dir || f == "main.tex"}
     cp_conv_0 ".", files, build_dir, converters
   end
-  # no doc
+  # :nodoc:
   def cp_conv_0 sdir, files, ddir, converters
     files.each do |f|
       f1 = "#{sdir}/#{f}"; f2 = "#{ddir}/#{f}"; ext = File.extname(f).to_sym

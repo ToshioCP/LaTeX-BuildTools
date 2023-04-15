@@ -1,7 +1,13 @@
 require_relative 'utils.rb'
 
 module Lbt
-  def part_typeset file_or_number, preview = false
+  # Typeset one source file to check the PDF.
+  #
+  # Parameter:
+  # [file_or_number]
+  # It can be either a filename or the number of a filename.
+  # For example, part1/chap2/sec3.tex or 1-2-3
+  def part_typeset file_or_number
     return unless file_or_number.is_a? String
     if File.file?(file_or_number)
       file = file_or_number
@@ -27,7 +33,7 @@ module Lbt
     cd cur_dir
   end
 
-  # example of n_n_n and return value:  '1-1-1' => 'part1/chap1/sec1.src.tex', '1-2' => 'chap1/sec2.md', '1' => 'sec1.tex',
+  # :nodoc:
   def num2path n_n_n
     return nil unless n_n_n.is_a? String
     num_pcs = /^(\d+(\.\d+)?)-(\d+(\.\d+)?)-(\d+(\.\d+)?)$/

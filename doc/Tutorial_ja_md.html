@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>Tutorial.ja - LaTeX-Buildtools</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+
+
+  <ul class="link-list" role="directory">
+              <li>      <a href="#label-E3-82-A4-E3-83-B3-E3-82-B9-E3-83-88-E3-83-BC-E3-83-AB">インストール</a>
+          <li>      <a href="#label-E3-82-BD-E3-83-BC-E3-82-B9-E3-83-95-E3-82-A1-E3-82-A4-E3-83-AB-E7-94-A8-E3-83-87-E3-82-A3-E3-83-AC-E3-82-AF-E3-83-88-E3-83-AA-E3-81-A8-E3-83-86-E3-83-B3-E3-83-97-E3-83-AC-E3-83-BC-E3-83-88-E3-81-AE-E4-BD-9C-E6-88-90">ソースファイル用ディレクトリとテンプレートの作成</a>
+          <li>      <a href="#label-E6-9C-AC-E6-96-87-E3-83-95-E3-82-A1-E3-82-A4-E3-83-AB-E3-81-AE-E4-BD-9C-E6-88-90">本文ファイルの作成</a>
+          <li>      <a href="#label-E3-82-BF-E3-82-A4-E3-83-97-E3-82-BB-E3-83-83-E3-83-88">タイプセット</a>
+          <li>      <a href="#label-E9-83-A8-E5-88-86-E3-82-BF-E3-82-A4-E3-83-97-E3-82-BB-E3-83-83-E3-83-88">部分タイプセット</a>
+          <li>      <a href="#label-E3-83-AA-E3-83-8A-E3-83-B3-E3-83-90-E3-83-BC">リナンバー</a>
+
+  </ul>
+</div>
+
+
+  <div id="project-metadata">
+    
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="./License_md.html">License</a>
+    <li><a href="./README_md.html">README</a>
+    <li><a href="./Tutorial_en_md.html">Tutorial.en</a>
+    <li><a href="./Tutorial_ja_md.html">Tutorial.ja</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-label="Page Tutorial.ja.md">
+
+<h1 id="label-E3-82-A4-E3-83-B3-E3-82-B9-E3-83-88-E3-83-BC-E3-83-AB">インストール<span><a href="#label-E3-82-A4-E3-83-B3-E3-82-B9-E3-83-88-E3-83-BC-E3-83-AB">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>Latex-Buildtoolsを使うには次の3つが必要です。</p>
+<ul><li>
+<p>Rubyのインストール</p>
+</li><li>
+<p>LuaLaTeXのインストール</p>
+</li><li>
+<p>Lbt（lbtはLatex-Buildtoolsのことです）のインストール</p>
+</li></ul>
+
+<p>最初の2つはディストリビューションのパッケージをインストールするのが最も簡単です。 例えばUbuntuであればaptコマンドを使います。</p>
+
+<p>LbtはRubyのgemとして提供されるので、gemコマンドでインストールします。</p>
+
+<pre>$ gem install lbt</pre>
+
+<h1 id="label-E3-82-BD-E3-83-BC-E3-82-B9-E3-83-95-E3-82-A1-E3-82-A4-E3-83-AB-E7-94-A8-E3-83-87-E3-82-A3-E3-83-AC-E3-82-AF-E3-83-88-E3-83-AA-E3-81-A8-E3-83-86-E3-83-B3-E3-83-97-E3-83-AC-E3-83-BC-E3-83-88-E3-81-AE-E4-BD-9C-E6-88-90">ソースファイル用ディレクトリとテンプレートの作成<span><a href="#label-E3-82-BD-E3-83-BC-E3-82-B9-E3-83-95-E3-82-A1-E3-82-A4-E3-83-AB-E7-94-A8-E3-83-87-E3-82-A3-E3-83-AC-E3-82-AF-E3-83-88-E3-83-AA-E3-81-A8-E3-83-86-E3-83-B3-E3-83-97-E3-83-AC-E3-83-BC-E3-83-88-E3-81-AE-E4-BD-9C-E6-88-90">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>ここでは、このチュートリアルをPDFファイルに変換することを通してLbtの使い方を示します。</p>
+
+<p>最初にソースファイル用ディレクトリとテンプレートを作成するために、newサブコマンドを使います。 newサブコマンドには、ディレクトリ名、ドキュメントクラス名、作業ディレクトリ名を引数に与えますが、後ろの2つは省略できます。 省略した場合のデフォルト値はそれぞれbookと_buildです。 ここではltjsarticleドキュメントクラスを使います。</p>
+
+<pre>$ lbt new Tutorial ltjsarticle
+$ cd Tutorial
+$ ls -a
+.  ..  .config  helper.tex  main.tex</pre>
+
+<p>.configファイルには作業ディレクトリ名の定義が書かれています。</p>
+
+<pre>$ cat .config
+build_dir = _build</pre>
+
+<p>newサブコマンドで作業ディレクトリ名を省略したので、デフォルト値の_buildになっています。 これはbuildとpart_typesetサブコマンド実行時に参照されます。</p>
+
+<p>main.texはLaTeXソースのルートファイルです。</p>
+
+<pre>$ cat main.tex
+\documentclass{ltjsarticle}
+\input{helper.tex}
+\title{Title}
+\author{Author}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\end{document}</pre>
+
+<p>タイトルと著者は書き換えが必要です。 タイトルを「チュートリアル」に、著者を「関谷 敏雄」に変更しておきます。</p>
+
+<p>helper.texはプリアンブル部に取り込まれます。 主にパッケージの取り込みとコマンドの定義をします。</p>
+
+<pre>$ cat helper.tex
+\usepackage{amsmath,amssymb}
+\usepackage[luatex]{graphicx}
+\usepackage{tikz}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+% If your source includes Markdown, you may need the following lines.
+% It is because Pandoc generates some undefined commands.
+% The Pandoc template file shows how to define them.
+% You can see it by &#39;pandoc --print-default-template=latex&#39;.
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}</pre>
+
+<p>今回はtikzは必要ないので削除しても構いませんが、ここではそのままにしておきます。 最後の2行は、PandocでMarkdownファイルをLaTeXファイルに変換するときに必要です。 今回のソースはMarkdownなので、このまま残しておきます。</p>
+
+<h1 id="label-E6-9C-AC-E6-96-87-E3-83-95-E3-82-A1-E3-82-A4-E3-83-AB-E3-81-AE-E4-BD-9C-E6-88-90">本文ファイルの作成<span><a href="#label-E6-9C-AC-E6-96-87-E3-83-95-E3-82-A1-E3-82-A4-E3-83-AB-E3-81-AE-E4-BD-9C-E6-88-90">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>今回はこのファイル（Readme.ja.md）をセクションごとに別ファイルにしてトップディレクトリに配置します。 最初の節（インストール）をsec1.mdとし、以下sec2.md、sec3.md・・・とします。 このファイルからコピペしてそれぞれのファイルを作ってください。</p>
+
+<h1 id="label-E3-82-BF-E3-82-A4-E3-83-97-E3-82-BB-E3-83-83-E3-83-88">タイプセット<span><a href="#label-E3-82-BF-E3-82-A4-E3-83-97-E3-82-BB-E3-83-83-E3-83-88">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>LaTeXのソースファイルからPDFファイルを作ることをタイプセットといいます。 タイプセットはbuildサブコマンドで実行できます。</p>
+
+<pre>$ lbt build</pre>
+
+<p>この実行によってトップディレクトリにPDFファイルが生成されます。 ファイル名にはタイトルが使われるので、「チュートリアル.pdf」となります。</p>
+
+<h1 id="label-E9-83-A8-E5-88-86-E3-82-BF-E3-82-A4-E3-83-97-E3-82-BB-E3-83-83-E3-83-88">部分タイプセット<span><a href="#label-E9-83-A8-E5-88-86-E3-82-BF-E3-82-A4-E3-83-97-E3-82-BB-E3-83-83-E3-83-88">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>LaTexのソースが大きくなると全体のタイプセットに時間がかかるようになります。 1つのファイルを書いていて、そのPDFの出来栄えを確かめたいときに全体をタイプセットするのは時間がかかりすぎます。 そのときは、該当のファイルのみをタイプセットすることができます。</p>
+
+<pre>$ lbt part_typeset 1</pre>
+
+<p>引数の1はsec1.mdのことです。 もしsec5.mdをタイプセットしたければ1の代わりに5を使ってください。</p>
+
+<p>PartやChapterのある大きな文書では、例えばpart1/chap2/sec4.texに対して「1-2-4」と引数を指定してください。</p>
+
+<h1 id="label-E3-83-AA-E3-83-8A-E3-83-B3-E3-83-90-E3-83-BC">リナンバー<span><a href="#label-E3-83-AA-E3-83-8A-E3-83-B3-E3-83-90-E3-83-BC">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>ときにはsec1.mdとsec2.mdの間にセクションを挿入したいことがあるかもしれません。 そのときにはsec1.5.mdとしてください。 これらをsec1.md、sec1.5.md、sec2.mdからsec1.md、sec2.md、sec3.mdのように連続する正整数に直すことをリナンバーと呼ぶことにします。 renumサブコマンドを実行することでリナンバーできます。</p>
+
+<pre>$ lbt renum</pre>
+
+</main>
+
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.5.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

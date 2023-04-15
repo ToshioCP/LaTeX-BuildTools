@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>Tutorial.en - LaTeX-Buildtools</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+
+
+  <ul class="link-list" role="directory">
+              <li>      <a href="#label-Installation">Installation</a>
+          <li>      <a href="#label-Creating+a+directory+and+templates+for+source+files">Creating a directory and templates for source files</a>
+          <li>      <a href="#label-Creating+sub+files">Creating sub files</a>
+          <li>      <a href="#label-Typesetting">Typesetting</a>
+          <li>      <a href="#label-Partial+typesetting">Partial typesetting</a>
+          <li>      <a href="#label-Renumbering">Renumbering</a>
+
+  </ul>
+</div>
+
+
+  <div id="project-metadata">
+    
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="./License_md.html">License</a>
+    <li><a href="./README_md.html">README</a>
+    <li><a href="./Tutorial_en_md.html">Tutorial.en</a>
+    <li><a href="./Tutorial_ja_md.html">Tutorial.ja</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-label="Page Tutorial.en.md">
+
+<h1 id="label-Installation">Installation<span><a href="#label-Installation">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>The followings are required for LaTex-Buildtools.</p>
+<ul><li>
+<p>Ruby</p>
+</li><li>
+<p>LualateX</p>
+</li><li>
+<p><a href="Lbt.html"><code>Lbt</code></a> (lbt is Latex-Buildtools)</p>
+</li></ul>
+
+<p>The first can be installed from the distribution package. For example, You can use the apt command with Ubuntu.</p>
+
+<p><a href="Lbt.html"><code>Lbt</code></a> is provided as a Ruby Gem. It can be installed with the <code>gem</code> command.</p>
+
+<pre>$ gem install lbt</pre>
+
+<h1 id="label-Creating+a+directory+and+templates+for+source+files">Creating a directory and templates for source files<span><a href="#label-Creating+a+directory+and+templates+for+source+files">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>The rest of this tutorial shows an example of using <a href="Lbt.html"><code>Lbt</code></a>. Its source file is this tutorial.</p>
+
+<p>First, use a <code>new</code> subcommand to create a directory and templates for source files. The <code>new</code> subcommand takes the directory name, document class name, and working directory name as arguments. The last two arguments can be left out. Their default values are book and _build respectively. In this example, we use <code>ltjsarticle</code> document class.</p>
+
+<pre>$ lbt new Tutorial ltjsarticle
+$ cd Tutorial
+$ ls -a
+. .. .config helper.tex main.tex</pre>
+
+<p>The working directory name is written in the <code>.config</code> file.</p>
+
+<pre>$ cat .config
+build_dir = _build</pre>
+
+<p>Since the working directory name was left out, it is _build (default value). It is used when <code>build</code> and <code>part_typeset</code> subcommands are executed.</p>
+
+<p>The file <code>main.tex</code> is the route file of LaTeX sources.</p>
+
+<pre>$ cat main.tex
+\documentclass{ltjsarticle}
+\input{helper.tex}
+\title{Title}
+\author{Author}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\end{document}</pre>
+
+<p>The title and the author need to rewrite. They are changed to “Tutorial” and “Toshio Sekiya” respectively.</p>
+
+<p>The file <code>helper.tex</code> is included into the preamble part of <code>main.tex</code>. Its contents are mainly package including and command definitions.</p>
+
+<pre>$ cat helper.tex
+\usepackage{amsmath,amssymb}
+\usepackage[luatex]{graphicx}
+\usepackage{tikz}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+% If your source includes Markdown, you may need the following lines.
+% It is because Pandoc generates some undefined commands.
+% The Pandoc template file shows how to define them.
+% You can see it by &#39;pandoc --print-default-template=latex&#39;.
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}</pre>
+
+<p>Since we don’t need tikz package in this example, it can be deleted. But you can leave it if you want. The last two lines are required when converting Markdown files to LaTeX files with Pandoc. The source, which is this tutorial, is Markdown, so we will leave them.</p>
+
+<h1 id="label-Creating+sub+files">Creating sub files<span><a href="#label-Creating+sub+files">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>This tutorial has six sections. We divide it into six files sec1.md, sec2.md, … and sec6.md They are put under the top directory.</p>
+
+<h1 id="label-Typesetting">Typesetting<span><a href="#label-Typesetting">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>Converting LaTeX source files into a PDF file is called typesetting. You can typeset them with <code>build</code> subcommand of <a href="Lbt.html"><code>Lbt</code></a>.</p>
+
+<pre>$ lbt build</pre>
+
+<p>There are many converting processes. Finally a PDF file <code>Tutorial.pdf</code> is made in the top directory. The name of the PDF file is the same as the title in the source file.</p>
+
+<h1 id="label-Partial+typesetting">Partial typesetting<span><a href="#label-Partial+typesetting">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>The bigger are the LaTeX sources, the longer time the typesetting takes. Even if your modification is in only one, <code>build</code> subcommand converts all the source files. It takes long time. The subcommand <code>part_typeset</code> provides one file typesetting. So it is faster than <code>build</code> subcommand.</p>
+
+<pre>$ lbt part_typeset 1</pre>
+
+<p>The argument <code>1</code> means <code>sec1.md</code>. If you want to type sec5.md, use 5 instead of 1.</p>
+
+<p>For large documents with parts and chapters, for example, specify “1-2-4” for part1/chap2/sec4.tex.</p>
+
+<h1 id="label-Renumbering">Renumbering<span><a href="#label-Renumbering">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>Sometimes you may want to insert a section between sec1.md and sec2.md. At that time, name it sec1.5.md. If you want to renamed these (sec1.md, sec1.5.md and sec2.md) into consecutive number filenames (sec1.md, sec2.md, and sec3.md), use <code>renum</code> subcommand.</p>
+
+<pre>$ lbt renum</pre>
+
+</main>
+
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.5.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

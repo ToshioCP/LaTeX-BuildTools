@@ -8,12 +8,18 @@ include FileUtils
 
 class TestBuild < Minitest::Test
   include Lbt
-  def test_build
-    cur_dir = Dir.pwd
-    dir = "build_sample"
-    create dir
-    cd dir
+  def setup
+    @cur_dir = Dir.pwd
+    @dir = "#{__dir__}/build_sample"
+    create @dir
+    cd @dir
+  end
+  def teardown
+    cd @cur_dir
+    remove_entry_secure @dir
+  end
 
+  def test_build
     %w{part1/chap1 part1/chap2 part2/chap1 part2/chap2}.each {|d| mkdir_p d}
     md = <<~EOS
     # Heading1
@@ -43,8 +49,5 @@ class TestBuild < Minitest::Test
     # We just test the exista of (build_dir)/main.pdf and (title).pdf.
     assert File.exist?("_build/main.pdf"), "_build/main.pdf not created."
     assert File.exist?("Title.pdf"), "Title.pdf not created."
-
-    cd cur_dir
-    remove_entry_secure dir
   end
 end

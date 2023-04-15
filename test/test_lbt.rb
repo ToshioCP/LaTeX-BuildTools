@@ -9,7 +9,7 @@ class TestLbt < Minitest::Test
     # set stub lbt library for the test.
     @bin = "#{__dir__}/../bin"
     @cur_dir = Dir.pwd
-    @dir = "lbt_sample"
+    @dir = "#{__dir__}/lbt_sample"
     mkdir_p @dir
     cd @dir
     File.write("lbt.rb", <<~'EOS')

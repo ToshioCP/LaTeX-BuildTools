@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.version           = '0.5'
   s.summary           = 'LaTeX Build Tools'
   s.description       = 'Lbt is a build tool for LaTeX. It is useful for big documents.'
-  s.licenses          = ['GPL-3.0']
+  s.license           = 'GPL-3.0'
   s.author            = 'Toshio Sekiya'
   s.email             = 'lxboyjp@gmail.com'
   s.homepage          = 'https://github.com/ToshioCP/LaTeX-BuildTools'

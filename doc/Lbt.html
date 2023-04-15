@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>module Lbt - LaTeX-Buildtools</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="module">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    
+    
+    
+    
+<!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    <li ><a href="#method-i-build">#build</a>
+    <li ><a href="#method-i-cp_conv">#cp_conv</a>
+    <li ><a href="#method-i-create">#create</a>
+    <li ><a href="#method-i-get_converters">#get_converters</a>
+    <li ><a href="#method-i-part_typeset">#part_typeset</a>
+    <li ><a href="#method-i-renum">#renum</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="module-Lbt">
+  <h1 id="module-Lbt" class="module">
+    module Lbt
+  </h1>
+
+  <section class="description">
+    
+<p>LaTeX-Buildtools provides Ruby script <code>lbt</code> to create template, build it and do other tasks. The <code>lbt</code> command includes <a href="Lbt.html"><code>Lbt</code></a> module and calls its instance methods. All the methods are instance methods and <a href="Lbt.html"><code>Lbt</code></a> module doesn’t have any singleton methods.</p>
+
+  </section>
+
+  <section id="5Buntitled-5D" class="documentation-section">
+
+
+
+
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-build" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">build</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Typeset LaTeX source files into a PDF file.</p>
+
+          <div class="method-source-code" id="build-source">
+            <pre><span class="ruby-comment"># File lib/lbt/build.rb, line 5</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">build</span>
+  <span class="ruby-identifier">m</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&quot;.config&quot;</span>).<span class="ruby-identifier">match</span>(<span class="ruby-regexp">/^build_dir = (.*)$/</span>)
+  <span class="ruby-identifier">build_dir</span> = <span class="ruby-identifier">m</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">m</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">:</span> <span class="ruby-string">&quot;_build&quot;</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&quot;main.tex not exist.&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-string">&#39;main.tex&#39;</span>)
+  <span class="ruby-identifier">mkdir</span> <span class="ruby-identifier">build_dir</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">build_dir</span>)
+
+  <span class="ruby-comment"># Build main.tex</span>
+  <span class="ruby-identifier">main_tex</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&#39;main.tex&#39;</span>)
+  <span class="ruby-identifier">m</span> = <span class="ruby-regexp">/\\title(\[(.*?)\])?\s*\{(.*?)\}/</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">main_tex</span>.<span class="ruby-identifier">remove_tex_comment</span>)
+  <span class="ruby-comment"># Beamer has \title[short title]{title} command.</span>
+  <span class="ruby-comment"># Other documentclasses don&#39;t have such short style option.</span>
+  <span class="ruby-identifier">title</span> = <span class="ruby-identifier">m</span>[<span class="ruby-value">2</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">m</span>[<span class="ruby-value">3</span>]
+  <span class="ruby-identifier">files</span> = <span class="ruby-constant">PCS</span>.<span class="ruby-identifier">new</span>.<span class="ruby-identifier">to_a</span>
+  <span class="ruby-identifier">input_commands</span> = <span class="ruby-identifier">files</span>.<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;\\input{#{f.ext(&#39;.tex&#39;)}}\n&quot;</span>}.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">join</span>
+  <span class="ruby-identifier">main_tex</span> = <span class="ruby-identifier">main_tex</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp">/\\end{document}/</span>, <span class="ruby-node">&quot;#{input_commands}\n\\end{document}&quot;</span>)
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{build_dir}/main.tex&quot;</span>, <span class="ruby-identifier">main_tex</span>)
+  <span class="ruby-comment"># copy or convert the files into build_dir</span>
+  <span class="ruby-identifier">cp_conv</span> <span class="ruby-identifier">build_dir</span>
+  <span class="ruby-comment"># Typeset</span>
+  <span class="ruby-identifier">cur_dir</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">pwd</span>
+  <span class="ruby-identifier">cd</span> <span class="ruby-identifier">build_dir</span>
+  <span class="ruby-identifier">system</span> <span class="ruby-string">&quot;latexmk -lualatex -pdflualatex=\&quot;lualatex --halt-on-error %O %S\&quot; main.tex&quot;</span>
+  <span class="ruby-identifier">cd</span> <span class="ruby-identifier">cur_dir</span>
+  
+  <span class="ruby-comment"># Copy the pdf file.</span>
+  <span class="ruby-identifier">temp</span> = <span class="ruby-node">&quot;#{build_dir}/main.pdf&quot;</span>
+  <span class="ruby-identifier">target</span> = <span class="ruby-node">&quot;#{title}.pdf&quot;</span>
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">target</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">mtime</span>(<span class="ruby-identifier">temp</span>) <span class="ruby-operator">&lt;=</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">mtime</span>(<span class="ruby-identifier">target</span>)
+    <span class="ruby-identifier">cp</span> <span class="ruby-identifier">temp</span>, <span class="ruby-identifier">target</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-cp_conv" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">cp_conv</span><span
+              class="method-args">(build_dir)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>copy or convert source files into build directory.</p>
+
+          <div class="method-source-code" id="cp_conv-source">
+            <pre><span class="ruby-comment"># File lib/lbt/utils.rb, line 119</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">cp_conv</span> <span class="ruby-identifier">build_dir</span>
+  <span class="ruby-identifier">converters</span> = <span class="ruby-identifier">get_converters</span>
+  <span class="ruby-identifier">files</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">children</span>(<span class="ruby-string">&quot;.&quot;</span>).<span class="ruby-identifier">reject</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">build_dir</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">f</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;main.tex&quot;</span>}
+  <span class="ruby-identifier">cp_conv_0</span> <span class="ruby-string">&quot;.&quot;</span>, <span class="ruby-identifier">files</span>, <span class="ruby-identifier">build_dir</span>, <span class="ruby-identifier">converters</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-create" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">create</span><span
+              class="method-args">(dir, document_class=&quot;book&quot;, build_dir=&quot;_build&quot;)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>The create method creates a source file directory and put some templates in the directory.</p>
+
+<p>Parameters are:</p>
+<dl class="rdoc-list label-list"><dt>dir
+<dd>
+<p>The name of the source file directory</p>
+</dd><dt>document_class
+<dd>
+<p>The document class of the LaTeX source file. For example, article, book and beamer.</p>
+</dd><dt>build_dir
+<dd>
+<p>The working directory in which typeset is carried out.</p>
+</dd></dl>
+
+          <div class="method-source-code" id="create-source">
+            <pre><span class="ruby-comment"># File lib/lbt/create.rb, line 14</span>
+  <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create</span> <span class="ruby-identifier">dir</span>, <span class="ruby-identifier">document_class</span>=<span class="ruby-string">&quot;book&quot;</span>, <span class="ruby-identifier">build_dir</span>=<span class="ruby-string">&quot;_build&quot;</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-string">&quot;Argument error.&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">dir</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">dir</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/[[:^space:]]+/</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;#{dir} already exists.&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">dir</span>)
+    <span class="ruby-identifier">mkdir_p</span>(<span class="ruby-identifier">dir</span>)
+    <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/.config&quot;</span>, <span class="ruby-node">&quot;build_dir = #{build_dir}\n&quot;</span>)
+    <span class="ruby-identifier">helper_tex</span> = <span class="ruby-identifier">&lt;&lt;~EOS</span>
+<span class="ruby-value">    \\usepackage{amsmath,amssymb}
+    \\usepackage[luatex]{graphicx}
+    \\usepackage{tikz}
+    \\usepackage[margin=2.4cm]{geometry}
+    \\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+    % If your source includes Markdown, you probably need the following lines.
+    % It is because Pandoc generates some undefined commands.
+    % The Pandoc template file shows how to define them.
+    % You can see it by &#39;pandoc --print-default-template=latex&#39;.
+    \\providecommand{\\tightlist}{%
+      \\setlength{\\itemsep}{0pt}\\setlength{\\parskip}{0pt}}
+</span><span class="ruby-identifier">    EOS</span>
+
+    <span class="ruby-keyword">if</span> [<span class="ruby-string">&quot;book&quot;</span>, <span class="ruby-string">&quot;ltjsbook&quot;</span>].<span class="ruby-identifier">include?</span> <span class="ruby-identifier">document_class</span>
+        <span class="ruby-identifier">main_tex</span> = <span class="ruby-identifier">&lt;&lt;~EOS</span>
+<span class="ruby-value">        \\documentclass{#{document_class}}
+        \\input{helper.tex}
+        \\title{Title}
+        \\author{Author}
+        \\begin{document}
+        \\frontmatter
+        \\begin{titlepage}
+        \\input{cover.tex}
+        \\end{titlepage}
+        \\tableofcontents
+        \\mainmatter
+
+        \\end{document}
+</span><span class="ruby-identifier">      EOS</span>
+
+      <span class="ruby-identifier">cover_tex</span> = <span class="ruby-identifier">&lt;&lt;~EOS</span>
+<span class="ruby-value">        \\newgeometry{margin=2.4cm}
+        \\begin{center}
+        \\begin{tikzpicture}
+          \\node at (0,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (70pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (140pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (210pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (280pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (350pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+        \\end{tikzpicture}
+        \\end{center}
+
+        \\vspace{2cm}
+        \\begin{center}
+        {\\fontsize{64}{0} \\selectfont Title}
+        \\end{center}
+        \\vspace{1cm}
+        \\begin{center}
+        {\\huge Author}
+        \\end{center}
+
+        \\vspace{9cm}
+        %\\vspace{6.5cm}
+        %\\begin{center}
+        %{\\Large Foobar University}
+        %\\end{center}
+        %\\begin{center}
+        %{\\Large School of Foobar}
+        %\\end{center}
+
+        \\vspace{3cm}
+        \\begin{center}
+        \\begin{tikzpicture}
+          \\node at (0,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (70pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (140pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (210pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (280pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+          \\node at (350pt,0) {\\includegraphics[width=100pt]{gecko.png}};
+        \\end{tikzpicture}
+        \\end{center}
+        \\restoregeometry
+</span><span class="ruby-identifier">      EOS</span>
+
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/main.tex&quot;</span>, <span class="ruby-identifier">main_tex</span>)
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/helper.tex&quot;</span>, <span class="ruby-identifier">helper_tex</span>)
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/cover.tex&quot;</span>, <span class="ruby-identifier">cover_tex</span>)
+      <span class="ruby-identifier">gecko_png</span> = <span class="ruby-identifier">__dir__</span><span class="ruby-string">+&quot;/../../images/gecko.png&quot;</span>
+      <span class="ruby-identifier">cp</span>(<span class="ruby-identifier">gecko_png</span>, <span class="ruby-node">&quot;#{dir}/gecko.png&quot;</span>)
+    <span class="ruby-keyword">elsif</span> [<span class="ruby-string">&quot;article&quot;</span>, <span class="ruby-string">&quot;ltjsarticle&quot;</span>].<span class="ruby-identifier">include?</span> <span class="ruby-identifier">document_class</span>
+      <span class="ruby-identifier">main_tex</span> = <span class="ruby-identifier">&lt;&lt;~EOS</span>
+<span class="ruby-value">      \\documentclass{#{document_class}}
+      \\input{helper.tex}
+      \\title{Title}
+      \\author{Author}
+      \\begin{document}
+      \\maketitle
+      \\tableofcontents
+
+      \\end{document}
+</span><span class="ruby-identifier">      EOS</span>
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/main.tex&quot;</span>, <span class="ruby-identifier">main_tex</span>)
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/helper.tex&quot;</span>, <span class="ruby-identifier">helper_tex</span>)
+    <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">document_class</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;beamer&quot;</span>
+      <span class="ruby-identifier">main_tex</span> = <span class="ruby-identifier">&lt;&lt;~EOS</span>
+<span class="ruby-value">      \\documentclass[utf8,aspectratio=149]{beamer}
+      \\mode&lt;presentation&gt;
+      {
+        \\usetheme{Warsaw}
+        \\setbeamercovered{transparent}
+      }
+      \\input{helper.tex}
+      % Don&#39;t show navigation symbol =&gt; If you want to show it, comment out the following line.
+      \\setbeamertemplate{navigation symbols}{}
+      \\title[short\\_title] % (optional, use only with long paper titles)
+      {titile}
+      \\subtitle
+      {substitile}
+      \\author[short\\_author] % (optional, use only with lots of authors)
+      {author \\\\ \\texttt{sample\\_address@email.com}}
+      % - Give the names in the same order as the appear in the paper.
+      % - Use the \\inst{?} command only if the authors have different
+      %   affiliation.
+      \\institute[short\\_institute] % (optional, but mostly needed)
+      {
+      %  \\inst{1}%
+        Department of Mathematics and Technology\\\\
+        School of Education and Humanities\\\\
+        XXXX University
+      }
+      % - Use the \\inst command only if there are several affiliations.
+      % - Keep it simple, no one is interested in your street address.
+      \\date[short\\_date] % (optional, should be abbreviation of conference name)
+      {XXXX meeting on Wednesday, April 27 2022}
+      % - Either use conference name or its abbreviation.
+      % - Not really informative to the audience, more for people (including
+      %   yourself) who are reading the slides online
+      \\subject{subject}
+      % If you have a file called &quot;university-logo-filename.xxx&quot;, where xxx
+      % is a graphic format that can be processed by lualatex,
+      % resp., then you can add a logo as follows:
+      % \\pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+      % \\logo{\\pgfuseimage{university-logo}}
+      \\begin{document}
+      \\begin{frame}
+        \\titlepage
+      \\end{frame}
+      \\begin{frame}{Outline}
+        \\tableofcontents
+      %  \\begin{center}
+      %    \\includegraphics[width=6cm,keepaspectratio]{photo.jpg}
+      %  \\end{center}
+      \\end{frame}
+
+      \\end{document}
+</span><span class="ruby-identifier">      EOS</span>
+      <span class="ruby-identifier">helper_tex</span> = <span class="ruby-identifier">&lt;&lt;~EOS</span>
+<span class="ruby-value">      \\usepackage{luatexja}
+      % 和文のデフォルトをゴシック体に
+      \\renewcommand{\\kanjifamilydefault}{\\gtdefault}
+      \\usepackage{amsmath,amssymb}
+      \\usepackage{tikz}
+      \\usepackage[absolute,overlay]{textpos}
+</span><span class="ruby-identifier">      EOS</span>
+      <span class="ruby-identifier">sec1_tex</span> = <span class="ruby-identifier">&lt;&lt;~EOS</span>
+<span class="ruby-value">      % This is a sample latex file for the beamer documentclass.
+      \\begin{frame}{introduction}
+      About something
+      \\begin{itemize}
+        \\item item 1
+        \\item&lt;2&gt; item 2
+      \\end{itemize}
+      About another thing
+      \\begin{enumerate}
+        \\item&lt;3&gt; item 1
+        \\item&lt;3-4&gt; item 2
+      \\end{enumerate}
+      \\alert{alert message, which is red.}
+      \\end{frame}
+      % Show a photo that extends to the whole slide view.
+      \\begin{frame}
+      \\begin{textblock*}{128mm}(0pt,0pt)
+      \\includegraphics[width=128mm,height=96mm,keepaspectratio]{lagoon.jpg}
+      \\end{textblock*}
+      \\end{frame}
+</span><span class="ruby-identifier">      EOS</span>
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/main.tex&quot;</span>, <span class="ruby-identifier">main_tex</span>)
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/helper.tex&quot;</span>, <span class="ruby-identifier">helper_tex</span>)
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/sec1.tex&quot;</span>, <span class="ruby-identifier">sec1_tex</span>)
+      <span class="ruby-identifier">lagoon_jpg</span> = <span class="ruby-identifier">__dir__</span><span class="ruby-string">+&quot;/../../images/lagoon.jpg&quot;</span>
+      <span class="ruby-identifier">cp</span>(<span class="ruby-identifier">lagoon_jpg</span>, <span class="ruby-node">&quot;#{dir}/lagoon.jpg&quot;</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">main_tex</span> = <span class="ruby-identifier">&lt;&lt;~EOS</span>
+<span class="ruby-value">      \\documentclass{#{document_class}}
+      \\input{helper.tex}
+      \\title{Title}
+      \\author{Author}
+      \\begin{document}
+      \\maketitle
+      \\tableofcontents
+
+      \\end{document}
+</span><span class="ruby-identifier">      EOS</span>
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/main.tex&quot;</span>, <span class="ruby-identifier">main_tex</span>)
+      <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{dir}/helper.tex&quot;</span>, <span class="ruby-identifier">helper_tex</span>)
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-get_converters" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">get_converters</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Return a hash (key: extension, value: Proc object) of converters.</p>
+
+          <div class="method-source-code" id="get_converters-source">
+            <pre><span class="ruby-comment"># File lib/lbt/utils.rb, line 109</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_converters</span>
+  <span class="ruby-identifier">converters</span> = {<span class="ruby-value">&#39;.md&#39;:</span>  <span class="ruby-identifier">lambda</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">src</span>, <span class="ruby-identifier">dst</span><span class="ruby-operator">|</span> <span class="ruby-identifier">system</span>(<span class="ruby-node">&quot;pandoc -o #{dst} #{src}&quot;</span>)} }
+  <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">file?</span>(<span class="ruby-string">&quot;converters.rb&quot;</span>)
+    <span class="ruby-identifier">c</span> = <span class="ruby-identifier">eval</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&quot;converters.rb&quot;</span>))
+    <span class="ruby-identifier">c</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">val</span><span class="ruby-operator">|</span> <span class="ruby-identifier">converters</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-identifier">val</span>} <span class="ruby-keyword">if</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">converters</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-part_typeset" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">part_typeset</span><span
+              class="method-args">(file_or_number)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Typeset one source file to check the PDF.</p>
+
+<p>Parameter:</p>
+<dl class="rdoc-list label-list"><dt>file_or_number
+<dd>
+<p>It can be either a filename or the number of a filename. For example, part1/chap2/sec3.tex or 1-2-3</p>
+</dd></dl>
+
+          <div class="method-source-code" id="part_typeset-source">
+            <pre><span class="ruby-comment"># File lib/lbt/part_typeset.rb, line 10</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">part_typeset</span> <span class="ruby-identifier">file_or_number</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file_or_number</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">String</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">file?</span>(<span class="ruby-identifier">file_or_number</span>)
+    <span class="ruby-identifier">file</span> = <span class="ruby-identifier">file_or_number</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">file</span> = <span class="ruby-identifier">num2path</span>(<span class="ruby-identifier">file_or_number</span>)
+    <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">file?</span> <span class="ruby-identifier">file</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">m</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&quot;.config&quot;</span>).<span class="ruby-identifier">match</span>(<span class="ruby-regexp">/^build_dir = (.*)$/</span>)
+  <span class="ruby-identifier">build_dir</span> = <span class="ruby-identifier">m</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">m</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">:</span> <span class="ruby-string">&quot;_build&quot;</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&quot;main.tex not exist.&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-string">&#39;main.tex&#39;</span>)
+  <span class="ruby-identifier">mkdir</span> <span class="ruby-identifier">build_dir</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">build_dir</span>)
+
+  <span class="ruby-identifier">main_tex</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&#39;main.tex&#39;</span>)
+  <span class="ruby-identifier">main_tex</span> = <span class="ruby-identifier">main_tex</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp">/\\end{document}/</span>, <span class="ruby-node">&quot;\\input{#{file.ext(&#39;.tex&#39;)}}\n\\end{document}&quot;</span>)
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span>(<span class="ruby-node">&quot;#{build_dir}/main.tex&quot;</span>, <span class="ruby-identifier">main_tex</span>)
+  <span class="ruby-comment"># copy or convert the files into build_dir</span>
+  <span class="ruby-identifier">cp_conv</span> <span class="ruby-identifier">build_dir</span>
+  <span class="ruby-comment"># Typeset</span>
+  <span class="ruby-identifier">cur_dir</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">pwd</span>
+  <span class="ruby-identifier">cd</span> <span class="ruby-identifier">build_dir</span>
+  <span class="ruby-identifier">system</span> <span class="ruby-string">&quot;latexmk -lualatex -pdflualatex=\&quot;lualatex --halt-on-error %O %S\&quot; main.tex&quot;</span>
+  <span class="ruby-identifier">cd</span> <span class="ruby-identifier">cur_dir</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-renum" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">renum</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Renumber the source files. For example,</p>
+<ul><li>
+<p>sec1.tex, sec1.5.tex, sec2.tex =&gt; sec1.tex, sec2.tex, sec3.tex</p>
+</li><li>
+<p>chap1/sec1.tex, chap1/sec1.2.tex, chap1.3/sec10.tex =&gt; chap1/sec1.tex, chap1/sec2.tex, chap2/sec1.tex</p>
+</li></ul>
+
+          <div class="method-source-code" id="renum-source">
+            <pre><span class="ruby-comment"># File lib/lbt/renumber.rb, line 6</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">renum</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">children</span>(<span class="ruby-string">&quot;.&quot;</span>).<span class="ruby-identifier">select</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span> <span class="ruby-identifier">d</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^part\d+(\.\d+)?$/</span>}.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+    <span class="ruby-identifier">renumber</span> <span class="ruby-string">&quot;part&quot;</span>
+  <span class="ruby-keyword">elsif</span> <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">children</span>(<span class="ruby-string">&quot;.&quot;</span>).<span class="ruby-identifier">select</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span> <span class="ruby-identifier">d</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^chap\d+(\.\d+)?$/</span>}.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+    <span class="ruby-identifier">renumber</span> <span class="ruby-string">&quot;chap&quot;</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">renumber</span> <span class="ruby-string">&quot;sec&quot;</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.5.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

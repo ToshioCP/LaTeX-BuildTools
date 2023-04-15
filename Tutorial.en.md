@@ -12,9 +12,9 @@ For example, You can use the apt command with Ubuntu.
 Lbt is provided as a Ruby Gem.
 It can be installed with the `gem` command.
 
-~~~
+```
 $ gem install lbt
-~~~
+```
 
 # Creating a directory and templates for source files
 
@@ -27,26 +27,26 @@ The last two arguments can be left out.
 Their default values are book and \_build respectively.
 In this example, we use `ltjsarticle` document class.
 
-~~~
+```
 $ lbt new Tutorial ltjsarticle
 $ cd Tutorial
 $ ls -a
 . .. .config helper.tex main.tex
-~~~
+```
 
 The working directory name is written in the `.config` file.
 
-~~~
+```
 $ cat .config
 build_dir = _build
-~~~
+```
 
 Since the working directory name was left out, it is \_build (default value).
 It is used when `build` and `part_typeset` subcommands are executed.
 
 The file `main.tex` is the route file of LaTeX sources.
 
-~~~
+```
 $ cat main.tex
 \documentclass{ltjsarticle}
 \input{helper.tex}
@@ -57,7 +57,7 @@ $ cat main.tex
 \tableofcontents
 
 \end{document}
-~~~
+```
 
 The title and the author need to rewrite.
 They are changed to "Tutorial" and "Toshio Sekiya" respectively.
@@ -65,7 +65,7 @@ They are changed to "Tutorial" and "Toshio Sekiya" respectively.
 The file `helper.tex` is included into the preamble part of `main.tex`.
 Its contents are mainly package including and command definitions.
 
-~~~
+```
 $ cat helper.tex
 \usepackage{amsmath,amssymb}
 \usepackage[luatex]{graphicx}
@@ -78,7 +78,7 @@ $ cat helper.tex
 % You can see it by 'pandoc --print-default-template=latex'.
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-~~~
+```
 
 Since we don't need tikz package in this example, it can be deleted.
 But you can leave it if you want.
@@ -96,9 +96,9 @@ They are put under the top directory.
 Converting LaTeX source files into a PDF file is called typesetting.
 You can typeset them with `build` subcommand of Lbt.
 
-~~~
+```
 $ lbt build
-~~~
+```
 
 There are many converting processes.
 Finally a PDF file `Tutorial.pdf` is made in the top directory.
@@ -112,9 +112,9 @@ It takes long time.
 The subcommand `part_typeset` provides one file typesetting.
 So it is faster than `build` subcommand.
 
-~~~
+```
 $ lbt part_typeset 1
-~~~
+```
 
 The argument `1` means `sec1.md`.
 If you want to type sec5.md, use 5 instead of 1.
@@ -127,6 +127,6 @@ Sometimes you may want to insert a section between sec1.md and sec2.md.
 At that time, name it sec1.5.md.
 If you want to renamed these (sec1.md, sec1.5.md and sec2.md) into consecutive number filenames (sec1.md, sec2.md, and sec3.md), use `renum` subcommand.
 
-~~~
+```
 $ lbt renum
-~~~
+```

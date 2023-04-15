@@ -27,9 +27,9 @@ If you want to use another engine, you need to modify `lib/lbt/build.rb` and `li
 
 Install `lbt` with gem command.
 
-~~~
+```
 $ gem install lbt
-~~~
+```
 
 ## Document
 
@@ -68,9 +68,9 @@ LaTeX Build ToolsがサポートするLaTeXエンジンはlualatexである。
 
 gemコマンドで`lbt`をインストールする。
 
-~~~
+```
 $ gem install lbt
-~~~
+```
 
 ## ドキュメント
 

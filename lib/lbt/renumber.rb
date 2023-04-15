@@ -1,4 +1,8 @@
 module Lbt
+  # Renumber the source files.
+  # For example,
+  # - sec1.tex, sec1.5.tex, sec2.tex => sec1.tex, sec2.tex, sec3.tex
+  # - chap1/sec1.tex, chap1/sec1.2.tex, chap1.3/sec10.tex => chap1/sec1.tex, chap1/sec2.tex, chap2/sec1.tex
   def renum
     if Dir.children(".").select{|d| d =~ /^part\d+(\.\d+)?$/}.size > 0
       renumber "part"
@@ -8,8 +12,8 @@ module Lbt
       renumber "sec"
     end
   end
-  module_function :renum
 
+  # :nodoc:
   def renumber pcs
     case pcs
     when "part", "chap"

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>README - LaTeX-Buildtools</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+
+
+  <ul class="link-list" role="directory">
+              <li>
+            <details open>
+              <summary>      <a href="#label-LaTeX+Build+Tools">LaTeX Build Tools</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Prerequisite">Prerequisite</a>
+          <li>      <a href="#label-Installation">Installation</a>
+          <li>      <a href="#label-Document">Document</a>
+          <li>      <a href="#label-License">License</a>
+
+              </ul>
+            </details>
+          </li>
+          <li>
+            <details open>
+              <summary>      <a href="#label-LaTeX+Build+Tools">LaTeX Build Tools</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-E5-8B-95-E4-BD-9C-E6-9D-A1-E4-BB-B6">動作条件</a>
+          <li>      <a href="#label-E3-82-A4-E3-83-B3-E3-82-B9-E3-83-88-E3-83-BC-E3-83-AB">インストール</a>
+          <li>      <a href="#label-E3-83-89-E3-82-AD-E3-83-A5-E3-83-A1-E3-83-B3-E3-83-88">ドキュメント</a>
+          <li>      <a href="#label-E3-83-A9-E3-82-A4-E3-82-BB-E3-83-B3-E3-82-B9">ライセンス</a>
+
+              </ul>
+            </details>
+          </li>
+
+  </ul>
+</div>
+
+
+  <div id="project-metadata">
+    
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="./License_md.html">License</a>
+    <li><a href="./README_md.html">README</a>
+    <li><a href="./Tutorial_en_md.html">Tutorial.en</a>
+    <li><a href="./Tutorial_ja_md.html">Tutorial.ja</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-label="Page README.md">
+
+<p>日本語の説明はこのファイルの後半にあります。</p>
+
+<h1 id="label-LaTeX+Build+Tools">LaTeX Build Tools<span><a href="#label-LaTeX+Build+Tools">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>LaTeX Build Tools is a tool to maintain big LaTeX source files. This version is different from the old versions as follows.</p>
+<ul><li>
+<p>Use <code>lbt</code> command to run every sub commands.</p>
+</li><li>
+<p>It is provided as a gem.</p>
+</li></ul>
+
+<p>The old versions, the one with rake and the other of bash scripts, are moved to the other branches, <code>rake_version</code> and <code>bash</code> respectovely.</p>
+
+<p>LaTeX Build Tools supports <code>lualatex</code> engine only. If you want to use another engine, you need to modify <code>lib/lbt/build.rb</code> and <code>lib/lbt/part_typeset.rb</code>.</p>
+
+<h2 id="label-Prerequisite">Prerequisite<span><a href="#label-Prerequisite">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Linux operationg system</p>
+</li><li>
+<p>Ruby. You can install it by one of the followings.</p>
+</li><li>
+<p>Install the distribution package</p>
+</li><li>
+<p>Install it with rbenv. Refer to <a href="https://github.com/rbenv/rbenv">Rbenv’s GitHub repository</a></p>
+</li><li>
+<p>LuaLaTeX. You can install it by one of the followings.</p>
+</li><li>
+<p>Install the distribution package</p>
+</li><li>
+<p>Install TexLive. Refer to <a href="https://tug.org/texlive/">TexLive website</a></p>
+</li></ul>
+
+<h2 id="label-Installation">Installation<span><a href="#label-Installation">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Install <code>lbt</code> with gem command.</p>
+
+<pre>$ gem install lbt</pre>
+
+<h2 id="label-Document">Document<span><a href="#label-Document">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>See <a href="Tutorial_md.html">Tutorial</a>.</p>
+
+<h2 id="label-License"><a href="License_md.html">License</a><span><a href="#label-License">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>GPL. See <a href="License_md.html">License.md</a>.</p>
+<hr>
+
+<h1 id="label-LaTeX+Build+Tools">LaTeX Build Tools<span><a href="#label-LaTeX+Build+Tools">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>LaTeX Build Toolsは大きなLaTeXソースファイルを管理するためのツールである。 現在の版は次の2点が旧版と異なっている。</p>
+<ul><li>
+<p>lbtというコマンドからすべてを起動</p>
+</li><li>
+<p>gemとして提供される</p>
+</li></ul>
+
+<p>旧版の、rakeを用いる版とbashスクリプト版は、それぞれrake_versionブランチとbashブランチに移動した。</p>
+
+<p>LaTeX Build ToolsがサポートするLaTeXエンジンはlualatexである。 その他のエンジンを使いたい場合はlib/lbt/build.rbとlib/lbt/part_typeset.rbの修正が必要である。</p>
+
+<h2 id="label-E5-8B-95-E4-BD-9C-E6-9D-A1-E4-BB-B6">動作条件<span><a href="#label-E5-8B-95-E4-BD-9C-E6-9D-A1-E4-BB-B6">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Linux オペレーティング・システム</p>
+</li><li>
+<p>Ruby。Rubyのインストール方法は次の2通りがある</p>
+</li><li>
+<p>ディストリビューションのパッケージをインストール</p>
+</li><li>
+<p>Rbenvを用いてインストール。詳しくは<a href="https://github.com/rbenv/rbenv">RbenvのGitHubレポジトリ</a>を参照してほしい</p>
+</li><li>
+<p>LuaLaTeX。LuaLaTeXのインストール方法は次の2通りがある</p>
+</li><li>
+<p>ディストリビューションのパッケージをインストール</p>
+</li><li>
+<p>TexLiveをインストール。詳しくは<a href="https://tug.org/texlive/">TexLiveのウェブサイト</a>を参照してほしい</p>
+</li></ul>
+
+<h2 id="label-E3-82-A4-E3-83-B3-E3-82-B9-E3-83-88-E3-83-BC-E3-83-AB">インストール<span><a href="#label-E3-82-A4-E3-83-B3-E3-82-B9-E3-83-88-E3-83-BC-E3-83-AB">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>gemコマンドで<code>lbt</code>をインストールする。</p>
+
+<pre>$ gem install lbt</pre>
+
+<h2 id="label-E3-83-89-E3-82-AD-E3-83-A5-E3-83-A1-E3-83-B3-E3-83-88">ドキュメント<span><a href="#label-E3-83-89-E3-82-AD-E3-83-A5-E3-83-A1-E3-83-B3-E3-83-88">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p><a href="Tutorial_ja_md.html">チュートリアル</a>を参照してほしい。</p>
+
+<h2 id="label-E3-83-A9-E3-82-A4-E3-82-BB-E3-83-B3-E3-82-B9">ライセンス<span><a href="#label-E3-83-A9-E3-82-A4-E3-82-BB-E3-83-B3-E3-82-B9">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>GPL。<a href="License_md.html">License.md</a>を参照。</p>
+
+</main>
+
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.5.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

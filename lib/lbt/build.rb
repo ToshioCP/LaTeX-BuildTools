@@ -1,6 +1,7 @@
 require_relative 'utils.rb'
 
 module Lbt
+  # Typeset LaTeX source files into a PDF file.
   def build
     m = File.read(".config").match(/^build_dir = (.*)$/)
     build_dir = m[1] ? m[1] : "_build"

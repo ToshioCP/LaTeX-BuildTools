@@ -3,10 +3,6 @@
 # Ignore all backupfiles made by gedit
 *~
 
-# Ignore Readme.html file generated from Readme.md by pandoc
-Readme.html
-Readme.ja.html
-
 # Ignore `Tutorial` directory
 Tutorial
 

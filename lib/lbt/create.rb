@@ -2,6 +2,15 @@ require 'fileutils'
 require 'base64'
 
 module Lbt
+=begin rdoc
+The create method creates a source file directory and put some templates in the directory.
+
+Parameters are:
+
+[dir] The name of the source file directory
+[document\_class] The document class of the LaTeX source file. For example, article, book and beamer.
+[build\_dir] The working directory in which typeset is carried out.
+=end
   def create dir, document_class="book", build_dir="_build"
     raise "Argument error." unless dir.is_a?(String) && dir =~ /[[:^space:]]+/
     raise "#{dir} already exists." if Dir.exist?(dir)

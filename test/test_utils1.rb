@@ -3,7 +3,20 @@ require 'fileutils'
 require_relative '../lib/lbt/utils.rb'
 include FileUtils
 
-class TestUtils < Minitest::Test
+class TestUtils1 < Minitest::Test
+  def setup
+    @cur_dir = Dir.pwd
+    cd __dir__
+    converter = "{'.txt': lambda {|src, dst| cp(src, dst)}}\n"
+    File.write("converters.rb", converter)
+    ["pcs1", "pcs2", "pcs3"].each{|pcs| mkdir pcs}
+  end
+  def teardown
+    ["pcs1", "pcs2", "pcs3"].each{|pcs| remove_entry_secure pcs}
+    rm "converters.rb"
+    cd @cur_dir
+  end    
+
   def test_remove_tex_comment
     tex_string = <<~EOS
     \\documentclass{article}
@@ -46,54 +59,47 @@ class TestUtils < Minitest::Test
     assert_equal "part1/chap2/sec3.html", s.ext(".html")
   end
   def test_pcs
-    dirs = ["part1/chap1", "part1/chap2", "part2/chap1", "part2/chap2"].map{|d| "pcs/#{d}"}
+    dirs = ["part1/chap1", "part1/chap2", "part2/chap1", "part2/chap2"].map{|d| "pcs1/#{d}"}
     dirs.each {|d| mkdir_p(d)}
     files = dirs.map {|d| ["#{d}/sec1.md", "#{d}/sec2.tex"]}.flatten
     files.each {|f| touch(f)}
-    pcs = Lbt::PCS.new "pcs"
+    pcs = Lbt::PCS.new "pcs1"
     assert_equal :PCS, pcs.type
-    assert_equal "pcs", pcs.dir
-    files = files.map{|d| d.sub(/^pcs\//, "")}
+    assert_equal "pcs1", pcs.dir
+    files = files.map{|d| d.sub(/^pcs1\//, "")}
     assert_equal files, pcs.to_a
     pcs_files = []
     pcs.each {|f| pcs_files << f}
     assert files == pcs_files
-    remove_entry_secure "pcs"
 
-    dirs = ["chap1", "chap2"].map{|d| "pcs/#{d}"}
+    dirs = ["chap1", "chap2"].map{|d| "pcs2/#{d}"}
     dirs.each {|d| mkdir_p(d)}
     files = dirs.map {|d| ["#{d}/sec1.md", "#{d}/sec2.tex"]}.flatten
     files.each {|f| touch(f)}
-    pcs = Lbt::PCS.new "pcs"
+    pcs = Lbt::PCS.new "pcs2"
     assert_equal :CS, pcs.type
-    assert_equal "pcs", pcs.dir
-    files = files.map{|d| d.sub(/^pcs\//, "")}
+    assert_equal "pcs2", pcs.dir
+    files = files.map{|d| d.sub(/^pcs2\//, "")}
     assert_equal files, pcs.to_a
     pcs_files = []
     pcs.each {|f| pcs_files << f}
     assert files == pcs_files
-    remove_entry_secure "pcs"
 
-    mkdir_p "pcs"
-    touch "pcs/sec1.md"
-    touch "pcs/sec2.tex"
+    touch "pcs3/sec1.md"
+    touch "pcs3/sec2.tex"
     files = ["sec1.md", "sec2.tex"]
-    pcs = Lbt::PCS.new "pcs"
+    pcs = Lbt::PCS.new "pcs3"
     assert_equal :S, pcs.type
-    assert_equal "pcs", pcs.dir
+    assert_equal "pcs3", pcs.dir
     assert_equal files, pcs.to_a
     pcs_files = []
     pcs.each {|f| pcs_files << f}
     assert files == pcs_files
-    remove_entry_secure "pcs"
   end
   include Lbt
   def test_get_converters
-    converter = "{'.txt': lambda {|src, dst| cp(src, dst)}}\n"
-    File.write("converters.rb", converter)
     converters = get_converters
     assert_equal converters[:'.txt'].source_location, ["(eval)", 1]
-    assert_equal converters[:'.md'].source_location, [File.absolute_path("../lib/lbt/utils.rb"), 86]
-    rm "converters.rb"
+    assert_equal converters[:'.md'].source_location[0], File.absolute_path("../lib/lbt/utils.rb")
   end
 end

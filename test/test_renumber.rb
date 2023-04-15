@@ -63,13 +63,13 @@ class TestRenumber < Minitest::Test
       "sec6.md"
     ]
     @cur_dir = Dir.pwd
-    @temp_dir = "renumber_sample"
-    mkdir @temp_dir
-    cd @temp_dir
+    @dir = "#{__dir__}/renumber_sample"
+    mkdir @dir
+    cd @dir
   end
   def teardown
     cd @cur_dir
-    remove_entry_secure @temp_dir
+    remove_entry_secure @dir
   end
 
   def test_renum
