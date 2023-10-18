@@ -113,7 +113,7 @@ Parameters are:
       File.write("#{dir}/helper.tex", helper_tex)
     elsif document_class == "beamer"
       main_tex = <<~EOS
-      \\documentclass[utf8,aspectratio=149]{beamer}
+      \\documentclass[utf8,aspectratio=169]{beamer}
       \\mode<presentation>
       {
         \\usetheme{Warsaw}
@@ -171,10 +171,14 @@ Parameters are:
       \\usepackage{amsmath,amssymb}
       \\usepackage{tikz}
       \\usepackage[absolute,overlay]{textpos}
+      % 数式フォントを設定（これなしだとsansになる）
+      \\usefonttheme{professionalfonts}
       EOS
       sec1_tex = <<~EOS
       % This is a sample latex file for the beamer documentclass.
-      \\begin{frame}{introduction}
+      \\section{Section Title}
+      \\begin{frame}
+      \\frametitle{introduction}
       About something
       \\begin{itemize}
         \\item item 1
@@ -188,9 +192,10 @@ Parameters are:
       \\alert{alert message, which is red.}
       \\end{frame}
       % Show a photo that extends to the whole slide view.
+      % The aspect ratio is 16:9.
       \\begin{frame}
       \\begin{textblock*}{128mm}(0pt,0pt)
-      \\includegraphics[width=128mm,height=96mm,keepaspectratio]{lagoon.jpg}
+      \\includegraphics[width=160mm,height=90mm,keepaspectratio]{lagoon.jpg}
       \\end{textblock*}
       \\end{frame}
       EOS

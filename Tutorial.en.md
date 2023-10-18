@@ -3,14 +3,14 @@
 The followings are required for LaTex-Buildtools.
 
 - Ruby
-- LualateX
+- LualaTeX
 - Lbt (lbt is Latex-Buildtools)
 
-The first can be installed from the distribution package.
-For example, You can use the apt command with Ubuntu.
+The first two items can be installed from the distribution package.
+For example, You can use the `apt` command in Ubuntu.
 
 Lbt is provided as a Ruby Gem.
-It can be installed with the `gem` command.
+It can be installed with the `gem` command from RubyGems.org.
 
 ```
 $ gem install lbt
@@ -18,17 +18,17 @@ $ gem install lbt
 
 # Creating a directory and templates for source files
 
-The rest of this tutorial shows an example of using Lbt.
+The rest of this tutorial shows how to use `lbt` with an example.
 Its source file is this tutorial.
 
 First, use a `new` subcommand to create a directory and templates for source files.
 The `new` subcommand takes the directory name, document class name, and working directory name as arguments.
 The last two arguments can be left out.
-Their default values are book and \_build respectively.
-In this example, we use `ltjsarticle` document class.
+Their default values are `book` and `_build` respectively.
+In this example, we use `article` document class.
 
 ```
-$ lbt new Tutorial ltjsarticle
+$ lbt new Tutorial article
 $ cd Tutorial
 $ ls -a
 . .. .config helper.tex main.tex
@@ -41,14 +41,14 @@ $ cat .config
 build_dir = _build
 ```
 
-Since the working directory name was left out, it is \_build (default value).
+Since the working directory name was left out, it is `_build` (default value).
 It is used when `build` and `part_typeset` subcommands are executed.
 
 The file `main.tex` is the route file of LaTeX sources.
 
 ```
 $ cat main.tex
-\documentclass{ltjsarticle}
+\documentclass{article}
 \input{helper.tex}
 \title{Title}
 \author{Author}
@@ -80,7 +80,7 @@ $ cat helper.tex
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 ```
 
-Since we don't need tikz package in this example, it can be deleted.
+Since we don't need `tikz` package in this example, it can be deleted.
 But you can leave it if you want.
 The last two lines are required when converting Markdown files to LaTeX files with Pandoc.
 The source, which is this tutorial, is Markdown, so we will leave them.
@@ -120,6 +120,8 @@ The argument `1` means `sec1.md`.
 If you want to type sec5.md, use 5 instead of 1.
 
 For large documents with parts and chapters, for example, specify "1-2-4" for part1/chap2/sec4.tex.
+
+The result is `_build/main.pdf`.
 
 # Renumbering
 

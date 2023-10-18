@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>LaTeX-Buildtools</title>
+<title>README - LaTeX-Buildtools</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "./";
@@ -36,7 +36,6 @@
   </div>
 </div>
 
-
     <div id="search-section" role="search" class="project-section initially-hidden">
   <form action="#" method="get" accept-charset="utf-8">
     <div id="search-field-wrapper">
@@ -54,6 +53,44 @@
 
   </div>
 
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+
+
+  <ul class="link-list" role="directory">
+              <li>
+            <details open>
+              <summary>      <a href="#label-LaTeX+Build+Tools">LaTeX Build Tools</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Prerequisite">Prerequisite</a>
+          <li>      <a href="#label-Installation">Installation</a>
+          <li>      <a href="#label-Document">Document</a>
+          <li>      <a href="#label-License">License</a>
+
+              </ul>
+            </details>
+          </li>
+          <li>
+            <details open>
+              <summary>      <a href="#label-LaTeX+Build+Tools">LaTeX Build Tools</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-E5-8B-95-E4-BD-9C-E6-9D-A1-E4-BB-B6">動作条件</a>
+          <li>      <a href="#label-E3-82-A4-E3-83-B3-E3-82-B9-E3-83-88-E3-83-BC-E3-83-AB">インストール</a>
+          <li>      <a href="#label-E3-83-89-E3-82-AD-E3-83-A5-E3-83-A1-E3-83-B3-E3-83-88">ドキュメント</a>
+          <li>      <a href="#label-E3-83-A9-E3-82-A4-E3-82-BB-E3-83-B3-E3-82-B9">ライセンス</a>
+
+              </ul>
+            </details>
+          </li>
+
+  </ul>
+</div>
+
+
   <div id="project-metadata">
     
 <div id="fileindex-section" class="nav-section">
@@ -67,23 +104,10 @@
   </ul>
 </div>
 
-    <div id="classindex-section" class="nav-section">
-  <h3>Class and Module Index</h3>
-
-  <ul class="link-list">
-  <li><details><summary><code><a href="./Lbt.html">Lbt</a></code></summary>
-  <ul class="link-list">
-  <li><code><a href="./Lbt/PCS.html">PCS</a></code>
-  </ul></details>
-  <li><code><a href="./Object.html">Object</a></code>
-  <li><code><a href="./String.html">String</a></code>
-</div>
-
   </div>
 </nav>
 
-<main role="main">
-
+<main role="main" aria-label="Page README.md">
 
 <p>日本語の説明はこのファイルの後半にあります。</p>
 
@@ -96,13 +120,13 @@
 <p>It is provided as a gem.</p>
 </li></ul>
 
-<p>The old versions, the one with rake and the other of bash scripts, are moved to the other branches, <code>rake_version</code> and <code>bash</code> respectovely.</p>
+<p>The old versions, the one with rake and the other of bash scripts, are moved to the other branches, <code>rake_version</code> and <code>bash</code> respectively.</p>
 
 <p>LaTeX Build Tools supports <code>lualatex</code> engine only. If you want to use another engine, you need to modify <code>lib/lbt/build.rb</code> and <code>lib/lbt/part_typeset.rb</code>.</p>
 
 <h2 id="label-Prerequisite">Prerequisite<span><a href="#label-Prerequisite">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
-<p>Linux operationg system</p>
+<p>Linux operating system</p>
 </li><li>
 <p>Ruby. You can install it by one of the followings.</p>
 </li><li>
@@ -119,9 +143,20 @@
 
 <h2 id="label-Installation">Installation<span><a href="#label-Installation">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
-<p>Install <code>lbt</code> with gem command.</p>
+<p>You can install <code>lbt</code> from RubyGems.org with gem command.</p>
 
 <pre>$ gem install lbt</pre>
+
+<p>If you want to install it from the source code, do the following.</p>
+<ol><li>
+<p>Click the <code>Code</code> button, then click <code>Download ZIP</code> in the small dialog.</p>
+</li><li>
+<p>Unzip the downloaded Zip file, then a new directory <code>LaTeX-BuildTools-master</code> will be created.</p>
+</li><li>
+<p>Type <code>gem build lbt</code> under the directory, then the gem file <code>lbt-0.5.1.gem</code> is created. The number <code>0.5.1</code> is the version number.</p>
+</li><li>
+<p>Type <code>gem install lbt-0.5.1.gem</code>.</p>
+</li></ol>
 
 <h2 id="label-Document">Document<span><a href="#label-Document">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
@@ -141,9 +176,9 @@
 <p>gemとして提供される</p>
 </li></ul>
 
-<p>旧版の、rakeを用いる版とbashスクリプト版は、それぞれrake_versionブランチとbashブランチに移動した。</p>
+<p>旧版の、rakeを用いる版とbashスクリプト版は、それぞれ<code>rake_version</code>ブランチと<code>bash</code>ブランチに移動した。</p>
 
-<p>LaTeX Build ToolsがサポートするLaTeXエンジンはlualatexである。 その他のエンジンを使いたい場合はlib/lbt/build.rbとlib/lbt/part_typeset.rbの修正が必要である。</p>
+<p>LaTeX Build ToolsがサポートするLaTeXエンジンはlualatexである。 その他のエンジンを使いたい場合は<code>lib/lbt/build.rb</code>と<code>lib/lbt/part_typeset.rb</code>の修正が必要である。</p>
 
 <h2 id="label-E5-8B-95-E4-BD-9C-E6-9D-A1-E4-BB-B6">動作条件<span><a href="#label-E5-8B-95-E4-BD-9C-E6-9D-A1-E4-BB-B6">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
@@ -164,9 +199,20 @@
 
 <h2 id="label-E3-82-A4-E3-83-B3-E3-82-B9-E3-83-88-E3-83-BC-E3-83-AB">インストール<span><a href="#label-E3-82-A4-E3-83-B3-E3-82-B9-E3-83-88-E3-83-BC-E3-83-AB">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
-<p>gemコマンドで<code>lbt</code>をインストールする。</p>
+<p>gemコマンドでRubyGems.orgから<code>lbt</code>をインストールする。</p>
 
 <pre>$ gem install lbt</pre>
+
+<p>以上が最も簡単なインストール方法だが、ソースコードからインストールしたい場合は次のようにする。</p>
+<ol><li>
+<p>GitHubのレポジトリを開き<code>Code</code>ボタンをクリック。小さいダイアログが現れるので、<code>Download ZIP</code>をクリックする</p>
+</li><li>
+<p>ZIPファイルを解凍すると<code>LaTeX-BuildTools-master</code>というディレクトリが作られる</p>
+</li><li>
+<p>端末をそのディレクトリに移動して<code>gem build lbt</code>とタイプすると、<code>lbt-0.5.1.gem</code>というGemファイルが作られる。 数字<code>0.5.1</code>はバージョン番号である</p>
+</li><li>
+<p><code>gem install lbt-0.5.1.gem</code>とタイプしてインストールする</p>
+</li></ol>
 
 <h2 id="label-E3-83-89-E3-82-AD-E3-83-A5-E3-83-A1-E3-83-B3-E3-83-88">ドキュメント<span><a href="#label-E3-83-89-E3-82-AD-E3-83-A5-E3-83-A1-E3-83-B3-E3-83-88">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
@@ -177,6 +223,7 @@
 <p>GPL。<a href="License_md.html">License.md</a>を参照。</p>
 
 </main>
+
 
 
 <footer id="validator-badges" role="contentinfo">

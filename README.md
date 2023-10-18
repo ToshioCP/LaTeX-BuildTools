@@ -8,14 +8,14 @@ This version is different from the old versions as follows.
 - Use `lbt` command to run every sub commands.
 - It is provided as a gem.
 
-The old versions, the one with rake and the other of bash scripts, are moved to the other branches, `rake_version` and `bash` respectovely.
+The old versions, the one with rake and the other of bash scripts, are moved to the other branches, `rake_version` and `bash` respectively.
 
 LaTeX Build Tools supports `lualatex` engine only.
 If you want to use another engine, you need to modify `lib/lbt/build.rb` and `lib/lbt/part_typeset.rb`.
 
 ## Prerequisite
 
-- Linux operationg system
+- Linux operating system
 - Ruby. You can install it by one of the followings.
   - Install the distribution package
   - Install it with rbenv. Refer to [Rbenv's GitHub repository](https://github.com/rbenv/rbenv)
@@ -25,11 +25,19 @@ If you want to use another engine, you need to modify `lib/lbt/build.rb` and `li
 
 ## Installation
 
-Install `lbt` with gem command.
+You can install `lbt` from RubyGems.org with gem command.
 
 ```
 $ gem install lbt
 ```
+
+If you want to install it from the source code, do the following.
+
+1. Click the `Code` button, then click `Download ZIP` in the small dialog.
+2. Unzip the downloaded Zip file, then a new directory `LaTeX-BuildTools-master` will be created.
+3. Type `gem build lbt` under the directory, then the gem file `lbt-0.5.1.gem` is created.
+The number `0.5.1` is the version number.
+4. Type `gem install lbt-0.5.1.gem`.
 
 ## Document
 
@@ -49,10 +57,10 @@ LaTeX Build Toolsは大きなLaTeXソースファイルを管理するための�
 - lbtというコマンドからすべてを起動
 - gemとして提供される
 
-旧版の、rakeを用いる版とbashスクリプト版は、それぞれrake\_versionブランチとbashブランチに移動した。
+旧版の、rakeを用いる版とbashスクリプト版は、それぞれ`rake_version`ブランチと`bash`ブランチに移動した。
 
 LaTeX Build ToolsがサポートするLaTeXエンジンはlualatexである。
-その他のエンジンを使いたい場合はlib/lbt/build.rbとlib/lbt/part\_typeset.rbの修正が必要である。
+その他のエンジンを使いたい場合は`lib/lbt/build.rb`と`lib/lbt/part_typeset.rb`の修正が必要である。
 
 ## 動作条件
 
@@ -66,11 +74,19 @@ LaTeX Build ToolsがサポートするLaTeXエンジンはlualatexである。
 
 ## インストール
 
-gemコマンドで`lbt`をインストールする。
+gemコマンドでRubyGems.orgから`lbt`をインストールする。
 
 ```
 $ gem install lbt
 ```
+
+以上が最も簡単なインストール方法だが、ソースコードからインストールしたい場合は次のようにする。
+
+1. GitHubのレポジトリを開き`Code`ボタンをクリック。小さいダイアログが現れるので、`Download ZIP`をクリックする
+2. ZIPファイルを解凍すると`LaTeX-BuildTools-master`というディレクトリが作られる
+3. 端末をそのディレクトリに移動して`gem build lbt`とタイプすると、`lbt-0.5.1.gem`というGemファイルが作られる。
+数字`0.5.1`はバージョン番号である
+4. `gem install lbt-0.5.1.gem`とタイプしてインストールする
 
 ## ドキュメント
 

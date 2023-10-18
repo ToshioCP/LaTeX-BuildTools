@@ -46,7 +46,7 @@ class TestCreate < Minitest::Test
       refute File.exist?("#{@dir3}/#{f}")
     end
     File.open("#{@dir3}/main.tex") {|f| s = f.readline}
-    assert_equal "\\documentclass[utf8,aspectratio=149]{beamer}\n", s
+    assert_equal "\\documentclass[utf8,aspectratio=169]{beamer}\n", s
 
     %w{.config cover.tex gecko.png helper.tex main.tex}.each do |f|
       assert File.exist?("#{@dir4}/#{f}")

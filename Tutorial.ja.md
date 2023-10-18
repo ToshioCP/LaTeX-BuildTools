@@ -114,6 +114,8 @@ $ lbt part_typeset 1
 
 PartやChapterのある大きな文書では、例えばpart1/chap2/sec4.texに対して「1-2-4」と引数を指定してください。
 
+コンパイル結果は`_build/main.pdf`に保存されます。
+
 # リナンバー
 
 ときにはsec1.mdとsec2.mdの間にセクションを挿入したいことがあるかもしれません。
