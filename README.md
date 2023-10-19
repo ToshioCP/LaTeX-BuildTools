@@ -35,9 +35,9 @@ If you want to install it from the source code, do the following.
 
 1. Click the `Code` button, then click `Download ZIP` in the small dialog.
 2. Unzip the downloaded Zip file, then a new directory `LaTeX-BuildTools-master` will be created.
-3. Type `gem build lbt` under the directory, then the gem file `lbt-0.5.1.gem` is created.
-The number `0.5.1` is the version number.
-4. Type `gem install lbt-0.5.1.gem`.
+3. Type `gem build lbt` under the directory, then the gem file `lbt-X.X.X.gem` is created.
+The number `X.X.X` is the version number like `0.5.2`.
+1. Type `gem install lbt-X.X.X.gem`.
 
 ## Document
 
@@ -84,9 +84,9 @@ $ gem install lbt
 
 1. GitHubのレポジトリを開き`Code`ボタンをクリック。小さいダイアログが現れるので、`Download ZIP`をクリックする
 2. ZIPファイルを解凍すると`LaTeX-BuildTools-master`というディレクトリが作られる
-3. 端末をそのディレクトリに移動して`gem build lbt`とタイプすると、`lbt-0.5.1.gem`というGemファイルが作られる。
-数字`0.5.1`はバージョン番号である
-4. `gem install lbt-0.5.1.gem`とタイプしてインストールする
+3. 端末をそのディレクトリに移動して`gem build lbt`とタイプすると、`lbt-X.X.X.gem`というGemファイルが作られる。
+この中の`X.X.X`はバージョン番号で、例えば`0.5.2`などのようなものである
+4. `gem install lbt-X.X.X.gem`とタイプしてインストールする
 
 ## ドキュメント
 
