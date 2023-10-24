@@ -126,3 +126,30 @@ renumサブコマンドを実行することでリナンバーできます。
 ```
 $ lbt renum
 ```
+
+# Pandoc と Top-Level-Division オプション
+
+LbtはPandocを用いてMarkdownをLaTeXに変換しています。
+デフォルトでは、PandocはATX見出しの`#`を`\section`に変換します。
+詳しくはPandocのドキュメントの`--top-level-division`を参照してください。
+
+これを、LaTeXファイルのディレクトリにある`.config`ファイルを書き換えることで変更できます。
+例えば、下記のようにすると、`#`が`\chapter`に対応するようになります。
+
+```
+$ cat .config
+build_dir = _build
+top-level-division = chapter
+```
+
+書き方の書式は`top-level-division = (part, chapter or section)`です。
+
+下記の表は一般的に良く用いられるtop-level-divisionです。
+
+|documentclass|top level division|
+|:-----|:-----|
+|book|chapter or part|
+|report|chapter|
+|article|section|
+|beamer|section|
+

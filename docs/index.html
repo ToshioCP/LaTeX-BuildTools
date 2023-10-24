@@ -89,16 +89,16 @@
 
 <h1 id="label-LaTeX+Build+Tools">LaTeX Build Tools<span><a href="#label-LaTeX+Build+Tools">&para;</a> <a href="#top">&uarr;</a></span></h1>
 
-<p>LaTeX Build Tools is a tool to maintain big LaTeX source files. This version is different from the old versions as follows.</p>
+<p>LaTeX Build Tools is a tool to manage big LaTeX source files. This version is different from the old versions.</p>
 <ul><li>
 <p>Use <code>lbt</code> command to run every sub commands.</p>
 </li><li>
-<p>It is provided as a gem.</p>
+<p>It is provided as a gem, which is a Ruby library program.</p>
 </li></ul>
 
 <p>The old versions, the one with rake and the other of bash scripts, are moved to the other branches, <code>rake_version</code> and <code>bash</code> respectively.</p>
 
-<p>LaTeX Build Tools supports <code>lualatex</code> engine only. If you want to use another engine, you need to modify <code>lib/lbt/build.rb</code> and <code>lib/lbt/part_typeset.rb</code>.</p>
+<p>LaTeX Build Tools supports LuaLaTeX engine only. If you want to use another engine, you need to modify <code>lib/lbt/build.rb</code> and <code>lib/lbt/part_typeset.rb</code>.</p>
 
 <h2 id="label-Prerequisite">Prerequisite<span><a href="#label-Prerequisite">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
@@ -131,12 +131,12 @@
 </li><li>
 <p>Type <code>gem build lbt</code> under the directory, then the gem file <code>lbt-X.X.X.gem</code> is created. The number <code>X.X.X</code> is the version number like <code>0.5.2</code>.</p>
 </li><li>
-<p>Type <code>gem install lbt-X.X.X.gem</code>.</p>
+<p>Type <code>gem install lbt-X.X.X.gem</code>, where <code>X.X.X</code> is the version number.</p>
 </li></ol>
 
 <h2 id="label-Document">Document<span><a href="#label-Document">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
-<p>See <a href="Tutorial_md.html">Tutorial</a>.</p>
+<p>See <a href="https://toshiocp.github.io/LaTeX-BuildTools/Tutorial_en_md.html">Tutorial.en</a>.</p>
 
 <h2 id="label-License"><a href="License_md.html">License</a><span><a href="#label-License">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
@@ -145,16 +145,16 @@
 
 <h1 id="label-LaTeX+Build+Tools">LaTeX Build Tools<span><a href="#label-LaTeX+Build+Tools">&para;</a> <a href="#top">&uarr;</a></span></h1>
 
-<p>LaTeX Build Toolsは大きなLaTeXソースファイルを管理するためのツールである。 現在の版は次の2点が旧版と異なっている。</p>
+<p>LaTeX Build Toolsは大きなLaTeXソースファイルを管理するためのツールです。 現在の版は次の2点が旧版と異なっています。</p>
 <ul><li>
 <p>lbtというコマンドからすべてを起動</p>
 </li><li>
-<p>gemとして提供される</p>
+<p>gem（Rubyのライブラリ・プログラム）として提供される</p>
 </li></ul>
 
-<p>旧版の、rakeを用いる版とbashスクリプト版は、それぞれ<code>rake_version</code>ブランチと<code>bash</code>ブランチに移動した。</p>
+<p>旧版の、rakeを用いる版とbashスクリプト版は、それぞれ<code>rake_version</code>ブランチと<code>bash</code>ブランチに移動しました。</p>
 
-<p>LaTeX Build ToolsがサポートするLaTeXエンジンはlualatexである。 その他のエンジンを使いたい場合は<code>lib/lbt/build.rb</code>と<code>lib/lbt/part_typeset.rb</code>の修正が必要である。</p>
+<p>LaTeX Build ToolsがサポートするLaTeXエンジンはLuaLaTeXです。 その他のエンジンを使いたい場合は<code>lib/lbt/build.rb</code>と<code>lib/lbt/part_typeset.rb</code>の修正が必要です。</p>
 
 <h2 id="label-E5-8B-95-E4-BD-9C-E6-9D-A1-E4-BB-B6">動作条件<span><a href="#label-E5-8B-95-E4-BD-9C-E6-9D-A1-E4-BB-B6">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
@@ -187,12 +187,12 @@
 </li><li>
 <p>端末をそのディレクトリに移動して<code>gem build lbt</code>とタイプすると、<code>lbt-X.X.X.gem</code>というGemファイルが作られる。 この中の<code>X.X.X</code>はバージョン番号で、例えば<code>0.5.2</code>などのようなものである</p>
 </li><li>
-<p><code>gem install lbt-X.X.X.gem</code>とタイプしてインストールする</p>
+<p><code>gem install lbt-X.X.X.gem</code>とタイプしてインストールする（<code>X.X.X</code>はバージョン番号）</p>
 </li></ol>
 
 <h2 id="label-E3-83-89-E3-82-AD-E3-83-A5-E3-83-A1-E3-83-B3-E3-83-88">ドキュメント<span><a href="#label-E3-83-89-E3-82-AD-E3-83-A5-E3-83-A1-E3-83-B3-E3-83-88">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
-<p><a href="Tutorial_ja_md.html">チュートリアル</a>を参照してほしい。</p>
+<p>使い方の説明は<a href="https://toshiocp.github.io/LaTeX-BuildTools/Tutorial_ja_md.html">Tutorial.ja</a>を参照してほしい。</p>
 
 <h2 id="label-E3-83-A9-E3-82-A4-E3-82-BB-E3-83-B3-E3-82-B9">ライセンス<span><a href="#label-E3-83-A9-E3-82-A4-E3-82-BB-E3-83-B3-E3-82-B9">&para;</a> <a href="#top">&uarr;</a></span></h2>
 

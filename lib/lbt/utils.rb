@@ -105,9 +105,17 @@ If the files are as above, the PCS instance keeps the six filenames whch are sor
     end
   end
 
+  # Convert '.config' file into a Hash
+  def get_config
+    return {} unless File.exist?(".config")
+    File.read(".config").split(/\n/).map{|s| s.split('=')}.map{|key, val| [key.strip.to_sym, val.strip]}.to_h
+  end
+
   # Return a hash (key: extension, value: Proc object) of converters.
   def get_converters
-    converters = {'.md':  lambda {|src, dst| system("pandoc -o #{dst} #{src}")} }
+    tld = get_config[:'top-level-division']
+    tld = tld ? tld : "default"
+    converters = {'.md':  lambda {|src, dst| system("pandoc --top-level-division=#{tld} -o #{dst} #{src}")} }
     if File.file?("converters.rb")
       c = eval(File.read("converters.rb"))
       c.each {|key, val| converters[key] = val} if c.is_a?(Hash)

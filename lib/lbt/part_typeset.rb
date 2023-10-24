@@ -16,8 +16,8 @@ module Lbt
       return unless File.file? file
     end
 
-    m = File.read(".config").match(/^build_dir = (.*)$/)
-    build_dir = m[1] ? m[1] : "_build"
+    m = get_config[:'build_dir']
+    build_dir = m ? m : "_build"
     raise "main.tex not exist." unless File.exist?('main.tex')
     mkdir build_dir unless Dir.exist?(build_dir)
 

@@ -69,6 +69,7 @@
     <li ><a href="#method-i-build">#build</a>
     <li ><a href="#method-i-cp_conv">#cp_conv</a>
     <li ><a href="#method-i-create">#create</a>
+    <li ><a href="#method-i-get_config">#get_config</a>
     <li ><a href="#method-i-get_converters">#get_converters</a>
     <li ><a href="#method-i-part_typeset">#part_typeset</a>
     <li ><a href="#method-i-renum">#renum</a>
@@ -115,8 +116,8 @@
           <div class="method-source-code" id="build-source">
             <pre><span class="ruby-comment"># File lib/lbt/build.rb, line 5</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">build</span>
-  <span class="ruby-identifier">m</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&quot;.config&quot;</span>).<span class="ruby-identifier">match</span>(<span class="ruby-regexp">/^build_dir = (.*)$/</span>)
-  <span class="ruby-identifier">build_dir</span> = <span class="ruby-identifier">m</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">m</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">:</span> <span class="ruby-string">&quot;_build&quot;</span>
+  <span class="ruby-identifier">m</span> = <span class="ruby-identifier">get_config</span>[<span class="ruby-value">:&#39;build_dir&#39;</span>]
+  <span class="ruby-identifier">build_dir</span> = <span class="ruby-identifier">m</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">m</span> <span class="ruby-operator">:</span> <span class="ruby-string">&quot;_build&quot;</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-string">&quot;main.tex not exist.&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-string">&#39;main.tex&#39;</span>)
   <span class="ruby-identifier">mkdir</span> <span class="ruby-identifier">build_dir</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">build_dir</span>)
 
@@ -164,7 +165,7 @@
           <p>copy or convert source files into build directory.</p>
 
           <div class="method-source-code" id="cp_conv-source">
-            <pre><span class="ruby-comment"># File lib/lbt/utils.rb, line 119</span>
+            <pre><span class="ruby-comment"># File lib/lbt/utils.rb, line 127</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">cp_conv</span> <span class="ruby-identifier">build_dir</span>
   <span class="ruby-identifier">converters</span> = <span class="ruby-identifier">get_converters</span>
   <span class="ruby-identifier">files</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">children</span>(<span class="ruby-string">&quot;.&quot;</span>).<span class="ruby-identifier">reject</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">build_dir</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">f</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;main.tex&quot;</span>}
@@ -417,6 +418,30 @@
 
       </div>
 
+      <div id="method-i-get_config" class="method-detail ">
+        <div class="method-header">
+          <div class="method-heading">
+            <span class="method-name">get_config</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+        </div>
+
+        <div class="method-description">
+          <p>Convert ‘.config’ file into a Hash</p>
+
+          <div class="method-source-code" id="get_config-source">
+            <pre><span class="ruby-comment"># File lib/lbt/utils.rb, line 109</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_config</span>
+  <span class="ruby-keyword">return</span> {} <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-string">&quot;.config&quot;</span>)
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&quot;.config&quot;</span>).<span class="ruby-identifier">split</span>(<span class="ruby-regexp">/\n/</span>).<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;=&#39;</span>)}.<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">val</span><span class="ruby-operator">|</span> [<span class="ruby-identifier">key</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">to_sym</span>, <span class="ruby-identifier">val</span>.<span class="ruby-identifier">strip</span>]}.<span class="ruby-identifier">to_h</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
       <div id="method-i-get_converters" class="method-detail ">
         <div class="method-header">
           <div class="method-heading">
@@ -430,9 +455,11 @@
           <p>Return a hash (key: extension, value: Proc object) of converters.</p>
 
           <div class="method-source-code" id="get_converters-source">
-            <pre><span class="ruby-comment"># File lib/lbt/utils.rb, line 109</span>
+            <pre><span class="ruby-comment"># File lib/lbt/utils.rb, line 115</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_converters</span>
-  <span class="ruby-identifier">converters</span> = {<span class="ruby-value">&#39;.md&#39;:</span>  <span class="ruby-identifier">lambda</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">src</span>, <span class="ruby-identifier">dst</span><span class="ruby-operator">|</span> <span class="ruby-identifier">system</span>(<span class="ruby-node">&quot;pandoc -o #{dst} #{src}&quot;</span>)} }
+  <span class="ruby-identifier">tld</span> = <span class="ruby-identifier">get_config</span>[<span class="ruby-value">:&#39;top-level-division&#39;</span>]
+  <span class="ruby-identifier">tld</span> = <span class="ruby-identifier">tld</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">tld</span> <span class="ruby-operator">:</span> <span class="ruby-string">&quot;default&quot;</span>
+  <span class="ruby-identifier">converters</span> = {<span class="ruby-value">&#39;.md&#39;:</span>  <span class="ruby-identifier">lambda</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">src</span>, <span class="ruby-identifier">dst</span><span class="ruby-operator">|</span> <span class="ruby-identifier">system</span>(<span class="ruby-node">&quot;pandoc --top-level-division=#{tld} -o #{dst} #{src}&quot;</span>)} }
   <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">file?</span>(<span class="ruby-string">&quot;converters.rb&quot;</span>)
     <span class="ruby-identifier">c</span> = <span class="ruby-identifier">eval</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&quot;converters.rb&quot;</span>))
     <span class="ruby-identifier">c</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">val</span><span class="ruby-operator">|</span> <span class="ruby-identifier">converters</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-identifier">val</span>} <span class="ruby-keyword">if</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
@@ -474,8 +501,8 @@
     <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">file?</span> <span class="ruby-identifier">file</span>
   <span class="ruby-keyword">end</span>
 
-  <span class="ruby-identifier">m</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&quot;.config&quot;</span>).<span class="ruby-identifier">match</span>(<span class="ruby-regexp">/^build_dir = (.*)$/</span>)
-  <span class="ruby-identifier">build_dir</span> = <span class="ruby-identifier">m</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">m</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">:</span> <span class="ruby-string">&quot;_build&quot;</span>
+  <span class="ruby-identifier">m</span> = <span class="ruby-identifier">get_config</span>[<span class="ruby-value">:&#39;build_dir&#39;</span>]
+  <span class="ruby-identifier">build_dir</span> = <span class="ruby-identifier">m</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">m</span> <span class="ruby-operator">:</span> <span class="ruby-string">&quot;_build&quot;</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-string">&quot;main.tex not exist.&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-string">&#39;main.tex&#39;</span>)
   <span class="ruby-identifier">mkdir</span> <span class="ruby-identifier">build_dir</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">build_dir</span>)
 

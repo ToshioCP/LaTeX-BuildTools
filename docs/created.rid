@@ -1,11 +1,11 @@
-Thu, 19 Oct 2023 21:50:37 +0900
-README.md	Thu, 19 Oct 2023 20:17:12 +0900
+Tue, 24 Oct 2023 13:34:00 +0900
+README.md	Tue, 24 Oct 2023 12:44:10 +0900
 License.md	Mon, 10 Apr 2023 21:44:19 +0900
-Tutorial.en.md	Wed, 18 Oct 2023 22:57:04 +0900
-Tutorial.ja.md	Wed, 18 Oct 2023 22:55:01 +0900
+Tutorial.en.md	Tue, 24 Oct 2023 13:33:43 +0900
+Tutorial.ja.md	Tue, 24 Oct 2023 13:33:57 +0900
 lib/lbt.rb	Fri, 14 Apr 2023 22:22:24 +0900
-lib/lbt/build.rb	Fri, 14 Apr 2023 23:35:33 +0900
+lib/lbt/build.rb	Tue, 24 Oct 2023 11:21:32 +0900
 lib/lbt/create.rb	Wed, 18 Oct 2023 15:26:05 +0900
-lib/lbt/part_typeset.rb	Sat, 15 Apr 2023 11:33:06 +0900
+lib/lbt/part_typeset.rb	Tue, 24 Oct 2023 11:21:47 +0900
 lib/lbt/renumber.rb	Sat, 15 Apr 2023 11:32:57 +0900
-lib/lbt/utils.rb	Sat, 15 Apr 2023 11:31:57 +0900
+lib/lbt/utils.rb	Tue, 24 Oct 2023 11:26:15 +0900

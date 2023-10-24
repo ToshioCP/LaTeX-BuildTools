@@ -2,15 +2,15 @@
 
 # LaTeX Build Tools
 
-LaTeX Build Tools is a tool to maintain big LaTeX source files.
-This version is different from the old versions as follows.
+LaTeX Build Tools is a tool to manage big LaTeX source files.
+This version is different from the old versions.
 
 - Use `lbt` command to run every sub commands.
-- It is provided as a gem.
+- It is provided as a gem, which is a Ruby library program.
 
 The old versions, the one with rake and the other of bash scripts, are moved to the other branches, `rake_version` and `bash` respectively.
 
-LaTeX Build Tools supports `lualatex` engine only.
+LaTeX Build Tools supports LuaLaTeX engine only.
 If you want to use another engine, you need to modify `lib/lbt/build.rb` and `lib/lbt/part_typeset.rb`.
 
 ## Prerequisite
@@ -37,11 +37,11 @@ If you want to install it from the source code, do the following.
 2. Unzip the downloaded Zip file, then a new directory `LaTeX-BuildTools-master` will be created.
 3. Type `gem build lbt` under the directory, then the gem file `lbt-X.X.X.gem` is created.
 The number `X.X.X` is the version number like `0.5.2`.
-1. Type `gem install lbt-X.X.X.gem`.
+1. Type `gem install lbt-X.X.X.gem`, where `X.X.X` is the version number.
 
 ## Document
 
-See [Tutorial](Tutorial.md).
+See [Tutorial.en](https://toshiocp.github.io/LaTeX-BuildTools/Tutorial_en_md.html).
 
 ## License
 
@@ -51,16 +51,16 @@ GPL. See [License.md](License.md).
 
 # LaTeX Build Tools
 
-LaTeX Build Toolsは大きなLaTeXソースファイルを管理するためのツールである。
-現在の版は次の2点が旧版と異なっている。
+LaTeX Build Toolsは大きなLaTeXソースファイルを管理するためのツールです。
+現在の版は次の2点が旧版と異なっています。
 
 - lbtというコマンドからすべてを起動
-- gemとして提供される
+- gem（Rubyのライブラリ・プログラム）として提供される
 
-旧版の、rakeを用いる版とbashスクリプト版は、それぞれ`rake_version`ブランチと`bash`ブランチに移動した。
+旧版の、rakeを用いる版とbashスクリプト版は、それぞれ`rake_version`ブランチと`bash`ブランチに移動しました。
 
-LaTeX Build ToolsがサポートするLaTeXエンジンはlualatexである。
-その他のエンジンを使いたい場合は`lib/lbt/build.rb`と`lib/lbt/part_typeset.rb`の修正が必要である。
+LaTeX Build ToolsがサポートするLaTeXエンジンはLuaLaTeXです。
+その他のエンジンを使いたい場合は`lib/lbt/build.rb`と`lib/lbt/part_typeset.rb`の修正が必要です。
 
 ## 動作条件
 
@@ -86,11 +86,11 @@ $ gem install lbt
 2. ZIPファイルを解凍すると`LaTeX-BuildTools-master`というディレクトリが作られる
 3. 端末をそのディレクトリに移動して`gem build lbt`とタイプすると、`lbt-X.X.X.gem`というGemファイルが作られる。
 この中の`X.X.X`はバージョン番号で、例えば`0.5.2`などのようなものである
-4. `gem install lbt-X.X.X.gem`とタイプしてインストールする
+4. `gem install lbt-X.X.X.gem`とタイプしてインストールする（`X.X.X`はバージョン番号）
 
 ## ドキュメント
 
-[チュートリアル](Tutorial.ja.md)を参照してほしい。
+使い方の説明は[Tutorial.ja](https://toshiocp.github.io/LaTeX-BuildTools/Tutorial_ja_md.html)を参照してほしい。
 
 ## ライセンス
 

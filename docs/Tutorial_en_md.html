@@ -66,6 +66,7 @@
           <li>      <a href="#label-Typesetting">Typesetting</a>
           <li>      <a href="#label-Partial+typesetting">Partial typesetting</a>
           <li>      <a href="#label-Renumbering">Renumbering</a>
+          <li>      <a href="#label-Pandoc+and+Top-Level-Division+option">Pandoc and Top-Level-Division option</a>
 
   </ul>
 </div>
@@ -185,6 +186,47 @@ build_dir = _build</pre>
 <p>Sometimes you may want to insert a section between sec1.md and sec2.md. At that time, name it sec1.5.md. If you want to renamed these (sec1.md, sec1.5.md and sec2.md) into consecutive number filenames (sec1.md, sec2.md, and sec3.md), use <code>renum</code> subcommand.</p>
 
 <pre>$ lbt renum</pre>
+
+<h1 id="label-Pandoc+and+Top-Level-Division+option">Pandoc and Top-Level-Division option<span><a href="#label-Pandoc+and+Top-Level-Division+option">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="Lbt.html"><code>Lbt</code></a> uses Pandoc to convert Markdown to LaTeX. The default behavior of Pandoc is from the ATX-heading <code>#</code> to <code>\section</code>. See <code>--top-level-division</code> option in the Pandoc document.</p>
+
+<p>You can change it by modifying <code>.config</code> file in your LaTeX-file directory. For example, the following makes the conversion from <code>#</code> to <code>\chapter</code>.</p>
+
+<pre>$ cat .config
+build_dir = _build
+top-level-division = chapter</pre>
+
+<p>The format is <code>top-level-division = (part, chapter or section)</code>.</p>
+
+<p>The table shows the commonly used top-level-division.</p>
+
+<table role="table">
+<thead>
+<tr>
+<th align="left">documentclass</th>
+<th align="left">top level division</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">book</td>
+<td align="left">chapter or part</td>
+</tr>
+<tr>
+<td align="left">report</td>
+<td align="left">chapter</td>
+</tr>
+<tr>
+<td align="left">article</td>
+<td align="left">section</td>
+</tr>
+<tr>
+<td align="left">beamer</td>
+<td align="left">section</td>
+</tr>
+</tbody>
+</table>
 
 </main>
 

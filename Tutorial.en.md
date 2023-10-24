@@ -132,3 +132,29 @@ If you want to renamed these (sec1.md, sec1.5.md and sec2.md) into consecutive n
 ```
 $ lbt renum
 ```
+
+# Pandoc and Top-Level-Division option
+
+Lbt uses Pandoc to convert Markdown to LaTeX.
+The default behavior of Pandoc is from the ATX-heading `#` to `\section`.
+See `--top-level-division` option in the Pandoc document.
+
+You can change it by modifying `.config` file in your LaTeX-file directory.
+For example, the following makes the conversion from `#` to `\chapter`.
+
+```
+$ cat .config
+build_dir = _build
+top-level-division = chapter
+```
+
+The format is `top-level-division = (part, chapter or section)`.
+
+The table shows the commonly used top-level-division.
+
+|documentclass|top level division|
+|:-----|:-----|
+|book|chapter or part|
+|report|chapter|
+|article|section|
+|beamer|section|
